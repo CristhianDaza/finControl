@@ -1,0 +1,100 @@
+:root {
+    --primary-color: #243447;
+    --secondary-color: #0D1117;
+    --background-color: #0A192F;
+    --text-color: #E0E1E9;
+    --accent-color: #3FA9F5;
+    --muted-text-color: #A3A8B8;
+    --success-color: #22C55E;
+    --warning-color: #F59E0B;
+    --error-color: #EF4444;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.card {
+    background-color: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.card h2 {
+    color: var(--accent-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.card p {
+    color: var(--muted-text-color);
+    margin: 0.5rem 0 1rem;
+}
+
+.button {
+    background-color: var(--accent-color);
+    color: var(--background-color);
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 6px rgba(63, 169, 245, 0.3);
+}
+
+.button:hover {
+    background-color: #3498db;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+textarea {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.6rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--muted-text-color);
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+}
+
+.alert-success {
+    background-color: var(--success-color);
+    color: #fff;
+    padding: 0.75rem;
+    border-radius: 6px;
+}
+
+.alert-warning {
+    background-color: var(--warning-color);
+    color: #000;
+    padding: 0.75rem;
+    border-radius: 6px;
+}
+
+.alert-error {
+    background-color: var(--error-color);
+    color: #fff;
+    padding: 0.75rem;
+    border-radius: 6px;
+}
