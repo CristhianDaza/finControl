@@ -1,11 +1,24 @@
 <script setup>
-
+import { defineAsyncComponent } from 'vue'
+const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
 </script>
 
 <template>
-  <h1>FinControl</h1>
+  <div class="layout">
+    <fc-sidebar />
+    <main class="main-content">
+      <router-view />
+    </main>
+  </div>
 </template>
 
 <style scoped>
+.layout {
+  display: flex;
+  height: 100dvh;
+}
 
+.main-content {
+  width: 100dvw;
+}
 </style>
