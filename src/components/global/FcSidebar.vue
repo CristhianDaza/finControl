@@ -1,14 +1,31 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import DashboardIcon from '@/assets/icons/dashboard.svg?raw'
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
+import TransactionsIcon from '@/assets/icons/transactions.svg?raw'
 
 const isMenuHidden = ref(true)
 
 const clickHandler = () => {
-  console.log('Hamburger icon clicked')
   isMenuHidden.value = !isMenuHidden.value
 }
+
+const linksMenu = computed(() => {
+  return [
+    {
+      id: 1,
+      name: 'Dashboard',
+      icon: DashboardIcon,
+      url: 'home'
+    },
+    {
+      id: 2,
+      name: 'Transacciones',
+      icon: TransactionsIcon,
+      url: 'transactions'
+    }
+  ]
+})
 </script>
 
 <template>
@@ -18,8 +35,13 @@ const clickHandler = () => {
       <svg class="sidebar-icon" v-html="HamburgerIcon" @click="clickHandler"></svg>
     </div>
     <nav>
-      <RouterLink to="/" exact-active-class="active">
-        <span>Dashboard</span><svg class="icon-menu" v-html="DashboardIcon"></svg>
+      <RouterLink
+        v-for="link in linksMenu"
+        :key="link.id"
+        :to="{ name: link.url }"
+        exact-active-class="active"
+      >
+        <span>{{ link.name}}</span><svg class="icon-menu" v-html="link.icon"></svg>
       </RouterLink>
     </nav>
   </aside>
@@ -27,7 +49,7 @@ const clickHandler = () => {
 
 <style scoped>
 .sidebar {
-  width: 220px;
+  min-width: 220px;
   background-color: var(--primary-color);
   padding: 2rem 1rem;
   display: flex;
@@ -37,6 +59,7 @@ const clickHandler = () => {
   max-height: 100dvh;
   transition: all 0.3s ease;
   overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar h2 {
@@ -106,7 +129,8 @@ a:hover .icon-menu {
 }
 
 .hidden-menu {
-  width: 3rem;
+  min-width: 3rem;
+  max-width: 3rem;
 }
 
 .hidden-menu nav {

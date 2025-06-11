@@ -1,13 +1,24 @@
 :root {
     --primary-color: #243447;
+    --hover-prrimary-color: #2c3e50;
     --secondary-color: #0D1117;
+    --hover-secondary-color: #161b22;
     --background-color: #0A192F;
+    --hover-background-color: #0D1117;
     --text-color: #E0E1E9;
+    --hover-text-color: #C9D1D9;
     --accent-color: #3FA9F5;
+    --hover-accent-color: #3498db;
     --muted-text-color: #A3A8B8;
+    --hover-muted-text-color: #8B95A1;
     --success-color: #22C55E;
+    --hover-success-color: #16A34A;
     --warning-color: #F59E0B;
+    --hover-warning-color: #D97706;
     --error-color: #EF4444;
+    --hover-error-color: #DC2626;
+    --info-color: #11567e;
+    --hover-info-color: #0d4f6c;
 }
 
 body {
@@ -97,4 +108,24 @@ textarea:focus {
     color: #fff;
     padding: 0.75rem;
     border-radius: 6px;
+}
+
+.button-delete {
+    background-color: var(--error-color);
+    color: var(--text-color);
+}
+
+
+.button-delete:hover {
+    background-color: var(--hover-error-color);
+}
+
+
+.button-edit {
+    background-color: var(--info-color);
+    color: var(--text-color);
+}
+
+.button-edit:hover {
+    background-color: var(--hover-info-color);
 }

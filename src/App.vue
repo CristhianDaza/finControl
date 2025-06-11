@@ -16,9 +16,12 @@ const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () =>
 .layout {
   display: flex;
   height: 100dvh;
+  overflow: hidden;
 }
 
 .main-content {
-  width: 100dvw;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: clamp(1rem, 4vw, 2rem);
 }
 </style>

@@ -6,6 +6,12 @@ export default createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import(/* webpackChunkName: "homeView" */  '@/views/HomeView.vue') },
+      component: () => import(/* webpackChunkName: "homeView" */  '@/views/HomeView.vue')
+    },
+    {
+      path: '/transactions',
+      name: 'transactions',
+      component: () => import(/* webpackChunkName: "transactionsView" */  '@/views/TransactionsView.vue')
+    }
   ]
 })
