@@ -1,12 +1,29 @@
 <script setup>
+import { defineAsyncComponent, ref } from 'vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
+
+const TransactionsModalComponent = defineAsyncComponent(/* webpackChunkName: "TransactionsModalComponent" */ () => import('@/components/transactions/TransactionsModalComponent.vue'))
+
+const showModal = ref(false)
+
+const openModal = () => {
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+}
 </script>
 
 <template>
-  <button class="button">
+  <button class="button" @click="openModal">
     Agregar Transacción
   </button>
+  <TransactionsModalComponent
+    :show-modal-transaction="showModal"
+    @update:showModal="closeModal"
+  />
   <div class="table-container">
     <table>
       <tr>

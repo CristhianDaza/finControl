@@ -89,6 +89,61 @@ textarea:focus {
     box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
 }
 
+select {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.6rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    appearance: none; /* elimina el estilo por defecto del navegador */
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A3A8B8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 10px 6px;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+}
+
+input[type="date"] {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.6rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* Placeholder (visible en navegadores que lo soportan) */
+input[type="date"]::placeholder {
+    color: var(--muted-text-color);
+}
+
+/* Icono del calendario (solo Chrome/WebKit) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+/* Focus */
+input[type="date"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+}
+
+
 .alert-success {
     background-color: var(--success-color);
     color: #fff;
