@@ -98,7 +98,7 @@ select {
     border-radius: 6px;
     width: 100%;
     box-sizing: border-box;
-    appearance: none; /* elimina el estilo por defecto del navegador */
+    appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A3A8B8'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.8rem center;
@@ -125,24 +125,20 @@ input[type="date"] {
     cursor: pointer;
 }
 
-/* Placeholder (visible en navegadores que lo soportan) */
 input[type="date"]::placeholder {
     color: var(--muted-text-color);
 }
 
-/* Icono del calendario (solo Chrome/WebKit) */
 input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;
 }
 
-/* Focus */
 input[type="date"]:focus {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
 }
-
 
 .alert-success {
     background-color: var(--success-color);
@@ -183,4 +179,14 @@ input[type="date"]:focus {
 
 .button-edit:hover {
     background-color: var(--hover-info-color);
+}
+
+.icon-delete, .icon-edit {
+    width: 20px;
+    height: 20px;
+}
+
+button.button.button-edit,
+button.button.button-delete {
+    padding: 0.5rem;
 }

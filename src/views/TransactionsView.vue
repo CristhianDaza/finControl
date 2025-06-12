@@ -157,16 +157,6 @@ td:nth-child(4) {
   justify-content: flex-end;
 }
 
-.button {
-  padding: 0.5rem 1rem;
-}
-
-.icon-delete, .icon-edit {
-  width: 20px;
-  height: 20px;
-  fill: var(--text-color);
-}
-
 tr {
   position: relative;
 }

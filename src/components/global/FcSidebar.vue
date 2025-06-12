@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import DashboardIcon from '@/assets/icons/dashboard.svg?raw'
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
 import TransactionsIcon from '@/assets/icons/transactions.svg?raw'
+import DebtsIcon from '@/assets/icons/debts.svg?raw'
 
 const isMenuHidden = ref(true)
 
@@ -23,7 +24,13 @@ const linksMenu = computed(() => {
       name: 'Transacciones',
       icon: TransactionsIcon,
       url: 'transactions'
-    }
+    },
+    {
+      id: 3,
+      name: 'Deudas',
+      icon: DebtsIcon,
+      url: 'debts'
+    },
   ]
 })
 </script>
