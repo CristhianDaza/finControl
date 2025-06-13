@@ -22,6 +22,11 @@ export default createRouter({
       path: '/accounts',
       name: 'accounts',
       component: () => import(/* webpackChunkName: "accountsView" */  '@/views/AccountsView.vue')
+    },
+    {
+      path: '/categories',
+      name: 'categories',
+      component: () => import(/* webpackChunkName: "categoriesView" */  '@/views/CategoriesView.vue')
     }
   ]
 })
