@@ -17,6 +17,11 @@ export default createRouter({
       path: '/debts',
       name: 'debts',
       component: () => import(/* webpackChunkName: "debtsView" */  '@/views/DebtsView.vue')
+    },
+    {
+      path: '/accounts',
+      name: 'accounts',
+      component: () => import(/* webpackChunkName: "accountsView" */  '@/views/AccountsView.vue')
     }
   ]
 })

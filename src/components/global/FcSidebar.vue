@@ -1,9 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
-import DashboardIcon from '@/assets/icons/dashboard.svg?raw'
+import { ref } from 'vue'
+import { useRoutes } from '@/composables/useRoutes.js'
+
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
-import TransactionsIcon from '@/assets/icons/transactions.svg?raw'
-import DebtsIcon from '@/assets/icons/debts.svg?raw'
 
 const isMenuHidden = ref(true)
 
@@ -11,28 +10,7 @@ const clickHandler = () => {
   isMenuHidden.value = !isMenuHidden.value
 }
 
-const linksMenu = computed(() => {
-  return [
-    {
-      id: 1,
-      name: 'Dashboard',
-      icon: DashboardIcon,
-      url: 'home'
-    },
-    {
-      id: 2,
-      name: 'Transacciones',
-      icon: TransactionsIcon,
-      url: 'transactions'
-    },
-    {
-      id: 3,
-      name: 'Deudas',
-      icon: DebtsIcon,
-      url: 'debts'
-    },
-  ]
-})
+const { routes } = useRoutes()
 </script>
 
 <template>
@@ -43,7 +21,7 @@ const linksMenu = computed(() => {
     </div>
     <nav>
       <RouterLink
-        v-for="link in linksMenu"
+        v-for="link in routes"
         :key="link.id"
         :to="{ name: link.url }"
         exact-active-class="active"
