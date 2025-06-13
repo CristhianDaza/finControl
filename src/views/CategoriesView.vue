@@ -17,63 +17,65 @@ const closeModal = () => {
 </script>
 
 <template>
-  <button class="button" @click="openModal">
-    Agregar Categoría
-  </button>
-  <CategoriesModalComponent
-    :show-modal-categories="showModal"
-    @update:showModal="closeModal"
-  />
-  <section class="category-container">
-    <div class="category-table-wrapper">
-      <h2>Categorías de Ingresos</h2>
-      <table class="category-table">
-        <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>Sueldo</td>
-          <td class="actions">
-            <button class="button button-edit">
-              <svg class="icon-edit" v-html="EditIcon"></svg>
-            </button>
-            <button class="button button-delete">
-              <svg class="icon-delete" v-html="DeleteIcon"></svg>
-            </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+  <section>
+    <button class="button" @click="openModal">
+      Agregar Categoría
+    </button>
+    <CategoriesModalComponent
+      :show-modal-categories="showModal"
+      @update:showModal="closeModal"
+    />
+    <section class="category-container">
+      <div class="category-table-wrapper">
+        <h2>Categorías de Ingresos</h2>
+        <table class="category-table">
+          <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>Sueldo</td>
+            <td class="actions">
+              <button class="button button-edit">
+                <svg class="icon-edit" v-html="EditIcon"></svg>
+              </button>
+              <button class="button button-delete">
+                <svg class="icon-delete" v-html="DeleteIcon"></svg>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <div class="category-table-wrapper">
-      <h2>Categorías de Egresos</h2>
-      <table class="category-table">
-        <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>Alquiler</td>
-          <td class="actions">
-            <button class="button button-edit">
-              <svg class="icon-edit" v-html="EditIcon"></svg>
-            </button>
-            <button class="button button-delete">
-              <svg class="icon-delete" v-html="DeleteIcon"></svg>
-            </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+      <div class="category-table-wrapper">
+        <h2>Categorías de Egresos</h2>
+        <table class="category-table">
+          <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>Alquiler</td>
+            <td class="actions">
+              <button class="button button-edit">
+                <svg class="icon-edit" v-html="EditIcon"></svg>
+              </button>
+              <button class="button button-delete">
+                <svg class="icon-delete" v-html="DeleteIcon"></svg>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </section>
 </template>
 

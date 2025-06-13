@@ -18,45 +18,47 @@ const closeModal = () => {
 </script>
 
 <template>
-  <button class="button" @click="openModal">
-    Agregar Deuda
-  </button>
-  <DebtsModalComponent
-    :show-modal-debts="showModal"
-    @update:showModal="closeModal"
-  />
-  <section class="debt-list">
-    <article class="debt-card">
-      <header class="debt-header">
-        <div class="debt-title">
-          <h3>Crédito celular</h3>
+  <section>
+    <button class="button" @click="openModal">
+      Agregar Deuda
+    </button>
+    <DebtsModalComponent
+      :show-modal-debts="showModal"
+      @update:showModal="closeModal"
+    />
+    <section class="debt-list">
+      <article class="debt-card">
+        <header class="debt-header">
+          <div class="debt-title">
+            <h3>Crédito celular</h3>
+          </div>
+          <p class="debt-total">Deuda total: $1.200.000</p>
+        </header>
+
+        <div class="debt-summary">
+          <p class="debt-saldo">Saldo restante: $800.000</p>
         </div>
-        <p class="debt-total">Deuda total: $1.200.000</p>
-      </header>
 
-      <div class="debt-summary">
-        <p class="debt-saldo">Saldo restante: $800.000</p>
-      </div>
-
-      <ul class="debt-payments">
-        <li>
-          <span>🗓 2024-01-15</span>
-          <span>$200.000</span>
-        </li>
-        <li>
-          <span>🗓 2024-02-15</span>
-          <span>$200.000</span>
-        </li>
-      </ul>
-      <div class="actions">
-        <button class="button button-edit">
-          <svg class="icon-edit" v-html="EditIcon"></svg>
-        </button>
-        <button class="button button-delete">
-          <svg class="icon-delete" v-html="DeleteIcon"></svg>
-        </button>
-      </div>
-    </article>
+        <ul class="debt-payments">
+          <li>
+            <span>🗓 2024-01-15</span>
+            <span>$200.000</span>
+          </li>
+          <li>
+            <span>🗓 2024-02-15</span>
+            <span>$200.000</span>
+          </li>
+        </ul>
+        <div class="actions">
+          <button class="button button-edit">
+            <svg class="icon-edit" v-html="EditIcon"></svg>
+          </button>
+          <button class="button button-delete">
+            <svg class="icon-delete" v-html="DeleteIcon"></svg>
+          </button>
+        </div>
+      </article>
+    </section>
   </section>
 </template>
 

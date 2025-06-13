@@ -17,76 +17,78 @@ const closeModal = () => {
 </script>
 
 <template>
-  <button class="button" @click="openModal">
-    Agregar Transacción
-  </button>
-  <TransactionsModalComponent
-    :show-modal-transaction="showModal"
-    @update:showModal="closeModal"
-  />
-  <div class="table-container">
-    <table>
-      <tr>
-        <th>Fecha</th>
-        <th>Descripción</th>
-        <th>Monto</th>
-        <th>Cuenta</th>
-        <th>Tipo</th>
-        <th></th>
-      </tr>
-      <tr class="row-income">
-        <td>2023-10-01</td>
-        <td>Compra de libros</td>
-        <td>$50.00</td>
-        <td>Cuenta de Ahorros</td>
-        <td>Gasto</td>
-        <td>
-          <div class="actions">
-            <button class="button button-edit">
-              <svg class="icon-edit" v-html="EditIcon"></svg>
-            </button>
-            <button class="button button-delete">
-              <svg class="icon-delete" v-html="DeleteIcon"></svg>
-            </button>
-          </div>
-        </td>
-      </tr>
-      <tr class="row-expense">
-        <td>2023-10-01</td>
-        <td>Compra de libros</td>
-        <td>$50.00</td>
-        <td>Cuenta de Ahorros</td>
-        <td>Gasto</td>
-        <td>
-          <div class="actions">
-            <button class="button button-edit">
-              <svg class="icon-edit" v-html="EditIcon"></svg>
-            </button>
-            <button class="button button-delete">
-              <svg class="icon-delete" v-html="DeleteIcon"></svg>
-            </button>
-          </div>
-        </td>
-      </tr>
-      <tr class="row-debt">
-        <td>2023-10-01</td>
-        <td>Compra de libros</td>
-        <td>$50.00</td>
-        <td>Cuenta de Ahorros</td>
-        <td>Gasto</td>
-        <td>
-          <div class="actions">
-            <button class="button button-edit">
-              <svg class="icon-edit" v-html="EditIcon"></svg>
-            </button>
-            <button class="button button-delete">
-              <svg class="icon-delete" v-html="DeleteIcon"></svg>
-            </button>
-          </div>
-        </td>
-      </tr>
-    </table>
-  </div>
+  <section>
+    <button class="button" @click="openModal">
+      Agregar Transacción
+    </button>
+    <TransactionsModalComponent
+      :show-modal-transaction="showModal"
+      @update:showModal="closeModal"
+    />
+    <div class="table-container">
+      <table>
+        <tr>
+          <th>Fecha</th>
+          <th>Descripción</th>
+          <th>Monto</th>
+          <th>Cuenta</th>
+          <th>Tipo</th>
+          <th></th>
+        </tr>
+        <tr class="row-income">
+          <td>2023-10-01</td>
+          <td>Compra de libros</td>
+          <td>$50.00</td>
+          <td>Cuenta de Ahorros</td>
+          <td>Gasto</td>
+          <td>
+            <div class="actions">
+              <button class="button button-edit">
+                <svg class="icon-edit" v-html="EditIcon"></svg>
+              </button>
+              <button class="button button-delete">
+                <svg class="icon-delete" v-html="DeleteIcon"></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr class="row-expense">
+          <td>2023-10-01</td>
+          <td>Compra de libros</td>
+          <td>$50.00</td>
+          <td>Cuenta de Ahorros</td>
+          <td>Gasto</td>
+          <td>
+            <div class="actions">
+              <button class="button button-edit">
+                <svg class="icon-edit" v-html="EditIcon"></svg>
+              </button>
+              <button class="button button-delete">
+                <svg class="icon-delete" v-html="DeleteIcon"></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr class="row-debt">
+          <td>2023-10-01</td>
+          <td>Compra de libros</td>
+          <td>$50.00</td>
+          <td>Cuenta de Ahorros</td>
+          <td>Gasto</td>
+          <td>
+            <div class="actions">
+              <button class="button button-edit">
+                <svg class="icon-edit" v-html="EditIcon"></svg>
+              </button>
+              <button class="button button-delete">
+                <svg class="icon-delete" v-html="DeleteIcon"></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
 </template>
 
 <style scoped>

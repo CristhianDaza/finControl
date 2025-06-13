@@ -15,40 +15,41 @@ const closeModal = () => {
 </script>
 
 <template>
-  <button class="button" @click="openModal">
-    Agregar Cuenta
-  </button>
-  <AccountsModalComponent
-    :show-modal-accounts="showModal"
-    @update:showModal="closeModal"
-  />
-  <div class="account-list">
-    <div class="account-card">
-      <div class="account-header">
-        <h3>Ahorros</h3>
-        <p class="account-balance">$2.350.000</p>
+  <section>
+    <button class="button" @click="openModal">
+      Agregar Cuenta
+    </button>
+    <AccountsModalComponent
+      :show-modal-accounts="showModal"
+      @update:showModal="closeModal"
+    />
+    <div class="account-list">
+      <div class="account-card">
+        <div class="account-header">
+          <h3>Ahorros</h3>
+          <p class="account-balance">$2.350.000</p>
+        </div>
+      </div>
+      <div class="account-card">
+        <div class="account-header">
+          <h3>Efectivo</h3>
+          <p class="account-balance">$1.150.000</p>
+        </div>
+      </div>
+      <div class="account-card">
+        <div class="account-header">
+          <h3>Tarjeta</h3>
+          <p class="account-balance">$10.200.000</p>
+        </div>
+      </div>
+      <div class="account-card">
+        <div class="account-header">
+          <h3>Nequi</h3>
+          <p class="account-balance">$200.000</p>
+        </div>
       </div>
     </div>
-    <div class="account-card">
-      <div class="account-header">
-        <h3>Efectivo</h3>
-        <p class="account-balance">$1.150.000</p>
-      </div>
-    </div>
-    <div class="account-card">
-      <div class="account-header">
-        <h3>Tarjeta</h3>
-        <p class="account-balance">$10.200.000</p>
-      </div>
-    </div>
-    <div class="account-card">
-      <div class="account-header">
-        <h3>Nequi</h3>
-        <p class="account-balance">$200.000</p>
-      </div>
-    </div>
-  </div>
-
+  </section>
 </template>
 
 <style scoped>
