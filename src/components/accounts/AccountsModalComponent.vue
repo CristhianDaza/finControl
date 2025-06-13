@@ -12,7 +12,7 @@ const props = defineProps({
   }
 })
 
-const debt = ref({
+const account = ref({
   name: '',
   balance: 0,
   id: ''
@@ -20,7 +20,7 @@ const debt = ref({
 const showModal = ref(false)
 
 const handleAccept = () => {
-  debt.value.id = crypto.randomUUID()
+  account.value.id = crypto.randomUUID()
   resetAccount()
 }
 
@@ -29,7 +29,7 @@ const handleCancel = () => {
 }
 
 const resetAccount = () => {
-  debt.value = {
+  account.value = {
     name: '',
     balance: 0,
     id: ''
@@ -53,7 +53,7 @@ watch(
     title-modal="Agregar Cuenta"
   >
     <FcFormField
-      v-model="debt.name"
+      v-model="account.name"
       label="Nombre de la Cuenta"
       placeholder="Ej: Ahorros, Efectivo, Tarjeta"
       required
@@ -61,7 +61,7 @@ watch(
       error-message="El nombre es obligatorio y debe tener un máximo de 40 caracteres"
     />
     <FcFormField
-      v-model="debt.balance"
+      v-model="account.balance"
       label="Saldo Inicial"
       type="number"
       required
