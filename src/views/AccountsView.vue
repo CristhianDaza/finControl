@@ -1,5 +1,7 @@
 <script setup>
 import {defineAsyncComponent, ref} from 'vue'
+import EditIcon from '@/assets/icons/edit.svg?raw'
+import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
 const AccountsModalComponent = defineAsyncComponent(/* webpackChunkName: "AccountsModalComponent" */() => import('@/components/accounts/AccountsModalComponent.vue'))
 
@@ -29,11 +31,27 @@ const closeModal = () => {
           <h3>Ahorros</h3>
           <p class="account-balance">$2.350.000</p>
         </div>
+        <div class="account-actions">
+          <button class="button button-edit">
+            <svg class="icon-edit" v-html="EditIcon"></svg>
+          </button>
+          <button class="button button-delete">
+            <svg class="icon-delete" v-html="DeleteIcon"></svg>
+          </button>
+        </div>
       </div>
       <div class="account-card">
         <div class="account-header">
           <h3>Efectivo</h3>
           <p class="account-balance">$1.150.000</p>
+        </div>
+        <div class="account-actions">
+          <button class="button button-edit">
+            <svg class="icon-edit" v-html="EditIcon"></svg>
+          </button>
+          <button class="button button-delete">
+            <svg class="icon-delete" v-html="DeleteIcon"></svg>
+          </button>
         </div>
       </div>
       <div class="account-card">
@@ -41,11 +59,27 @@ const closeModal = () => {
           <h3>Tarjeta</h3>
           <p class="account-balance">$10.200.000</p>
         </div>
+        <div class="account-actions">
+          <button class="button button-edit">
+            <svg class="icon-edit" v-html="EditIcon"></svg>
+          </button>
+          <button class="button button-delete">
+            <svg class="icon-delete" v-html="DeleteIcon"></svg>
+          </button>
+        </div>
       </div>
       <div class="account-card">
         <div class="account-header">
           <h3>Nequi</h3>
           <p class="account-balance">$200.000</p>
+        </div>
+        <div class="account-actions">
+          <button class="button button-edit">
+            <svg class="icon-edit" v-html="EditIcon"></svg>
+          </button>
+          <button class="button button-delete">
+            <svg class="icon-delete" v-html="DeleteIcon"></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -97,4 +131,10 @@ const closeModal = () => {
   margin-top: 2rem;
 }
 
+.account-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: end;
+  padding-top: 1rem;
+}
 </style>
