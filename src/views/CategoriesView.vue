@@ -30,23 +30,23 @@ const closeModal = () => {
         <h2>Categorías de Ingresos</h2>
         <table class="category-table">
           <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Acciones</th>
-          </tr>
+            <tr>
+              <th>Nombre</th>
+              <th>Acciones</th>
+            </tr>
           </thead>
           <tbody>
-          <tr>
-            <td>Sueldo</td>
-            <td class="actions">
-              <button class="button button-edit">
-                <svg class="icon-edit" v-html="EditIcon"></svg>
-              </button>
-              <button class="button button-delete">
-                <svg class="icon-delete" v-html="DeleteIcon"></svg>
-              </button>
-            </td>
-          </tr>
+            <tr>
+              <td>Sueldo</td>
+              <td class="actions">
+                <button class="button button-edit">
+                  <svg class="icon-edit" v-html="EditIcon"></svg>
+                </button>
+                <button class="button button-delete">
+                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                </button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
