@@ -31,22 +31,45 @@ const isValid = computed(() => {
   const el = document.getElementById(props.id)
   return el ? el.checkValidity() : true
 })
+
+const isPassword = computed(() => props.type === 'password')
+const showPassword = ref(false)
+
+const currentInputType = computed(() => {
+  if (isPassword.value && showPassword.value) return 'text'
+  return props.type
+})
+
+const togglePassword = () => {
+  showPassword.value = !showPassword.value
+}
 </script>
 
 <template>
   <div class="form-field">
     <label v-if="label" :for="id">{{ label }}</label>
     <slot name="label" />
-    <input
-      v-if="type !== 'textarea' && type !== 'select' && type !== 'number'"
-      :type="type"
-      :id="id"
-      :placeholder="placeholder"
-      v-model="model"
-      v-bind="attrs"
-      @blur="touched = true"
-      :class="{ invalid: touched && !isValid }"
-    />
+    <div v-if="!['textarea', 'select', 'number'].includes(type)" class="input-wrapper">
+      <input
+        :type="currentInputType"
+        :id="id"
+        :placeholder="placeholder"
+        v-model="model"
+        v-bind="attrs"
+        @blur="touched = true"
+        :class="{ invalid: touched && !isValid }"
+      />
+      <button
+        v-if="isPassword && attrs['show-toggle'] !== false"
+        type="button"
+        class="toggle-password"
+        @click="togglePassword"
+        :title="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      >
+        {{ showPassword ? '🙈' : '👁️' }}
+      </button>
+    </div>
+
 
     <input
       v-if="type === 'number'"
@@ -96,5 +119,20 @@ const isValid = computed(() => {
 </template>
 
 <style scoped>
+.input-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted-text-color);
+  cursor: pointer;
+  font-size: 1rem;
+}
 
 </style>

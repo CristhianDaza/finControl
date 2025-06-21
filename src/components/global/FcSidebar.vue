@@ -4,10 +4,14 @@ import { useRoutes } from '@/composables/useRoutes.js'
 import { useIsMobile } from '@/composables/useIsMobile.js'
 
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
+import LoginIcon from '@/assets/icons/login.svg?raw'
+import LogoutIcon from '@/assets/icons/logout.svg?raw'
 
 const { routes } = useRoutes()
 const { isMobile } = useIsMobile()
 const isMenuHidden = ref(true)
+
+const emit = defineEmits(['login', 'logout'])
 
 const handleMainClick = () => {
   if (!isMenuHidden.value) {
@@ -17,6 +21,14 @@ const handleMainClick = () => {
 
 const clickHandler = () => {
   isMenuHidden.value = !isMenuHidden.value
+}
+
+const handleClickSession = (event) => {
+  if (event === 'login') {
+    emit('login')
+  } else {
+    emit('logout')
+  }
 }
 
 onMounted(() => {
@@ -34,21 +46,37 @@ defineExpose({
 
 <template>
   <aside class="sidebar" :class="{ 'hidden-menu': isMenuHidden }">
-    <div class="sidebar-header">
-      <h2>FinControl</h2>
-      <svg class="sidebar-icon" v-html="HamburgerIcon" @click="clickHandler"></svg>
+    <div>
+      <div class="sidebar-header">
+        <h2>FinControl</h2>
+        <svg class="sidebar-icon" v-html="HamburgerIcon" @click="clickHandler"></svg>
+      </div>
+      <nav>
+        <RouterLink
+          v-for="link in routes"
+          :key="link.id"
+          :to="{ name: link.url }"
+          exact-active-class="active"
+          @click.native="isMobile ? isMenuHidden = true : null"
+        >
+          <span>{{ link.name}}</span><svg class="icon-menu" v-html="link.icon"></svg>
+        </RouterLink>
+      </nav>
     </div>
-    <nav>
-      <RouterLink
-        v-for="link in routes"
-        :key="link.id"
-        :to="{ name: link.url }"
-        exact-active-class="active"
-        @click.native="isMobile ? isMenuHidden = true : null"
-      >
-        <span>{{ link.name}}</span><svg class="icon-menu" v-html="link.icon"></svg>
-      </RouterLink>
-    </nav>
+    <button
+      class="button button-secondary"
+      v-if="!isMenuHidden"
+      @click="handleClickSession('login')"
+    >
+      <span>Iniciar sesión</span><svg class="icon-menu" v-html="LoginIcon"></svg>
+    </button>
+    <button
+      class="button button-delete"
+      v-else
+      @click="handleClickSession('logout')"
+    >
+      <span>Cerrar sesión</span><svg class="icon-menu" v-html="LogoutIcon"></svg>
+    </button>
   </aside>
 </template>
 
@@ -65,6 +93,7 @@ defineExpose({
   transition: all 0.3s ease;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  justify-content: space-between;
 }
 
 .sidebar h2 {
@@ -78,7 +107,7 @@ defineExpose({
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: .8rem;
+  padding-bottom: 1rem;
 }
 
 .sidebar-icon {
@@ -106,7 +135,7 @@ nav {
   transition: width 0.3s ease;
 }
 
-a {
+a, .button {
   color: var(--text-color);
   text-decoration: none;
   font-weight: 500;
@@ -157,6 +186,10 @@ a:hover .icon-menu {
 .hidden-menu a {
   justify-content: center;
   width: 1rem;
+}
+
+.hidden-menu button {
+  justify-content: center;
 }
 
 .hidden-menu .icon-menu {
