@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoutes } from '@/composables/useRoutes.js'
+import { useIsMobile } from '@/composables/useIsMobile.js'
 
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
 
+const { isMobile } = useIsMobile()
 const isMenuHidden = ref(true)
 
 const clickHandler = () => {
@@ -25,6 +27,7 @@ const { routes } = useRoutes()
         :key="link.id"
         :to="{ name: link.url }"
         exact-active-class="active"
+        @click.native="isMobile ? isMenuHidden = true : null"
       >
         <span>{{ link.name}}</span><svg class="icon-menu" v-html="link.icon"></svg>
       </RouterLink>
