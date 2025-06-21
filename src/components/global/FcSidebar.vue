@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoutes } from '@/composables/useRoutes.js'
 import { useIsMobile } from '@/composables/useIsMobile.js'
 
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
 
+const { routes } = useRoutes()
 const { isMobile } = useIsMobile()
 const isMenuHidden = ref(true)
 
@@ -14,15 +15,21 @@ const handleMainClick = () => {
   }
 }
 
-defineExpose({
-  handleMainClick,
-})
-
 const clickHandler = () => {
   isMenuHidden.value = !isMenuHidden.value
 }
 
-const { routes } = useRoutes()
+onMounted(() => {
+  if (isMobile.value) {
+    isMenuHidden.value = true
+    return
+  }
+  isMenuHidden.value = false
+})
+
+defineExpose({
+  handleMainClick,
+})
 </script>
 
 <template>
