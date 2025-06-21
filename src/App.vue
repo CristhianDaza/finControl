@@ -1,12 +1,23 @@
 <script setup>
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
+import { useIsMobile} from '@/composables/useIsMobile.js'
+
 const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
+
+const { isMobile } = useIsMobile()
+const sidebarRef = ref()
+
+const clickMainContent = () => {
+  if (isMobile.value) {
+    sidebarRef.value?.handleMainClick?.();
+  }
+}
 </script>
 
 <template>
   <div class="layout">
-    <fc-sidebar />
-    <main class="main-content">
+    <fc-sidebar ref="sidebarRef" />
+    <main class="main-content" @click="clickMainContent">
       <router-view v-slot="{ Component }">
         <transition name="route-fade" mode="out-in">
           <component :is="Component" />

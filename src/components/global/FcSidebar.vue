@@ -8,6 +8,16 @@ import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
 const { isMobile } = useIsMobile()
 const isMenuHidden = ref(true)
 
+const handleMainClick = () => {
+  if (!isMenuHidden.value) {
+    isMenuHidden.value = true
+  }
+}
+
+defineExpose({
+  handleMainClick,
+})
+
 const clickHandler = () => {
   isMenuHidden.value = !isMenuHidden.value
 }
