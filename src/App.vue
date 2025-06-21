@@ -7,9 +7,11 @@ const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () =>
   <div class="layout">
     <fc-sidebar />
     <main class="main-content">
-      <transition name="route-fade" mode="out-in">
-        <router-view />
-      </transition>
+      <router-view v-slot="{ Component }">
+        <transition name="route-fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </main>
   </div>
 </template>
