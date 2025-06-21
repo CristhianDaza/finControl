@@ -25,26 +25,28 @@ const accept = () => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="showModal" class="modal-overlay" @click.self="cancel">
-      <div class="modal-content">
-        <header class="modal-header">
-          <h2 class="modal-title">
-            {{ titleModal }}
-          </h2>
-        </header>
+  <transition name="fade">
+    <Teleport to="body">
+      <div v-if="showModal" class="modal-overlay" @click.self="cancel">
+        <div class="modal-content">
+          <header class="modal-header">
+            <h2 class="modal-title">
+              {{ titleModal }}
+            </h2>
+          </header>
 
-        <div class="modal-body">
-          <slot />
+          <div class="modal-body">
+            <slot />
+          </div>
+
+          <footer class="modal-footer">
+            <button class="btn cancel" @click="cancel">Cancelar</button>
+            <button class="btn accept" @click="accept">Aceptar</button>
+          </footer>
         </div>
-
-        <footer class="modal-footer">
-          <button class="btn cancel" @click="cancel">Cancelar</button>
-          <button class="btn accept" @click="accept">Aceptar</button>
-        </footer>
       </div>
-    </div>
-  </Teleport>
+    </Teleport>
+  </transition>
 </template>
 
 <style scoped>

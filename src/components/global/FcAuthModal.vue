@@ -38,7 +38,8 @@ const handleCancel = () => {
 
 <template>
   <transition name="fade">
-    <form v-if="show" class="modal-overlay" @click.self="handleCancel">
+    <Teleport to="body">
+      <form v-if="show" class="modal-overlay" @click.self="handleCancel">
       <div class="modal-container">
         <img src="@/assets/images/logo-fin-control.png" alt="Logo" class="modal-logo" />
 
@@ -78,6 +79,7 @@ const handleCancel = () => {
         </div>
       </div>
     </form>
+    </Teleport>
   </transition>
 </template>
 
