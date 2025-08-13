@@ -2,6 +2,7 @@
 import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useTransactionsStore } from '@/stores/transactions.js'
 import { useAccountsStore } from '@/stores/accounts.js'
+import { useDebtsStore } from '@/stores/debts.js'
 import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
@@ -10,6 +11,7 @@ import { t } from '@/i18n/index.js'
 const TransactionsModalComponent = defineAsyncComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
 const tx = useTransactionsStore()
 const acc = useAccountsStore()
+const deb = useDebtsStore()
 
 const showModal = ref(false)
 const modalTitle = ref('Agregar Transacción')
@@ -32,6 +34,7 @@ const rows = computed(() => tx.items)
 const hasItems = computed(() => tx.hasItems)
 const isLoading = computed(() => tx.status === 'loading')
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
+const debtsOptions = computed(() => deb.items.map(d => ({ label: d.name, value: d.id })))
 const accountNameById = computed(() => acc.items.reduce((m, a) => { m[a.id] = a.name; return m }, {}))
 
 const openAdd = () => { editing.value = null; modalTitle.value = t('transactions.addTitle'); showModal.value = true }
@@ -77,7 +80,7 @@ const setMonth = (m) => {
   applyFilters()
 }
 
-onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts() })
+onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.subscribeMyDebts() })
 </script>
 
 <template>
@@ -101,6 +104,7 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts() })
             <option value="">Todos</option>
             <option value="income">Ingreso</option>
             <option value="expense">Gasto</option>
+            <option value="debtPayment">Pago de deuda</option>
           </select>
         </div>
         <div>
@@ -141,7 +145,7 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts() })
             <td>{{ item.note || item.description }}</td>
             <td>${{ Number(item.amount||0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
             <td>{{ accountNameById[item.accountId] || item.accountId }}</td>
-            <td>{{ item.type==='income' ? 'Ingreso' : item.type==='expense' ? 'Gasto' : item.type }}</td>
+            <td>{{ item.type==='income' ? 'Ingreso' : item.type==='expense' ? 'Gasto' : item.type==='debtPayment' ? 'Pago de deuda' : item.type }}</td>
             <td>
               <div class="actions">
                 <button class="button button-edit" @click="openEdit(item)" :disabled="busy">
@@ -162,6 +166,7 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts() })
       :initial="editing || undefined"
       :title="modalTitle"
       :accounts-options="accountsOptions"
+      :debts-options="debtsOptions"
       @save="onSave"
       @update:showModalTransaction="showModal = $event"
     />
@@ -260,11 +265,6 @@ tr::before {
   border-radius: 4px 0 0 4px;
 }
 
-.row-income::before {
-  background-color: var(--success-color);
-}
-
-.row-expense::before {
-  background-color: var(--error-color);
-}
+.row-income::before { background-color: var(--success-color) }
+.row-expense::before { background-color: var(--error-color) }
 </style>

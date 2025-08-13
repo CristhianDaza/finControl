@@ -1,6 +1,7 @@
 <script setup>
-import {defineAsyncComponent, ref, watch} from 'vue'
+import {defineAsyncComponent, ref, watch, computed} from 'vue'
 import { t } from '@/i18n/index.js'
+import { useNotify } from '@/components/global/fcNotify.js'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
@@ -9,22 +10,27 @@ const props = defineProps({
   showModalTransaction: { type: Boolean, default: false, attribute: 'show-modal-transaction' },
   initial: { type: Object, default: null },
   title: { type: String, default: () => t('transactions.addTitle') },
-  accountsOptions: { type: Array, default: () => [] }
+  accountsOptions: { type: Array, default: () => [] },
+  debtsOptions: { type: Array, default: () => [] }
 })
 
 const emit = defineEmits(['save','update:showModalTransaction','cancel'])
+const { error: notifyError } = useNotify()
 
 const transaction = ref({
   description: '',
   amount: 0,
   type: '',
   account: '',
+  debt: '',
   date: new Date().toISOString().split('T')[0],
   id: ''
 })
 const showModal = ref(false)
+const isDebtPayment = computed(() => transaction.value.type === 'debtPayment')
 
 const handleAccept = () => {
+  if (isDebtPayment.value && !transaction.value.debt) { notifyError(t('transactions.notifications.debtRequired')); return }
   const payload = { ...transaction.value }
   emit('save', payload)
   emit('update:showModalTransaction', false)
@@ -43,6 +49,7 @@ const resetTransaction = () => {
     amount: 0,
     type: '',
     account: '',
+    debt: '',
     date: new Date().toISOString().split('T')[0],
     id: ''
   }
@@ -63,6 +70,7 @@ watch(
         amount: Number(val.amount) || 0,
         type: val.type || '',
         account: val.account || val.accountId || '',
+        debt: val.debt || val.debtId || '',
         date: val.date || new Date().toISOString().split('T')[0]
       }
     }
@@ -108,10 +116,20 @@ watch(
       type="select"
       :options="[
         { label: t('transactions.form.income'), value: 'income' },
-        { label: t('transactions.form.expense'), value: 'expense' }
+        { label: t('transactions.form.expense'), value: 'expense' },
+        { label: t('transactions.form.debtPayment'), value: 'debtPayment' }
       ]"
       required
       :error-message="t('transactions.form.type')"
+    />
+    <FcFormField
+      v-if="isDebtPayment"
+      v-model="transaction.debt"
+      :label="t('transactions.form.debt')"
+      type="select"
+      :options="debtsOptions"
+      required
+      :error-message="t('transactions.form.debtError')"
     />
     <FcFormField
       v-model="transaction.account"

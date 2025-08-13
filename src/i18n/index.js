@@ -42,6 +42,41 @@ const messages = {
         cta: 'Ver transacciones',
       },
     },
+    debts: {
+      title: 'Deudas',
+      addButton: 'Agregar Deuda',
+      addTitle: 'Agregar Deuda',
+      editTitle: 'Editar Deuda',
+      form: {
+        name: 'Nombre de la deuda',
+        namePlaceholder: 'Ej: Crédito celular, Préstamo personal',
+        nameError: 'El nombre es obligatorio y debe tener un máximo de 40 caracteres',
+        amount: 'Monto inicial',
+        amountError: 'El monto es obligatorio y no puede ser negativo',
+        dueDate: 'Fecha de vencimiento',
+        dueDateError: 'Fecha inválida',
+      },
+      card: {
+        total: 'Deuda total',
+        remaining: 'Saldo restante',
+        status: 'Estado',
+        paid: 'Pagada',
+        active: 'Activa',
+        payments: 'Pagos',
+        emptyPayments: 'Aún no hay pagos',
+      },
+      notifications: {
+        created: 'Deuda creada',
+        updated: 'Deuda actualizada',
+        deleted: 'Deuda eliminada',
+        deleteBlocked: 'No se puede eliminar la deuda porque tiene pagos registrados.',
+      },
+      confirmDelete: {
+        title: 'Eliminar deuda',
+        message: 'No puedes eliminar una deuda con pagos. Gestiona o elimina los pagos primero.',
+        cta: 'Ver pagos',
+      },
+    },
     transactions: {
       addTitle: 'Agregar Transacción',
       editTitle: 'Editar Transacción',
@@ -55,6 +90,9 @@ const messages = {
         type: 'Tipo',
         income: 'Ingreso',
         expense: 'Gasto',
+        debtPayment: 'Pago de deuda',
+        debt: 'Deuda',
+        debtError: 'Selecciona una deuda válida',
         account: 'Cuenta',
         accountError: 'Selecciona una cuenta válida',
         date: 'Fecha',
@@ -67,11 +105,11 @@ const messages = {
         balanceNegative: 'La operación dejaría la cuenta con saldo negativo',
         accountNotFound: 'Cuenta no encontrada',
         unauthorized: 'Operación no autorizada',
+        debtRemainingNegative: 'El pago excede el saldo de la deuda',
+        debtRequired: 'Debes seleccionar una deuda',
+        debtNotFound: 'Deuda no encontrada',
       },
-      confirmDelete: {
-        title: 'Eliminar transacción',
-        message: 'Esta acción no se puede deshacer. ¿Deseas continuar?',
-      }
+      confirmDelete: { title: 'Eliminar transacción', message: 'Esta acción no se puede deshacer. ¿Deseas continuar?' }
     }
   }
 }
@@ -81,13 +119,8 @@ export const setLocale = (locale) => { currentLocale = locale || 'es' }
 export const t = (path, params) => {
   const parts = path.split('.')
   let val = messages[currentLocale]
-  for (const p of parts) {
-    if (!val) break
-    val = val[p]
-  }
+  for (const p of parts) { if (!val) break; val = val[p] }
   if (val == null) return path
-  if (params && typeof val === 'string') {
-    return val.replace(/\{(\w+)\}/g, (_, k) => params[k] ?? '')
-  }
+  if (params && typeof val === 'string') { return val.replace(/\{(\w+)\}/g, (_, k) => params[k] ?? '') }
   return val
 }

@@ -43,11 +43,19 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   const add = async payload => {
     try {
-      const id = await createTransaction({ type: payload.type, amount: payload.amount, accountId: payload.account, date: payload.date, note: payload.description })
+      const id = await createTransaction({ type: payload.type, amount: payload.amount, accountId: payload.account, date: payload.date, note: payload.description, debtId: payload.debt })
       success(t('transactions.notifications.created'))
       return id
     } catch (e) {
-      const msg = e?.message === 'BalanceNegative' ? t('transactions.notifications.balanceNegative') : t('transactions.notifications.unauthorized')
+      const map = {
+        BalanceNegative: t('transactions.notifications.balanceNegative'),
+        DebtRemainingNegative: t('transactions.notifications.debtRemainingNegative'),
+        DebtRequired: t('transactions.notifications.debtRequired'),
+        DebtNotFound: t('transactions.notifications.debtNotFound'),
+        AccountNotFound: t('transactions.notifications.accountNotFound'),
+        Unauthorized: t('transactions.notifications.unauthorized'),
+      }
+      const msg = map[e?.message] || t('transactions.notifications.unauthorized')
       notifyError(msg)
       throw e
     }
@@ -58,7 +66,15 @@ export const useTransactionsStore = defineStore('transactions', () => {
       await updateTransaction(id, patch)
       success(t('transactions.notifications.updated'))
     } catch (e) {
-      const msg = e?.message === 'BalanceNegative' ? t('transactions.notifications.balanceNegative') : t('transactions.notifications.unauthorized')
+      const map = {
+        BalanceNegative: t('transactions.notifications.balanceNegative'),
+        DebtRemainingNegative: t('transactions.notifications.debtRemainingNegative'),
+        DebtRequired: t('transactions.notifications.debtRequired'),
+        DebtNotFound: t('transactions.notifications.debtNotFound'),
+        AccountNotFound: t('transactions.notifications.accountNotFound'),
+        Unauthorized: t('transactions.notifications.unauthorized'),
+      }
+      const msg = map[e?.message] || t('transactions.notifications.unauthorized')
       notifyError(msg)
       throw e
     }
@@ -69,7 +85,15 @@ export const useTransactionsStore = defineStore('transactions', () => {
       await deleteTransaction(id)
       success(t('transactions.notifications.deleted'))
     } catch (e) {
-      const msg = e?.message === 'BalanceNegative' ? t('transactions.notifications.balanceNegative') : t('transactions.notifications.unauthorized')
+      const map = {
+        BalanceNegative: t('transactions.notifications.balanceNegative'),
+        DebtRemainingNegative: t('transactions.notifications.debtRemainingNegative'),
+        DebtRequired: t('transactions.notifications.debtRequired'),
+        DebtNotFound: t('transactions.notifications.debtNotFound'),
+        AccountNotFound: t('transactions.notifications.accountNotFound'),
+        Unauthorized: t('transactions.notifications.unauthorized'),
+      }
+      const msg = map[e?.message] || t('transactions.notifications.unauthorized')
       notifyError(msg)
       throw e
     }
