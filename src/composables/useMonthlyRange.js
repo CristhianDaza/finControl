@@ -1,3 +1,6 @@
+import { computed } from 'vue'
+import { intlLocale } from '@/i18n/index.js'
+
 const BOGOTA_OFFSET_HOURS = -5 // UTC-5
 
 const toBogotaMonthIndex = (date = new Date()) => {
@@ -36,13 +39,6 @@ const daysInMonth = (year, monthIndex) => new Date(year, monthIndex + 1, 0).getD
 export const useMonthlyRange = () => {
   const currentMonthIndex = toBogotaMonthIndex()
   const currentYear = toBogotaYear()
-  const labels = monthLabels()
-  return {
-    currentMonthIndex,
-    currentYear,
-    labels,
-    monthRange,
-    daysInMonth,
-  }
+  const labels = computed(() => monthLabels(intlLocale.value))
+  return { currentMonthIndex, currentYear, labels, monthRange, daysInMonth }
 }
-

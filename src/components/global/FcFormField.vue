@@ -79,6 +79,9 @@ const togglePassword = () => {
       :placeholder="placeholder"
       v-model="displayValue"
       v-bind="attrs"
+      inputmode="decimal"
+      pattern="[0-9]*[.,]?[0-9]*"
+      autocomplete="off"
       @blur="touched = true"
       :class="{ invalid: touched && !isValid }"
     />

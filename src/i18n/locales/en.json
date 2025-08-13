@@ -1,0 +1,161 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "empty": "You don't have accounts yet",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "type": "Type",
+    "from": "From",
+    "to": "To",
+    "close": "Close",
+    "all": "All"
+  },
+  "language": { "switcher": "Language" },
+  "notification": { "dismiss": "Dismiss notification" },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "debts": "Debts",
+    "accounts": "Accounts",
+    "categories": "Categories"
+  },
+  "auth": {
+    "logout": "Log out"
+  },
+  "currency": {
+    "default": "COP",
+    "invalid": "Invalid currency"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "addButton": "Add Account",
+    "editTitle": "Edit Account",
+    "addTitle": "Add Account",
+    "form": {
+      "name": "Account Name",
+      "namePlaceholder": "e.g., Savings, Cash, Card",
+      "nameError": "Name is required and must be at most 40 characters",
+      "balance": "Initial Balance",
+      "balanceError": "Balance is required and must be a positive number",
+      "currency": "Currency"
+    },
+    "notifications": {
+      "created": "Account created",
+      "updated": "Account updated",
+      "deleted": "Account deleted",
+      "deleteBlocked": "The account cannot be deleted because it has associated transactions."
+    },
+    "confirmDelete": {
+      "title": "Delete account",
+      "message": "You can't delete an account with transactions. Move or delete them before deleting the account.",
+      "cta": "See transactions"
+    }
+  },
+  "debts": {
+    "title": "Debts",
+    "addButton": "Add Debt",
+    "addTitle": "Add Debt",
+    "editTitle": "Edit Debt",
+    "form": {
+      "name": "Debt name",
+      "namePlaceholder": "e.g., Phone plan, Personal loan",
+      "nameError": "Name is required and must be at most 40 characters",
+      "amount": "Initial amount",
+      "amountError": "Amount is required and cannot be negative",
+      "dueDate": "Due date",
+      "dueDateError": "Invalid date"
+    },
+    "card": {
+      "total": "Total debt",
+      "remaining": "Remaining balance",
+      "status": "Status",
+      "paid": "Paid",
+      "active": "Active",
+      "payments": "Payments",
+      "emptyPayments": "No payments yet"
+    },
+    "notifications": {
+      "created": "Debt created",
+      "updated": "Debt updated",
+      "deleted": "Debt deleted",
+      "deleteBlocked": "Debt cannot be deleted because it has registered payments."
+    },
+    "confirmDelete": {
+      "title": "Delete debt",
+      "message": "You can't delete a debt with payments. Manage or delete payments first.",
+      "cta": "See payments"
+    }
+  },
+  "transactions": {
+    "addTitle": "Add Transaction",
+    "editTitle": "Edit Transaction",
+    "empty": "No transactions",
+    "form": {
+      "description": "Description",
+      "descriptionPlaceholder": "e.g., Rent payment",
+      "descriptionError": "Description is required and should be short",
+      "amount": "Amount",
+      "amountError": "Enter a value greater than 0",
+      "type": "Type",
+      "income": "Income",
+      "expense": "Expense",
+      "debtPayment": "Debt payment",
+      "debt": "Debt",
+      "debtError": "Select a valid debt",
+      "account": "Account",
+      "accountError": "Select a valid account",
+      "date": "Date",
+      "dateError": "Date is required"
+    },
+    "notifications": {
+      "created": "Transaction created",
+      "updated": "Transaction updated",
+      "deleted": "Transaction deleted",
+      "balanceNegative": "The operation would leave the account with a negative balance",
+      "accountNotFound": "Account not found",
+      "unauthorized": "Operation not authorized",
+      "debtRemainingNegative": "Payment exceeds remaining debt",
+      "debtRequired": "You must select a debt",
+      "debtNotFound": "Debt not found"
+    },
+    "confirmDelete": {
+      "title": "Delete transaction",
+      "message": "This action cannot be undone. Do you want to continue?"
+    },
+    "table": {
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "account": "Account",
+      "type": "Type",
+      "actions": "Actions"
+    }
+  },
+  "dashboard": {
+    "kpis": {
+      "totalBalance": "Total Balance",
+      "incomeMonth": "Income this month",
+      "expenseMonth": "Expenses this month",
+      "netMonth": "Net this month",
+      "txCount": "Transactions this month"
+    },
+    "filter": {
+      "ariaLabel": "Select month"
+    },
+    "charts": {
+      "daily": "Income vs Expenses (daily)",
+      "breakdown": "Breakdown by type",
+      "net": "Net cumulative"
+    },
+    "list": {
+      "title": "This month's transactions",
+      "empty": "No transactions this month",
+      "seeMore": "See more"
+    }
+  }
+}
+

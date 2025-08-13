@@ -6,7 +6,8 @@ import { useDebtsStore } from '@/stores/debts.js'
 import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
-import { t } from '@/i18n/index.js'
+import { t, formatCurrency } from '@/i18n/index.js'
+import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
 
 const TransactionsModalComponent = defineAsyncComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
 const tx = useTransactionsStore()
@@ -14,7 +15,7 @@ const acc = useAccountsStore()
 const deb = useDebtsStore()
 
 const showModal = ref(false)
-const modalTitle = ref('Agregar Transacción')
+const modalTitle = ref(t('transactions.addTitle'))
 const editing = ref(null)
 const confirmOpen = ref(false)
 const toDeleteId = ref(null)
@@ -24,11 +25,11 @@ const typeFilter = ref('')
 const from = ref('')
 const to = ref('')
 
-const monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+const { labels: monthLabels } = useMonthlyRange()
 const now = new Date()
 const selectedMonth = ref(now.getMonth())
 const currentYear = ref(now.getFullYear())
-const months = computed(() => monthNames.map((label, idx) => ({ label, value: idx })))
+const months = computed(() => monthLabels.value.map((label, idx) => ({ label, value: idx })))
 
 const rows = computed(() => tx.items)
 const hasItems = computed(() => tx.hasItems)
@@ -44,16 +45,10 @@ const askRemove = (id) => { toDeleteId.value = id; confirmOpen.value = true }
 const onSave = async (payload) => {
   busy.value = true
   try {
-    if (editing.value && editing.value.id) {
-      await tx.edit(editing.value.id, payload)
-    } else {
-      await tx.add(payload)
-    }
+    if (editing.value && editing.value.id) { await tx.edit(editing.value.id, payload) } else { await tx.add(payload) }
     showModal.value = false
     editing.value = null
-  } finally {
-    busy.value = false
-  }
+  } finally { busy.value = false }
 }
 
 const onConfirmRemove = async () => {
@@ -94,48 +89,48 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
           :class="selectedMonth === m.value ? '' : 'button-secondary'"
           @click="setMonth(m.value)"
         >
-          {{ m.label }} {{ m.value === now.getMonth() ? '' : '' }}
+          {{ m.label }}
         </button>
       </div>
       <div style="display:flex;gap:1rem;align-items:flex-end">
         <div style="min-width:200px">
-          <label style="display:block;margin-bottom:.25rem">Tipo</label>
+          <label style="display:block;margin-bottom:.25rem">{{ t('common.type') }}</label>
           <select class="input" v-model="typeFilter" @change="applyFilters">
-            <option value="">Todos</option>
-            <option value="income">Ingreso</option>
-            <option value="expense">Gasto</option>
-            <option value="debtPayment">Pago de deuda</option>
+            <option value="">{{ t('common.all') }}</option>
+            <option value="income">{{ t('transactions.form.income') }}</option>
+            <option value="expense">{{ t('transactions.form.expense') }}</option>
+            <option value="debtPayment">{{ t('transactions.form.debtPayment') }}</option>
           </select>
         </div>
         <div>
-          <label style="display:block;margin-bottom:.25rem">Desde</label>
+          <label style="display:block;margin-bottom:.25rem">{{ t('common.from') }}</label>
           <input class="input" type="date" v-model="from" @change="applyFilters" />
         </div>
         <div>
-          <label style="display:block;margin-bottom:.25rem">Hasta</label>
+          <label style="display:block;margin-bottom:.25rem">{{ t('common.to') }}</label>
           <input class="input" type="date" v-model="to" @change="applyFilters" />
         </div>
         <div>
-          <button class="button" @click="openAdd" :disabled="busy || isLoading">Agregar Transacción</button>
+          <button class="button" @click="openAdd" :disabled="busy || isLoading">{{ t('transactions.addTitle') }}</button>
         </div>
       </div>
     </div>
 
-    <div v-if="isLoading" class="card" style="margin-top:1rem">Cargando…</div>
+    <div v-if="isLoading" class="card" style="margin-top:1rem">{{ t('common.loading') }}</div>
     <div v-else-if="!hasItems" class="card" style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
-      <span>No hay transacciones</span>
-      <button class="button" @click="openAdd">Agregar</button>
+      <span>{{ t('transactions.empty') }}</span>
+      <button class="button" @click="openAdd">{{ t('common.add') }}</button>
     </div>
 
     <div v-else class="table-container">
       <table>
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Descripción</th>
-            <th>Monto</th>
-            <th>Cuenta</th>
-            <th>Tipo</th>
+            <th>{{ t('transactions.table.date') }}</th>
+            <th>{{ t('transactions.table.description') }}</th>
+            <th>{{ t('transactions.table.amount') }}</th>
+            <th>{{ t('transactions.table.account') }}</th>
+            <th>{{ t('transactions.table.type') }}</th>
             <th></th>
           </tr>
         </thead>
@@ -143,9 +138,9 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
           <tr v-for="item in rows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' }">
             <td>{{ item.date }}</td>
             <td>{{ item.note || item.description }}</td>
-            <td>${{ Number(item.amount||0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
+            <td>{{ formatCurrency(item.amount) }}</td>
             <td>{{ accountNameById[item.accountId] || item.accountId }}</td>
-            <td>{{ item.type==='income' ? 'Ingreso' : item.type==='expense' ? 'Gasto' : item.type==='debtPayment' ? 'Pago de deuda' : item.type }}</td>
+            <td>{{ item.type==='income' ? t('transactions.form.income') : item.type==='expense' ? t('transactions.form.expense') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : item.type }}</td>
             <td>
               <div class="actions">
                 <button class="button button-edit" @click="openEdit(item)" :disabled="busy">
@@ -175,8 +170,8 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
       :open="confirmOpen"
       :title="t('transactions.confirmDelete.title')"
       :message="t('transactions.confirmDelete.message')"
-      confirm-text="Eliminar"
-      cancel-text="Cancelar"
+      :confirm-text="t('common.delete')"
+      :cancel-text="t('common.cancel')"
       @update:open="confirmOpen = $event"
       @confirm="onConfirmRemove"
     />

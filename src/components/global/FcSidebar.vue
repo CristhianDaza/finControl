@@ -4,9 +4,11 @@ import { useRoutes } from '@/composables/useRoutes.js'
 import { useIsMobile } from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useRouter } from 'vue-router'
+import { t } from '@/i18n/index.js'
 
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
 import LogoutIcon from '@/assets/icons/logout.svg?raw'
+import LanguageSwitcher from '@/components/global/LanguageSwitcher.vue'
 
 const { routes } = useRoutes()
 const { isMobile } = useIsMobile()
@@ -16,15 +18,8 @@ const auth = useAuthStore()
 const router = useRouter()
 const isAuthenticated = computed(() => auth.isAuthenticated)
 
-const handleMainClick = () => {
-  if (!isMenuHidden.value) {
-    isMenuHidden.value = true
-  }
-}
-
-const clickHandler = () => {
-  isMenuHidden.value = !isMenuHidden.value
-}
+const handleMainClick = () => { if (!isMenuHidden.value) { isMenuHidden.value = true } }
+const clickHandler = () => { isMenuHidden.value = !isMenuHidden.value }
 
 const handleLogout = async () => {
   if (!isAuthenticated.value) return
@@ -32,17 +27,9 @@ const handleLogout = async () => {
   router.push({ name: 'login' })
 }
 
-onMounted(() => {
-  if (isMobile.value) {
-    isMenuHidden.value = true
-    return
-  }
-  isMenuHidden.value = false
-})
+onMounted(() => { isMenuHidden.value = isMobile.value ? true : false })
 
-defineExpose({
-  handleMainClick,
-})
+defineExpose({ handleMainClick })
 </script>
 
 <template>
@@ -50,7 +37,9 @@ defineExpose({
     <div>
       <div class="sidebar-header">
         <h2>FinControl</h2>
-        <svg class="sidebar-icon" v-html="HamburgerIcon" @click="clickHandler"></svg>
+        <div class="header-actions">
+          <svg class="sidebar-icon" v-html="HamburgerIcon" @click="clickHandler"></svg>
+        </div>
       </div>
       <nav>
         <RouterLink
@@ -64,14 +53,13 @@ defineExpose({
         </RouterLink>
       </nav>
     </div>
-    <button
-      v-if="isAuthenticated"
-      class="button button-delete"
-      @click="handleLogout"
-    >
-      <span>Cerrar sesión</span>
-      <svg class="icon-menu" v-html="LogoutIcon"></svg>
-    </button>
+    <div style="display:flex;flex-direction:column;gap:.5rem">
+      <LanguageSwitcher />
+      <button v-if="isAuthenticated" class="button button-delete" @click="handleLogout">
+        <span>{{ t('auth.logout') }}</span>
+        <svg class="icon-menu" v-html="LogoutIcon"></svg>
+      </button>
+    </div>
   </aside>
 </template>
 
@@ -103,6 +91,12 @@ defineExpose({
   justify-content: space-between;
   align-items: center;
   padding-bottom: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .sidebar-icon {

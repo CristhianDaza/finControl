@@ -1,148 +1,118 @@
-const messages = {
-  es: {
-    common: {
-      loading: 'Cargando…',
-      empty: 'Aún no tienes cuentas',
-      retry: 'Reintentar',
-      cancel: 'Cancelar',
-      save: 'Guardar',
-      delete: 'Eliminar',
-      edit: 'Editar',
-      add: 'Agregar',
-      type: 'Tipo',
-      from: 'Desde',
-      to: 'Hasta',
-    },
-    currency: {
-      default: 'COP',
-      invalid: 'Moneda inválida',
-    },
-    accounts: {
-      title: 'Cuentas',
-      addButton: 'Agregar Cuenta',
-      editTitle: 'Editar Cuenta',
-      addTitle: 'Agregar Cuenta',
-      form: {
-        name: 'Nombre de la Cuenta',
-        namePlaceholder: 'Ej: Ahorros, Efectivo, Tarjeta',
-        nameError: 'El nombre es obligatorio y debe tener un máximo de 40 caracteres',
-        balance: 'Saldo Inicial',
-        balanceError: 'El saldo es obligatorio y debe ser un número positivo',
-        currency: 'Moneda',
-      },
-      notifications: {
-        created: 'Cuenta creada',
-        updated: 'Cuenta actualizada',
-        deleted: 'Cuenta eliminada',
-        deleteBlocked: 'No se puede eliminar la cuenta porque tiene transacciones asociadas.',
-      },
-      confirmDelete: {
-        title: 'Eliminar cuenta',
-        message: 'No puedes eliminar una cuenta con transacciones. Puedes mover o eliminar las transacciones antes de eliminar la cuenta.',
-        cta: 'Ver transacciones',
-      },
-    },
-    debts: {
-      title: 'Deudas',
-      addButton: 'Agregar Deuda',
-      addTitle: 'Agregar Deuda',
-      editTitle: 'Editar Deuda',
-      form: {
-        name: 'Nombre de la deuda',
-        namePlaceholder: 'Ej: Crédito celular, Préstamo personal',
-        nameError: 'El nombre es obligatorio y debe tener un máximo de 40 caracteres',
-        amount: 'Monto inicial',
-        amountError: 'El monto es obligatorio y no puede ser negativo',
-        dueDate: 'Fecha de vencimiento',
-        dueDateError: 'Fecha inválida',
-      },
-      card: {
-        total: 'Deuda total',
-        remaining: 'Saldo restante',
-        status: 'Estado',
-        paid: 'Pagada',
-        active: 'Activa',
-        payments: 'Pagos',
-        emptyPayments: 'Aún no hay pagos',
-      },
-      notifications: {
-        created: 'Deuda creada',
-        updated: 'Deuda actualizada',
-        deleted: 'Deuda eliminada',
-        deleteBlocked: 'No se puede eliminar la deuda porque tiene pagos registrados.',
-      },
-      confirmDelete: {
-        title: 'Eliminar deuda',
-        message: 'No puedes eliminar una deuda con pagos. Gestiona o elimina los pagos primero.',
-        cta: 'Ver pagos',
-      },
-    },
-    transactions: {
-      addTitle: 'Agregar Transacción',
-      editTitle: 'Editar Transacción',
-      empty: 'No hay transacciones',
-      form: {
-        description: 'Descripción',
-        descriptionPlaceholder: 'Ej: Pago de arriendo',
-        descriptionError: 'La descripción es obligatoria y debe ser corta',
-        amount: 'Monto',
-        amountError: 'Ingresa un valor mayor a 0',
-        type: 'Tipo',
-        income: 'Ingreso',
-        expense: 'Gasto',
-        debtPayment: 'Pago de deuda',
-        debt: 'Deuda',
-        debtError: 'Selecciona una deuda válida',
-        account: 'Cuenta',
-        accountError: 'Selecciona una cuenta válida',
-        date: 'Fecha',
-        dateError: 'La fecha es obligatoria',
-      },
-      notifications: {
-        created: 'Transacción creada',
-        updated: 'Transacción actualizada',
-        deleted: 'Transacción eliminada',
-        balanceNegative: 'La operación dejaría la cuenta con saldo negativo',
-        accountNotFound: 'Cuenta no encontrada',
-        unauthorized: 'Operación no autorizada',
-        debtRemainingNegative: 'El pago excede el saldo de la deuda',
-        debtRequired: 'Debes seleccionar una deuda',
-        debtNotFound: 'Deuda no encontrada',
-      },
-      confirmDelete: { title: 'Eliminar transacción', message: 'Esta acción no se puede deshacer. ¿Deseas continuar?' }
-    },
-    dashboard: {
-      kpis: {
-        totalBalance: 'Saldo Total',
-        incomeMonth: 'Ingresos del mes',
-        expenseMonth: 'Egresos del mes',
-        netMonth: 'Neto del mes',
-        txCount: 'Transacciones del mes',
-      },
-      filter: {
-        ariaLabel: 'Seleccionar mes',
-      },
-      charts: {
-        daily: 'Ingresos vs Egresos (diario)',
-        breakdown: 'Distribución por tipo',
-        net: 'Acumulado neto',
-      },
-      list: {
-        title: 'Transacciones del mes',
-        empty: 'Sin transacciones este mes',
-        seeMore: 'Ver más',
-      }
-    },
-  }
+import { ref, computed } from 'vue'
+
+const LOCALE_KEY = 'app.lang'
+const supported = ['es', 'en']
+const loaded = new Set()
+
+const localeRef = ref('es')
+
+export const intlLocale = computed(() => localeRef.value === 'en' ? 'en-US' : 'es-CO')
+
+const messages = { es: {}, en: {} }
+
+const deepGet = (obj, path) => {
+  const parts = path.split('.')
+  let cur = obj
+  for (const p of parts) { if (cur == null) return undefined; cur = cur[p] }
+  return cur
 }
 
-let currentLocale = 'es'
-export const setLocale = (locale) => { currentLocale = locale || 'es' }
+const template = (str, params) =>
+  str.replace(/\{(\w+)\}/g, (_, k) => params?.[k] ?? '')
+
+export const getLocale = () => localeRef.value
+
+export const setLocale = async (locale) => {
+  const next = supported.includes(locale) ? locale : 'es'
+  if (!loaded.has(next)) {
+    if (next === 'es') {
+      messages.es = (await import('./locales/es.json')).default
+    } else if (next === 'en') {
+      messages.en = (await import('./locales/en.json')).default
+    }
+    loaded.add(next)
+  }
+  localeRef.value = next
+  try { localStorage.setItem(LOCALE_KEY, next) } catch {}
+  if (typeof document !== 'undefined') { document.documentElement.lang = next }
+}
+
+const initial = (() => {
+  try {
+    const saved = localStorage.getItem(LOCALE_KEY)
+    if (supported.includes(saved)) return saved
+  } catch {}
+  const nav = (typeof navigator !== 'undefined' && navigator.language || 'es').toLowerCase()
+  return nav.startsWith('en') ? 'en' : 'es'
+})()
+
+export const initI18n = async () => {
+  await setLocale(initial)
+}
+
 export const t = (path, params) => {
-  const parts = path.split('.')
-  let val = messages[currentLocale]
-  for (const p of parts) { if (!val) break; val = val[p] }
-  if (val == null) return path
-  if (params && typeof val === 'string') { return val.replace(/\{(\w+)\}/g, (_, k) => params[k] ?? '') }
+  const loc = localeRef.value
+  const primary = deepGet(messages[loc], path)
+  const alt = deepGet(messages[loc === 'es' ? 'en' : 'es'], path)
+  if (primary == null && alt == null) return path
+  const val = primary ?? alt
+  if (typeof val === 'string') return params ? template(val, params) : val
   return val
 }
+
+export const tp = (path, count, params = {}) => {
+  const v = t(path)
+  if (v && typeof v === 'object') {
+    const form = count === 1 ? v.one : v.other
+    return template(form, { ...params, count })
+  }
+
+  if (typeof v === 'string') return template(v, { ...params, count })
+  return String(count)
+}
+
+const nfCache = new Map()
+const dfCache = new Map()
+const cfCache = new Map()
+
+const nfKey = (opts) => JSON.stringify(opts)
+
+export const formatNumber = (value, options = {}) => {
+  const loc = intlLocale.value
+  const key = loc + '|' + nfKey(options)
+  let fmt = nfCache.get(key)
+  if (!fmt) { fmt = new Intl.NumberFormat(loc, options); nfCache.set(key, fmt) }
+  const n = Number(value)
+  return isNaN(n) ? '' : fmt.format(n)
+}
+
+export const formatPercent = (value, options = { style: 'percent', maximumFractionDigits: 2 }) =>
+  formatNumber(value, options)
+
+export const formatCurrency = (value, currency = 'COP', options = {}) => {
+  const loc = intlLocale.value
+  const key = loc + '|' + currency + '|' + nfKey(options)
+  let fmt = cfCache.get(key)
+  if (!fmt) {
+    fmt = new Intl.NumberFormat(loc, { style: 'currency', currency, minimumFractionDigits: 2, maximumFractionDigits: 2, ...options })
+    cfCache.set(key, fmt)
+  }
+  const n = Number(value)
+  return isNaN(n) ? '' : fmt.format(n)
+}
+
+export const formatDate = (date, options = { dateStyle: 'medium', timeZone: 'America/Bogota' }) => {
+  const loc = intlLocale.value
+  const key = loc + '|' + nfKey(options)
+  let fmt = dfCache.get(key)
+  if (!fmt) { fmt = new Intl.DateTimeFormat(loc, options); dfCache.set(key, fmt) }
+  try {
+    let d = date
+    if (typeof date === 'object' && date?.seconds) d = new Date(date.seconds * 1000)
+    if (typeof date === 'number') d = new Date(date)
+    if (typeof date === 'string') return date
+    return fmt.format(d)
+  } catch { return '' }
+}
+
+export { localeRef }
