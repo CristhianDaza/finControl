@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
+import { t } from '@/i18n/index.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -13,12 +14,12 @@ const password = ref('')
 const emailError = computed(() => {
   if (!email.value) return null
   const ok = /.+@.+\..+/.test(email.value)
-  return ok ? null : 'Ingresa un correo válido'
+  return ok ? null : t('validation.email-invalid')
 })
 
 const passwordError = computed(() => {
   if (!password.value) return null
-  return password.value.length > 0 ? null : 'La contraseña es requerida'
+  return password.value.length > 0 ? null : t('validation.password-required')
 })
 
 const submit = async () => {
@@ -38,12 +39,12 @@ const submit = async () => {
 <template>
   <section class="login-container">
     <div class="card login-card" role="dialog" aria-labelledby="login-title" aria-describedby="login-desc">
-      <h1 id="login-title">Iniciar sesión</h1>
-      <p id="login-desc" class="muted">Accede con tu correo y contraseña.</p>
+      <h1 id="login-title">{{ t('auth.login.title') }}</h1>
+      <p id="login-desc" class="muted">{{ t('auth.login.description') }}</p>
 
       <form @submit.prevent="submit" novalidate>
         <label class="field">
-          <span>Correo electrónico</span>
+          <span>{{ t('auth.login.email') }}</span>
           <input
             class="input"
             type="email"
@@ -54,13 +55,13 @@ const submit = async () => {
             aria-required="true"
             :aria-invalid="!!emailError"
             aria-describedby="email-help"
-            placeholder="ejemplo@correo.com"
+            :placeholder="t('auth.login.email-placeholder')"
           />
           <small id="email-help" v-if="emailError" class="error">{{ emailError }}</small>
         </label>
 
         <label class="field">
-          <span>Contraseña</span>
+          <span>{{ t('auth.login.password') }}</span>
           <input
             class="input"
             type="password"
@@ -71,7 +72,7 @@ const submit = async () => {
             aria-required="true"
             :aria-invalid="!!passwordError"
             aria-describedby="password-help"
-            placeholder="Tu contraseña"
+            :placeholder="t('auth.login.password-placeholder')"
           />
           <small id="password-help" v-if="passwordError" class="error">{{ passwordError }}</small>
         </label>
@@ -79,7 +80,7 @@ const submit = async () => {
         <p v-if="auth.error" class="error" role="alert">{{ auth.error }}</p>
 
         <button class="button w-full" :disabled="auth.status === 'loading'">
-          {{ auth.status === 'loading' ? 'Ingresando…' : 'Iniciar sesión' }}
+          {{ auth.status === 'loading' ? t('auth.login.submitting') : t('auth.login.submit') }}
         </button>
       </form>
     </div>
@@ -120,4 +121,3 @@ const submit = async () => {
 }
 .w-full { width: 100%; }
 </style>
-

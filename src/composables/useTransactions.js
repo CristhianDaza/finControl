@@ -4,7 +4,7 @@ import { collection, doc, onSnapshot, orderBy as fbOrderBy, query, serverTimesta
 export const useTransactions = () => {
   const getUserPaths = () => {
     const uid = auth.currentUser && auth.currentUser.uid
-    if (!uid) throw new Error('No autenticado')
+    if (!uid) throw new Error('Unauthorized')
     return { uid, txCol: collection(db, 'users', uid, 'transactions'), accColPath: ['users', uid, 'accounts'], debtColPath: ['users', uid, 'debts'] }
   }
 
@@ -51,11 +51,11 @@ export const useTransactions = () => {
     const { uid, txCol, accColPath, debtColPath } = getUserPaths()
     const txRef = doc(txCol)
     const accountId = payload.accountId || payload.account
-    if (!accountId) throw new Error('Cuenta requerida')
+    if (!accountId) throw new Error('AccountRequired')
     const type = normalizeType(payload.type)
     const amountC = cents(payload.amount)
-    if (!['income','expense','debtPayment'].includes(type)) throw new Error('Tipo inválido')
-    if (amountC <= 0) throw new Error('Monto inválido')
+    if (!['income','expense','debtPayment'].includes(type)) throw new Error('InvalidType')
+    if (amountC <= 0) throw new Error('InvalidAmount')
 
     await runTransaction(db, async (trx) => {
       const accRef = doc(db, ...accColPath, accountId)
@@ -105,8 +105,8 @@ export const useTransactions = () => {
       const newAccountId = payload.accountId || payload.account || prev.accountId
       const newDebtId = payload.debtId || payload.debt || prev.debtId || null
       const newAmountC = payload.amount != null ? cents(payload.amount) : cents(prev.amount)
-      if (!['income','expense','debtPayment'].includes(newType)) throw new Error('Tipo inválido')
-      if (newAmountC <= 0) throw new Error('Monto inválido')
+      if (!['income','expense','debtPayment'].includes(newType)) throw new Error('InvalidType')
+      if (newAmountC <= 0) throw new Error('InvalidAmount')
       const prevAccRef = doc(db, ...accColPath, prev.accountId)
       const prevAccSnap = await trx.get(prevAccRef)
       if (!prevAccSnap.exists()) throw new Error('AccountNotFound')

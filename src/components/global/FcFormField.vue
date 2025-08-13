@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, useAttrs } from 'vue'
 import { useFormattedNumber } from '@/composables/useFormattedNumber.js'
+import { t } from '@/i18n/index.js'
 
 const props = defineProps({
   modelValue: [String, Number],
@@ -11,7 +12,7 @@ const props = defineProps({
   placeholder: String,
   options: { type: Array, default: () => [] },
   formatThousands: { type: Boolean, default: false },
-  errorMessage: { type: String, default: 'Campo inválido' }
+  errorMessage: { type: String, default: '' }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -64,7 +65,7 @@ const togglePassword = () => {
         type="button"
         class="toggle-password"
         @click="togglePassword"
-        :title="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        :title="showPassword ? t('auth.hide-password') : t('auth.show-password')"
       >
         {{ showPassword ? '🙈' : '👁️' }}
       </button>
@@ -104,7 +105,7 @@ const togglePassword = () => {
       @blur="touched = true"
       :class="{ invalid: touched && !isValid }"
     >
-      <option disabled value="">-- Selecciona una opción --</option>
+      <option disabled value="">-- {{ t('common.select-option') }} --</option>
       <option
         v-for="(option, index) in options"
         :key="index"
@@ -114,8 +115,8 @@ const togglePassword = () => {
       </option>
     </select>
 
-    <p v-if="touched && !isValid && errorMessage" class="error-message">
-      {{ errorMessage }}
+    <p v-if="touched && !isValid && (errorMessage || t('validation.invalid-field'))" class="error-message">
+      {{ errorMessage || t('validation.invalid-field') }}
     </p>
   </div>
 </template>

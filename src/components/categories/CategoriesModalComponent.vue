@@ -1,5 +1,6 @@
 <script setup>
 import { defineAsyncComponent, ref, watch } from 'vue'
+import { t } from '@/i18n/index.js'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
@@ -50,26 +51,26 @@ watch(
     @accept="handleAccept"
     @cancel-modal="handleCancel"
     @update:showModal="showModal = $event"
-    title-modal="Agregar Categoría"
+    :title-modal="t('categories.addButton')"
   >
     <FcFormField
       v-model="category.name"
-      label="Nombre de la categoría"
-      placeholder="Ej: Alimentación"
+      :label="t('categories.form.name')"
+      :placeholder="t('categories.form.namePlaceholder')"
       required
       :maxlength="100"
-      error-message="El nombre es obligatorio y no puede exceder los 100 caracteres."
+      :error-message="t('categories.form.nameError')"
     />
     <FcFormField
       v-model="category.type"
-      label="Tipo"
+      :label="t('categories.form.type')"
       type="select"
       :options="[
-        { label: 'Ingreso', value: 'income' },
-        { label: 'Egreso', value: 'expense' },
+        { label: t('categories.form.income'), value: 'income' },
+        { label: t('categories.form.expense'), value: 'expense' },
       ]"
       required
-      error-message="Selecciona un tipo de categoría."
+      :error-message="t('categories.form.typeError')"
     />
   </FcModal>
 </template>

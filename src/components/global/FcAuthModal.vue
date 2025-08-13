@@ -1,5 +1,6 @@
 <script setup>
 import { ref, defineAsyncComponent, computed } from 'vue'
+import { t } from '@/i18n/index.js'
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
 
 const props = defineProps({
@@ -44,39 +45,39 @@ const handleCancel = () => {
         <div class="modal-container">
           <img src="@/assets/images/logo-fin-control.png" alt="Logo" class="modal-logo" />
 
-          <h2 class="modal-title">{{ isLogin ? 'Iniciar Sesión' : 'Cerrar Sesión' }}</h2>
+          <h2 class="modal-title">{{ isLogin ? t('auth.login.title') : t('auth.logout') }}</h2>
 
           <template v-if="isLogin">
             <FcFormField
               v-model="email"
-              label="Correo electrónico"
+              :label="t('auth.login.email')"
               type="email"
-              placeholder="ejemplo@correo.com"
+              :placeholder="t('auth.login.email-placeholder')"
               autocomplete="email"
               required
-              error-message="Correo válido requerido"
+              :error-message="t('validation.email-invalid')"
             />
 
             <FcFormField
               v-model="password"
-              label="Contraseña"
+              :label="t('auth.login.password')"
               type="password"
-              placeholder="Tu contraseña"
+              :placeholder="t('auth.login.password-placeholder')"
               autocomplete="current-password"
               required
-              error-message="Ingresa tu contraseña"
+              :error-message="t('validation.password-required')"
             />
           </template>
 
           <template v-else>
-            <p class="modal-message">¿Estás seguro que deseas cerrar sesión?</p>
+            <p class="modal-message">{{ t('auth.logoutConfirm') }}</p>
           </template>
 
           <div class="modal-actions">
             <button class="button" type="button" @click="handleAccept">
-              {{ isLogin ? 'Iniciar Sesión' : 'Cerrar Sesión' }}
+              {{ isLogin ? t('auth.login.submit') : t('auth.logout') }}
             </button>
-            <button class="button button-outline" type="button" @click="handleCancel">Cancelar</button>
+            <button class="button button-outline" type="button" @click="handleCancel">{{ t('common.cancel') }}</button>
           </div>
         </div>
       </form>

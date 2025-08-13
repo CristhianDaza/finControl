@@ -12,7 +12,10 @@
     "from": "Desde",
     "to": "Hasta",
     "close": "Cerrar",
-    "all": "Todos"
+    "all": "Todos",
+    "confirm": "Confirmar",
+    "select-option": "Selecciona una opción",
+    "no-note": "Sin nota"
   },
   "language": {
     "switcher": "Idioma"
@@ -28,7 +31,36 @@
     "categories": "Categorías"
   },
   "auth": {
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Accede con tu correo y contraseña.",
+      "email": "Correo electrónico",
+      "email-placeholder": "ejemplo@correo.com",
+      "password": "Contraseña",
+      "password-placeholder": "Tu contraseña",
+      "submit": "Iniciar sesión",
+      "submitting": "Ingresando…"
+    },
+    "show-password": "Mostrar contraseña",
+    "hide-password": "Ocultar contraseña",
+    "logoutConfirm": "¿Estás seguro que deseas cerrar sesión?"
+  },
+  "validation": {
+    "invalid-field": "Campo inválido",
+    "email-invalid": "Ingresa un correo válido",
+    "password-required": "La contraseña es requerida"
+  },
+  "errors": {
+    "auth": {
+      "invalid-email": "El correo no es válido.",
+      "user-not-found": "Usuario no encontrado.",
+      "wrong-password": "Contraseña incorrecta.",
+      "invalid-credential": "Credenciales incorrectas.",
+      "too-many-requests": "Demasiados intentos. Intenta más tarde.",
+      "generic": "No pudimos iniciar sesión. Intenta de nuevo."
+    },
+    "generic": "Ocurrió un error"
   },
   "currency": {
     "default": "COP",
@@ -137,7 +169,9 @@
       "account": "Cuenta",
       "type": "Tipo",
       "actions": "Acciones"
-    }
+    },
+    "filters": { "save": "Guardar filtro", "clear": "Limpiar" },
+    "exportCsv": "Exportar CSV"
   },
   "dashboard": {
     "kpis": {
@@ -160,6 +194,22 @@
       "empty": "Sin transacciones este mes",
       "seeMore": "Ver más"
     }
-  }
+  },
+  "categories": {
+    "addButton": "Agregar Categoría",
+    "incomeTitle": "Categorías de Ingresos",
+    "expenseTitle": "Categorías de Egresos",
+    "table": { "name": "Nombre", "actions": "Acciones" },
+    "samples": { "salary": "Sueldo", "rent": "Alquiler" },
+    "form": {
+      "name": "Nombre de la categoría",
+      "namePlaceholder": "Ej: Alimentación",
+      "nameError": "El nombre es obligatorio y no puede exceder los 100 caracteres.",
+      "type": "Tipo",
+      "income": "Ingreso",
+      "expense": "Egreso",
+      "typeError": "Selecciona un tipo de categoría."
+    }
+  },
+  "layout": { "brand": "FinControl" }
 }
-

@@ -8,6 +8,7 @@ import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 import { t, formatCurrency } from '@/i18n/index.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
+import { useUserPrefs } from '@/composables/useUserPrefs.js'
 
 const TransactionsModalComponent = defineAsyncComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
 const tx = useTransactionsStore()
@@ -37,6 +38,8 @@ const isLoading = computed(() => tx.status === 'loading')
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
 const debtsOptions = computed(() => deb.items.map(d => ({ label: d.name, value: d.id })))
 const accountNameById = computed(() => acc.items.reduce((m, a) => { m[a.id] = a.name; return m }, {}))
+
+const { getTxFilters, saveTxFilters } = useUserPrefs()
 
 const openAdd = () => { editing.value = null; modalTitle.value = t('transactions.addTitle'); showModal.value = true }
 const openEdit = (item) => { editing.value = item; modalTitle.value = t('transactions.editTitle'); showModal.value = true }
@@ -75,7 +78,44 @@ const setMonth = (m) => {
   applyFilters()
 }
 
-onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.subscribeMyDebts() })
+const saveFilters = async () => {
+  const current = { type: typeFilter.value || '', from: from.value || '', to: to.value || '' }
+  await saveTxFilters(current)
+}
+const clearFilters = () => { typeFilter.value = ''; from.value = ''; to.value = ''; applyFilters() }
+const loadSavedFilters = async () => {
+  try {
+    const saved = await getTxFilters()
+    if (saved) {
+      typeFilter.value = saved.type || ''
+      from.value = saved.from || ''
+      to.value = saved.to || ''
+      applyFilters()
+    }
+  } catch {}
+}
+
+const exportCsv = () => {
+  const headers = [t('transactions.table.date'), t('transactions.table.description'), t('transactions.table.amount'), t('transactions.table.account'), t('transactions.table.type')]
+  const csvRows = [headers.join(',')]
+  for (const item of rows.value) {
+    const desc = (item.note || item.description || '').replace(/\"/g, '"')
+    const accName = accountNameById.value[item.accountId] || item.accountId
+    const typ = item.type==='income' ? t('transactions.form.income') : item.type==='expense' ? t('transactions.form.expense') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : item.type
+    csvRows.push([item.date, `"${desc}"`, item.amount, `"${accName}"`, `"${typ}"`].join(','))
+  }
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'transactions.csv'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.subscribeMyDebts(); loadSavedFilters() })
 </script>
 
 <template>
@@ -92,7 +132,7 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
           {{ m.label }}
         </button>
       </div>
-      <div style="display:flex;gap:1rem;align-items:flex-end">
+      <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
         <div style="min-width:200px">
           <label style="display:block;margin-bottom:.25rem">{{ t('common.type') }}</label>
           <select class="input" v-model="typeFilter" @change="applyFilters">
@@ -110,8 +150,11 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
           <label style="display:block;margin-bottom:.25rem">{{ t('common.to') }}</label>
           <input class="input" type="date" v-model="to" @change="applyFilters" />
         </div>
-        <div>
+        <div style="display:flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap">
           <button class="button" @click="openAdd" :disabled="busy || isLoading">{{ t('transactions.addTitle') }}</button>
+          <button class="button button-secondary" @click="saveFilters" :title="t('transactions.filters.save')">{{ t('transactions.filters.save') }}</button>
+          <button class="button button-secondary" @click="clearFilters" :title="t('transactions.filters.clear')">{{ t('transactions.filters.clear') }}</button>
+          <button class="button button-secondary" @click="exportCsv" :title="t('transactions.exportCsv')">{{ t('transactions.exportCsv') }}</button>
         </div>
       </div>
     </div>

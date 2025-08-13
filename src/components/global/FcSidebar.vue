@@ -36,7 +36,7 @@ defineExpose({ handleMainClick })
   <aside class="sidebar" :class="{ 'hidden-menu': isMenuHidden }">
     <div>
       <div class="sidebar-header">
-        <h2>FinControl</h2>
+        <h2>{{ t('layout.brand') }}</h2>
         <div class="header-actions">
           <svg class="sidebar-icon" v-html="HamburgerIcon" @click="clickHandler"></svg>
         </div>

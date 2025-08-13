@@ -2,7 +2,7 @@
 import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAccountsStore } from '@/stores/accounts.js'
-import { t } from '@/i18n/index.js'
+import { t, formatCurrency } from '@/i18n/index.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
@@ -78,13 +78,13 @@ onMounted(() => { acc.subscribeMyAccounts() })
       <div class="account-card" v-for="item in rows" :key="item.id">
         <div class="account-header">
           <h3>{{ item.name }}</h3>
-          <p class="account-balance">${{ Number(item.balance||0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
+          <p class="account-balance">{{ formatCurrency(item.balance) }}</p>
         </div>
         <div class="account-actions">
-          <button class="button button-edit" :aria-label="t('common.edit')" title="Editar" @click="openEdit(item)">
+          <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')" @click="openEdit(item)">
             <svg class="icon-edit" v-html="EditIcon"></svg>
           </button>
-          <button class="button button-delete" :aria-label="t('common.delete')" title="Eliminar" @click="askRemove(item.id)">
+          <button class="button button-delete" :aria-label="t('common.delete')" :title="t('common.delete')" @click="askRemove(item.id)">
             <svg class="icon-delete" v-html="DeleteIcon"></svg>
           </button>
         </div>

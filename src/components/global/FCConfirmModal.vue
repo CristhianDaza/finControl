@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
-const props = defineProps({ open: Boolean, title: String, message: String, confirmText: { type: String, default: 'Confirmar' }, cancelText: { type: String, default: 'Cancelar' } })
+import { t } from '@/i18n/index.js'
+const props = defineProps({ open: Boolean, title: String, message: String, confirmText: { type: String, default: '' }, cancelText: { type: String, default: '' } })
 const emit = defineEmits(['update:open','confirm','cancel'])
 const close = () => emit('update:open', false)
 const onCancel = () => { emit('cancel'); close() }
@@ -16,8 +17,8 @@ const onKey = (e) => { if (e.key === 'Escape') onCancel() }
         <h2 class="modal-title">{{ title }}</h2>
         <p class="modal-message">{{ message }}</p>
         <div class="actions">
-          <button class="button" @click="onConfirm">{{ confirmText }}</button>
-          <button class="button button-secondary" @click="onCancel">{{ cancelText }}</button>
+          <button class="button" @click="onConfirm">{{ confirmText || t('common.confirm') }}</button>
+          <button class="button button-secondary" @click="onCancel">{{ cancelText || t('common.cancel') }}</button>
         </div>
       </div>
     </div>
@@ -31,4 +32,3 @@ const onKey = (e) => { if (e.key === 'Escape') onCancel() }
 .modal-message{margin:0 0 1rem 0}
 .actions{display:flex;gap:.75rem;justify-content:flex-end}
 </style>
-

@@ -2,24 +2,20 @@
 import { defineAsyncComponent, ref } from 'vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
+import { t } from '@/i18n/index.js'
 
 const CategoriesModalComponent = defineAsyncComponent(/* webpackChunkName: "CategoriesModalComponent" */ () => import('@/components/categories/CategoriesModalComponent.vue'))
 
 const showModal = ref(false)
 
-const openModal = () => {
-  showModal.value = true
-}
-
-const closeModal = () => {
-  showModal.value = false
-}
+const openModal = () => { showModal.value = true }
+const closeModal = () => { showModal.value = false }
 </script>
 
 <template>
   <section>
     <button class="button" @click="openModal">
-      Agregar Categoría
+      {{ t('categories.addButton') }}
     </button>
     <CategoriesModalComponent
       :show-modal-categories="showModal"
@@ -27,22 +23,22 @@ const closeModal = () => {
     />
     <section class="category-container">
       <div class="category-table-wrapper">
-        <h2>Categorías de Ingresos</h2>
+        <h2>{{ t('categories.incomeTitle') }}</h2>
         <table class="category-table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Acciones</th>
+              <th>{{ t('categories.table.name') }}</th>
+              <th>{{ t('categories.table.actions') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Sueldo</td>
+              <td>{{ t('categories.samples.salary') }}</td>
               <td class="actions">
-                <button class="button button-edit">
+                <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')">
                   <svg class="icon-edit" v-html="EditIcon"></svg>
                 </button>
-                <button class="button button-delete">
+                <button class="button button-delete" :aria-label="t('common.delete')" :title="t('common.delete')">
                   <svg class="icon-delete" v-html="DeleteIcon"></svg>
                 </button>
               </td>
@@ -52,22 +48,22 @@ const closeModal = () => {
       </div>
 
       <div class="category-table-wrapper">
-        <h2>Categorías de Egresos</h2>
+        <h2>{{ t('categories.expenseTitle') }}</h2>
         <table class="category-table">
           <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Acciones</th>
+            <th>{{ t('categories.table.name') }}</th>
+            <th>{{ t('categories.table.actions') }}</th>
           </tr>
           </thead>
           <tbody>
           <tr>
-            <td>Alquiler</td>
+            <td>{{ t('categories.samples.rent') }}</td>
             <td class="actions">
-              <button class="button button-edit">
+              <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')">
                 <svg class="icon-edit" v-html="EditIcon"></svg>
               </button>
-              <button class="button button-delete">
+              <button class="button button-delete" :aria-label="t('common.delete')" :title="t('common.delete')">
                 <svg class="icon-delete" v-html="DeleteIcon"></svg>
               </button>
             </td>

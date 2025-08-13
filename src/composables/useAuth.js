@@ -1,19 +1,21 @@
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth } from '@/services/firebase.js'
+import { t } from '@/i18n/index.js'
 
 const toFriendlyError = (err) => {
   const code = typeof err === 'object' && err && 'code' in err ? /** @type {{code?: string}} */(err).code : ''
   switch (code) {
     case 'auth/invalid-email':
-      return 'El correo no es válido.'
+      return t('errors.auth.invalid-email')
     case 'auth/user-not-found':
+      return t('errors.auth.user-not-found')
     case 'auth/wrong-password':
     case 'auth/invalid-credential':
-      return 'Credenciales incorrectas.'
+      return t('errors.auth.invalid-credential')
     case 'auth/too-many-requests':
-      return 'Demasiados intentos. Intenta más tarde.'
+      return t('errors.auth.too-many-requests')
     default:
-      return 'No pudimos iniciar sesión. Intenta de nuevo.'
+      return t('errors.auth.generic')
   }
 }
 
@@ -42,4 +44,3 @@ export const useAuth = () => {
 
   return { loginWithEmail, logout, onAuthReady, toFriendlyError }
 }
-

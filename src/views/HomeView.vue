@@ -3,7 +3,7 @@ import { ref, computed, onMounted, watch, onBeforeUnmount, nextTick } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useTransactionsStore } from '@/stores/transactions.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
-import { t } from '@/i18n/index.js'
+import { t, formatCurrency } from '@/i18n/index.js'
 import {
   Chart,
   BarController, BarElement,
@@ -33,7 +33,6 @@ const selectedYear = ref(Number(sessionStorage.getItem('dash:year') ?? currentYe
 const isLoading = computed(() => accountsStore.status === 'loading' || transactionsStore.status === 'loading')
 const hasError = computed(() => accountsStore.status === 'error' || transactionsStore.status === 'error')
 
-const formatCurrency = (v) => `$${Number(v || 0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 const pad2 = (n) => String(n).padStart(2, '0')
 
 const applyMonthFilter = (y, m) => {

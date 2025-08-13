@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n/index.js'
 defineProps({
   showModal: {
     type: Boolean,
@@ -7,7 +8,7 @@ defineProps({
   },
   titleModal: {
     type: String,
-    default: 'Confirmación'
+    default: () => t('common.confirm')
   }
 })
 
@@ -28,7 +29,7 @@ const accept = () => {
   <transition name="fade">
     <Teleport to="body">
       <div v-if="showModal" class="modal-overlay" @click.self="cancel">
-        <div class="modal-content">
+        <div class="modal-content" role="dialog" aria-modal="true">
           <header class="modal-header">
             <h2 class="modal-title">
               {{ titleModal }}
@@ -40,8 +41,8 @@ const accept = () => {
           </div>
 
           <footer class="modal-footer">
-            <button class="btn cancel" @click="cancel">Cancelar</button>
-            <button class="btn accept" @click="accept">Aceptar</button>
+            <button class="btn cancel" @click="cancel">{{ t('common.cancel') }}</button>
+            <button class="btn accept" @click="accept">{{ t('common.confirm') }}</button>
           </footer>
         </div>
       </div>

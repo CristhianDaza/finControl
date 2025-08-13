@@ -12,7 +12,9 @@
     "from": "From",
     "to": "To",
     "close": "Close",
-    "all": "All"
+    "all": "All",
+    "confirm": "Confirm",
+    "select-option": "Select an option"
   },
   "language": { "switcher": "Language" },
   "notification": { "dismiss": "Dismiss notification" },
@@ -24,7 +26,35 @@
     "categories": "Categories"
   },
   "auth": {
-    "logout": "Log out"
+    "logout": "Log out",
+    "login": {
+      "title": "Sign in",
+      "description": "Access with your email and password.",
+      "email": "Email",
+      "email-placeholder": "example@email.com",
+      "password": "Password",
+      "password-placeholder": "Your password",
+      "submit": "Sign in",
+      "submitting": "Signing in…"
+    },
+    "show-password": "Show password",
+    "hide-password": "Hide password",
+    "logoutConfirm": "Are you sure you want to log out?"
+  },
+  "validation": {
+    "invalid-field": "Invalid field",
+    "email-invalid": "Enter a valid email",
+    "password-required": "Password is required"
+  },
+  "errors": {
+    "auth": {
+      "invalid-email": "Email is not valid.",
+      "user-not-found": "User not found.",
+      "wrong-password": "Incorrect password.",
+      "invalid-credential": "Incorrect credentials.",
+      "too-many-requests": "Too many attempts. Try again later.",
+      "generic": "We couldn't sign you in. Please try again."
+    }
   },
   "currency": {
     "default": "COP",
@@ -133,7 +163,9 @@
       "account": "Account",
       "type": "Type",
       "actions": "Actions"
-    }
+    },
+    "filters": { "save": "Save filter", "clear": "Clear" },
+    "exportCsv": "Export CSV"
   },
   "dashboard": {
     "kpis": {
@@ -156,6 +188,13 @@
       "empty": "No transactions this month",
       "seeMore": "See more"
     }
-  }
+  },
+  "categories": {
+    "addButton": "Add Category",
+    "incomeTitle": "Income Categories",
+    "expenseTitle": "Expense Categories",
+    "table": { "name": "Name", "actions": "Actions" },
+    "samples": { "salary": "Salary", "rent": "Rent" }
+  },
+  "layout": { "brand": "FinControl" }
 }
-

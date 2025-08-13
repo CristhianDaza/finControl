@@ -3,7 +3,7 @@ import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useTransactions } from '@/composables/useTransactions.js'
-import { t } from '@/i18n/index.js'
+import { t, formatCurrency } from '@/i18n/index.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
@@ -96,11 +96,11 @@ onMounted(() => { deb.subscribeMyDebts() })
           <div class="debt-title" @click="toggleOpen(d.id)" style="cursor:pointer">
             <h3>{{ d.name }}</h3>
           </div>
-          <p class="debt-total">{{ t('debts.card.total') }}: ${{ Number(d.originalAmount||0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
+          <p class="debt-total">{{ t('debts.card.total') }}: {{ formatCurrency(d.originalAmount) }}</p>
         </header>
 
         <div class="debt-summary">
-          <p class="debt-saldo">{{ t('debts.card.remaining') }}: ${{ Number(d.remainingAmount||0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</p>
+          <p class="debt-saldo">{{ t('debts.card.remaining') }}: {{ formatCurrency(d.remainingAmount) }}</p>
           <p class="debt-saldo">{{ t('debts.card.status') }}: {{ d.status === 'paid' ? t('debts.card.paid') : t('debts.card.active') }}</p>
         </div>
 
@@ -109,15 +109,15 @@ onMounted(() => { deb.subscribeMyDebts() })
           <li v-if="!(paymentsByDebt[d.id] && paymentsByDebt[d.id].length)">{{ t('debts.card.emptyPayments') }}</li>
           <li v-for="p in (paymentsByDebt[d.id]||[])" :key="p.id">
             <span>🗓 {{ p.date }}</span>
-            <span>${{ Number(p.amount||0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+            <span>{{ formatCurrency(p.amount) }}</span>
           </li>
         </ul>
 
         <div class="actions">
-          <button class="button button-edit" :aria-label="t('common.edit')" title="Editar" @click="openEdit(d)">
+          <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')" @click="openEdit(d)">
             <svg class="icon-edit" v-html="EditIcon"></svg>
           </button>
-          <button class="button button-delete" :aria-label="t('common.delete')" title="Eliminar" @click="askRemove(d.id)">
+          <button class="button button-delete" :aria-label="t('common.delete')" :title="t('common.delete')" @click="askRemove(d.id)">
             <svg class="icon-delete" v-html="DeleteIcon"></svg>
           </button>
         </div>
