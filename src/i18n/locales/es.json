@@ -15,7 +15,8 @@
     "all": "Todos",
     "confirm": "Confirmar",
     "select-option": "Selecciona una opción",
-    "no-note": "Sin nota"
+    "no-note": "Sin nota",
+    "transfer": "Transferir"
   },
   "language": {
     "switcher": "Idioma"
@@ -49,7 +50,9 @@
   "validation": {
     "invalid-field": "Campo inválido",
     "email-invalid": "Ingresa un correo válido",
-    "password-required": "La contraseña es requerida"
+    "password-required": "La contraseña es requerida",
+    "required": "Campo requerido",
+    "positive_amount": "El monto debe ser mayor que cero"
   },
   "errors": {
     "auth": {
@@ -211,5 +214,24 @@
       "typeError": "Selecciona un tipo de categoría."
     }
   },
-  "layout": { "brand": "FinControl" }
+  "layout": { "brand": "FinControl" },
+  "transfers": {
+    "title": "Transferencias",
+    "new": "Nueva transferencia",
+    "edit": "Editar transferencia",
+    "from": "Desde",
+    "to": "Hacia",
+    "amount": "Monto",
+    "rate": "Tasa",
+    "date": "Fecha",
+    "note": "Nota",
+    "created": "Transferencia creada",
+    "updated": "Transferencia actualizada",
+    "deleted": "Transferencia eliminada",
+    "invalid_accounts": "Las cuentas deben ser distintas",
+    "insufficient_funds": "Fondos insuficientes en la cuenta origen",
+    "confirm_delete_title": "Eliminar transferencia",
+    "confirm_delete_message": "Esta acción moverá el dinero de vuelta. ¿Deseas continuar?",
+    "empty": "No hay transferencias"
+  }
 }

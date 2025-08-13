@@ -27,7 +27,8 @@ export const useTransactions = () => {
       try {
         const q = buildQuery(opts)
         const unsub = onSnapshot(q, snap => {
-          const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          const all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          const items = all.filter(i => i.isTransfer !== true)
           unsub()
           resolve(items)
         }, reject)
@@ -199,7 +200,8 @@ export const useTransactions = () => {
   const subscribeTransactions = (cb, opts = {}) => {
     const q = buildQuery(opts)
     return onSnapshot(q, snap => {
-      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      const all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      const items = all.filter(i => i.isTransfer !== true)
       cb(items)
     })
   }

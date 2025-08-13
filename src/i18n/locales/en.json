@@ -14,7 +14,8 @@
     "close": "Close",
     "all": "All",
     "confirm": "Confirm",
-    "select-option": "Select an option"
+    "select-option": "Select an option",
+    "transfer": "Transfer"
   },
   "language": { "switcher": "Language" },
   "notification": { "dismiss": "Dismiss notification" },
@@ -44,7 +45,9 @@
   "validation": {
     "invalid-field": "Invalid field",
     "email-invalid": "Enter a valid email",
-    "password-required": "Password is required"
+    "password-required": "Password is required",
+    "required": "Field is required",
+    "positive_amount": "Amount must be greater than zero"
   },
   "errors": {
     "auth": {
@@ -54,7 +57,8 @@
       "invalid-credential": "Incorrect credentials.",
       "too-many-requests": "Too many attempts. Try again later.",
       "generic": "We couldn't sign you in. Please try again."
-    }
+    },
+    "generic": "An error occurred"
   },
   "currency": {
     "default": "COP",
@@ -196,5 +200,24 @@
     "table": { "name": "Name", "actions": "Actions" },
     "samples": { "salary": "Salary", "rent": "Rent" }
   },
-  "layout": { "brand": "FinControl" }
+  "layout": { "brand": "FinControl" },
+  "transfers": {
+    "title": "Transfers",
+    "new": "New transfer",
+    "edit": "Edit transfer",
+    "from": "From",
+    "to": "To",
+    "amount": "Amount",
+    "rate": "Rate",
+    "date": "Date",
+    "note": "Note",
+    "created": "Transfer created",
+    "updated": "Transfer updated",
+    "deleted": "Transfer deleted",
+    "invalid_accounts": "Accounts must be different",
+    "insufficient_funds": "Insufficient funds in source account",
+    "confirm_delete_title": "Delete transfer",
+    "confirm_delete_message": "This action will move the money back. Do you want to continue?",
+    "empty": "No transfers"
+  }
 }

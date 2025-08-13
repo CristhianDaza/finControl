@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, watch, onBeforeUnmount, nextTick } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useTransactionsStore } from '@/stores/transactions.js'
+import { useTransfersStore } from '@/stores/transfers.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
 import { t, formatCurrency } from '@/i18n/index.js'
 import {
@@ -23,6 +24,7 @@ Chart.register(
 
 const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
+const transfersStore = useTransfersStore()
 
 const { currentMonthIndex, currentYear, labels, monthRange, daysInMonth } = useMonthlyRange()
 const monthLabels = labels
@@ -39,12 +41,14 @@ const applyMonthFilter = (y, m) => {
   const fromStr = `${y}-${pad2(m + 1)}-01`
   const toStr = `${y}-${pad2(m + 1)}-${pad2(daysInMonth(y, m))}`
   transactionsStore.setFilters({ from: fromStr, to: toStr })
+  transfersStore.setFilters({ from: fromStr, to: toStr })
   sessionStorage.setItem('dash:month', String(m))
   sessionStorage.setItem('dash:year', String(y))
 }
 
 onMounted(async () => {
   await accountsStore.subscribeMyAccounts()
+  transfersStore.init()
   applyMonthFilter(selectedYear.value, selectedMonth.value)
 })
 
@@ -53,6 +57,9 @@ watch([selectedMonth, selectedYear], ([m, y]) => applyMonthFilter(y, m))
 // KPIs
 const totalBalance = computed(() => accountsStore.totalBalance)
 const monthTx = computed(() => transactionsStore.items)
+const monthTransferPairs = computed(() => transfersStore.filtered)
+const monthTransferAsTx = computed(() => monthTransferPairs.value.map(p => ({ id: `tr:${p.transferId}`, date: p.out.date, note: `${t('transfers.title')}: ${p.out.fromAccountId} → ${p.out.toAccountId}${p.out.note ? ' · '+p.out.note : ''}`, accountId: p.out.fromAccountId, amount: 0, type: 'transfer' })))
+const monthEvents = computed(() => [...monthTx.value, ...monthTransferAsTx.value].sort((a,b)=> (a.date===b.date?0:(a.date>b.date?-1:1))))
 
 const incomeSum = computed(() => monthTx.value.filter(i => i.type === 'income').reduce((a,b)=>a+Number(b.amount||0),0))
 const expenseSum = computed(() => monthTx.value.filter(i => i.type === 'expense' || i.type === 'debtPayment').reduce((a,b)=>a+Number(b.amount||0),0))
@@ -60,8 +67,8 @@ const netSum = computed(() => incomeSum.value - expenseSum.value)
 const txCount = computed(() => monthTx.value.length)
 
 const pageSize = ref(10)
-const visibleTx = computed(() => monthTx.value.slice(0, pageSize.value))
-const canSeeMore = computed(() => monthTx.value.length > pageSize.value)
+const visibleTx = computed(() => monthEvents.value.slice(0, pageSize.value))
+const canSeeMore = computed(() => monthEvents.value.length > pageSize.value)
 const seeMore = () => { pageSize.value += 10 }
 
 const getAccountName = (id) => {
@@ -286,7 +293,7 @@ const onKeydownMonths = (e) => {
 
     <section class="card tx-list" v-if="!isLoading && !hasError">
       <h3>{{ t('dashboard.list.title') }}</h3>
-      <div v-if="!monthTx.length" class="empty">{{ t('dashboard.list.empty') }}</div>
+      <div v-if="!monthEvents.length" class="empty">{{ t('dashboard.list.empty') }}</div>
       <ul v-else class="tx-ul">
         <li v-for="it in visibleTx" :key="it.id" class="tx-item">
           <div class="tx-left">
