@@ -110,7 +110,29 @@ const messages = {
         debtNotFound: 'Deuda no encontrada',
       },
       confirmDelete: { title: 'Eliminar transacción', message: 'Esta acción no se puede deshacer. ¿Deseas continuar?' }
-    }
+    },
+    dashboard: {
+      kpis: {
+        totalBalance: 'Saldo Total',
+        incomeMonth: 'Ingresos del mes',
+        expenseMonth: 'Egresos del mes',
+        netMonth: 'Neto del mes',
+        txCount: 'Transacciones del mes',
+      },
+      filter: {
+        ariaLabel: 'Seleccionar mes',
+      },
+      charts: {
+        daily: 'Ingresos vs Egresos (diario)',
+        breakdown: 'Distribución por tipo',
+        net: 'Acumulado neto',
+      },
+      list: {
+        title: 'Transacciones del mes',
+        empty: 'Sin transacciones este mes',
+        seeMore: 'Ver más',
+      }
+    },
   }
 }
 

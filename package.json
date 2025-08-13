@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "chart.js": "^4.4.3",
     "firebase": "^11.0.0",
     "pinia": "^3.0.0",
     "vue": "^3.0.0",
