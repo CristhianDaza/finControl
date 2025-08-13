@@ -1,29 +1,24 @@
 <script setup>
 import { defineAsyncComponent, ref } from 'vue'
 import { useIsMobile} from '@/composables/useIsMobile.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
-const FcAuthModal = defineAsyncComponent(/* webpackChunkName: "FcAuthModal" */ () => import('@/components/global/FcAuthModal.vue'))
 
 const { isMobile } = useIsMobile()
+const auth = useAuthStore()
 const sidebarRef = ref()
-const showAuthModal = ref(false)
 
 const clickMainContent = () => {
   if (isMobile.value) {
     sidebarRef.value?.handleMainClick?.();
   }
 }
-
-//    @accept="loginHandler"
 </script>
 
 <template>
   <div class="layout">
-    <fc-sidebar
-      ref="sidebarRef"
-      @login="showAuthModal = true"
-    />
+    <fc-sidebar v-if="auth.isAuthenticated" ref="sidebarRef" />
     <main class="main-content" @click="clickMainContent">
       <router-view v-slot="{ Component }">
         <transition name="route-fade" mode="out-in">
@@ -32,12 +27,6 @@ const clickMainContent = () => {
       </router-view>
     </main>
   </div>
-  <FcAuthModal
-    :show="showAuthModal"
-    mode="login"
-
-    @cancel-button="showAuthModal = false"
-  />
 </template>
 
 <style scoped>

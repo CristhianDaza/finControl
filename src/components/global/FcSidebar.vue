@@ -1,17 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoutes } from '@/composables/useRoutes.js'
 import { useIsMobile } from '@/composables/useIsMobile.js'
+import { useAuthStore } from '@/stores/auth.js'
+import { useRouter } from 'vue-router'
 
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
-import LoginIcon from '@/assets/icons/login.svg?raw'
 import LogoutIcon from '@/assets/icons/logout.svg?raw'
 
 const { routes } = useRoutes()
 const { isMobile } = useIsMobile()
 const isMenuHidden = ref(true)
 
-const emit = defineEmits(['login', 'logout'])
+const auth = useAuthStore()
+const router = useRouter()
+const isAuthenticated = computed(() => auth.isAuthenticated)
 
 const handleMainClick = () => {
   if (!isMenuHidden.value) {
@@ -23,12 +26,10 @@ const clickHandler = () => {
   isMenuHidden.value = !isMenuHidden.value
 }
 
-const handleClickSession = (event) => {
-  if (event === 'login') {
-    emit('login')
-  } else {
-    emit('logout')
-  }
+const handleLogout = async () => {
+  if (!isAuthenticated.value) return
+  await auth.logout()
+  router.push({ name: 'login' })
 }
 
 onMounted(() => {
@@ -64,18 +65,12 @@ defineExpose({
       </nav>
     </div>
     <button
-      class="button button-secondary"
-      v-if="!isMenuHidden"
-      @click="handleClickSession('login')"
-    >
-      <span>Iniciar sesión</span><svg class="icon-menu" v-html="LoginIcon"></svg>
-    </button>
-    <button
+      v-if="isAuthenticated"
       class="button button-delete"
-      v-else
-      @click="handleClickSession('logout')"
+      @click="handleLogout"
     >
-      <span>Cerrar sesión</span><svg class="icon-menu" v-html="LogoutIcon"></svg>
+      <span>Cerrar sesión</span>
+      <svg class="icon-menu" v-html="LogoutIcon"></svg>
     </button>
   </aside>
 </template>
