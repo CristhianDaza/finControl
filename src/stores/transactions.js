@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed, onUnmounted } from 'vue'
 import { useTransactions } from '@/composables/useTransactions.js'
 import { useNotify } from '@/components/global/fcNotify.js'
+import { t } from '@/i18n/index.js'
 
 export const useTransactionsStore = defineStore('transactions', () => {
   const items = ref([])
@@ -43,10 +44,11 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const add = async payload => {
     try {
       const id = await createTransaction({ type: payload.type, amount: payload.amount, accountId: payload.account, date: payload.date, note: payload.description })
-      success('Transacción creada')
+      success(t('transactions.notifications.created'))
       return id
     } catch (e) {
-      notifyError('No se pudo crear la transacción')
+      const msg = e?.message === 'BalanceNegative' ? t('transactions.notifications.balanceNegative') : t('transactions.notifications.unauthorized')
+      notifyError(msg)
       throw e
     }
   }
@@ -54,9 +56,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const edit = async (id, patch) => {
     try {
       await updateTransaction(id, patch)
-      success('Transacción actualizada')
+      success(t('transactions.notifications.updated'))
     } catch (e) {
-      notifyError('No se pudo actualizar la transacción')
+      const msg = e?.message === 'BalanceNegative' ? t('transactions.notifications.balanceNegative') : t('transactions.notifications.unauthorized')
+      notifyError(msg)
       throw e
     }
   }
@@ -64,9 +67,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const remove = async id => {
     try {
       await deleteTransaction(id)
-      success('Transacción eliminada')
+      success(t('transactions.notifications.deleted'))
     } catch (e) {
-      notifyError('No se pudo eliminar la transacción')
+      const msg = e?.message === 'BalanceNegative' ? t('transactions.notifications.balanceNegative') : t('transactions.notifications.unauthorized')
+      notifyError(msg)
       throw e
     }
   }
@@ -79,7 +83,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const setOrder = o => { orderBy.value = Array.isArray(o) ? o : orderBy.value; init() }
 
   const hasItems = computed(() => items.value.length > 0)
-  const byId = id => computed(() => items.value.find(t => t.id === id))
+  const byId = id => computed(() => items.value.find(ti => ti.id === id))
   const totals = computed(() => { const income = items.value.filter(i => i.type === 'income').reduce((a,b)=>a+Number(b.amount||0),0); const expense = items.value.filter(i => i.type === 'expense').reduce((a,b)=>a+Number(b.amount||0),0); return { income, expense, balance: income - expense } })
 
   onUnmounted(() => dispose())

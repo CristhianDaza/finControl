@@ -1,5 +1,6 @@
 <script setup>
 import {defineAsyncComponent, ref, watch} from 'vue'
+import { t } from '@/i18n/index.js'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
@@ -7,7 +8,8 @@ const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */()
 const props = defineProps({
   showModalTransaction: { type: Boolean, default: false, attribute: 'show-modal-transaction' },
   initial: { type: Object, default: null },
-  title: { type: String, default: 'Agregar Transacción' }
+  title: { type: String, default: () => t('transactions.addTitle') },
+  accountsOptions: { type: Array, default: () => [] }
 })
 
 const emit = defineEmits(['save','update:showModalTransaction','cancel'])
@@ -84,54 +86,49 @@ watch(
   >
     <FcFormField
       v-model="transaction.description"
-      label="Descripción"
-      placeholder="Ej: Pago de arriendo"
+      :label="t('transactions.form.description')"
+      :placeholder="t('transactions.form.descriptionPlaceholder')"
       required
       :maxlength="40"
-      error-message="La descripción es obligatoria y debe ser corta"
+      :error-message="t('transactions.form.descriptionError')"
     />
     <FcFormField
       v-model="transaction.amount"
-      label="Monto"
+      :label="t('transactions.form.amount')"
       type="number"
       required
       min="1"
       step="0.01"
       format-thousands
-      error-message="Ingresa un valor mayor a 0"
+      :error-message="t('transactions.form.amountError')"
     />
     <FcFormField
       v-model="transaction.type"
-      label="Tipo"
+      :label="t('transactions.form.type')"
       type="select"
       :options="[
-        { label: 'Ingreso', value: 'income' },
-        { label: 'Gasto', value: 'expense' },
-        { label: 'Deuda', value: 'debt' }
+        { label: t('transactions.form.income'), value: 'income' },
+        { label: t('transactions.form.expense'), value: 'expense' }
       ]"
-        required
-        error-message="Selecciona un tipo de transacción"
+      required
+      :error-message="t('transactions.form.type')"
     />
     <FcFormField
       v-model="transaction.account"
-      label="Cuenta"
+      :label="t('transactions.form.account')"
       type="select"
-      :options="[
-        { label: 'Ahorros', value: 'Ahorros' },
-        { label: 'Efectivo', value: 'Efectivo' },
-        { label: 'Cuenta', value: 'Cuenta' }
-      ]"
-        required
-        error-message="Selecciona una cuenta válida"
+      :options="accountsOptions"
+      required
+      :error-message="t('transactions.form.accountError')"
     />
     <FcFormField
       v-model="transaction.date"
-      label="Fecha"
+      :label="t('transactions.form.date')"
       type="date"
       required
       :min="'2023-01-01'"
       :max="'2030-12-31'"
-      error-message="La fecha es obligatoria"
+      :error-message="t('transactions.form.dateError')"
     />
   </FcModal>
 </template>

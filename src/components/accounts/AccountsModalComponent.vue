@@ -1,47 +1,45 @@
 <script setup>
-import { defineAsyncComponent, ref, watch } from 'vue'
+import { defineAsyncComponent, ref, watch, computed } from 'vue'
+import { t } from '@/i18n/index.js'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
 
 const props = defineProps({
-  showModalAccounts: {
-    type: Boolean,
-    default: false,
-    attribute: 'show-modal-accounts'
-  }
+  showModalAccounts: { type: Boolean, default: false, attribute: 'show-modal-accounts' },
+  initial: { type: Object, default: null },
+  title: { type: String, default: () => t('accounts.addTitle') }
 })
 
-const account = ref({
-  name: '',
-  balance: 0,
-  id: ''
-})
+const emit = defineEmits(['save','update:showModal','cancel'])
+
+const account = ref({ id: '', name: '', balance: 0, currency: 'COP' })
 const showModal = ref(false)
+const isEdit = computed(() => !!account.value.id)
 
 const handleAccept = () => {
-  account.value.id = crypto.randomUUID()
+  const payload = { id: account.value.id, name: String(account.value.name||'').trim(), balance: Number(account.value.balance||0), currency: account.value.currency || 'COP' }
+  emit('save', payload)
+  emit('update:showModal', false)
   resetAccount()
 }
 
 const handleCancel = () => {
+  emit('cancel')
+  emit('update:showModal', false)
   resetAccount()
 }
 
-const resetAccount = () => {
-  account.value = {
-    name: '',
-    balance: 0,
-    id: ''
-  }
-}
+const resetAccount = () => { account.value = { id: '', name: '', balance: 0, currency: 'COP' } }
 
-watch(
-  () => props.showModalAccounts,
-  (newValue) => {
-    showModal.value = newValue
+watch(() => props.showModalAccounts, v => { showModal.value = v })
+watch(() => props.initial, (val) => {
+  if (val) {
+    account.value = { id: val.id || '', name: val.name || '', balance: Number(val.balance || 0), currency: val.currency || 'COP' }
   }
-)
+}, { immediate: true })
+
+watch(showModal, v => emit('update:showModal', v))
 </script>
 
 <template>
@@ -50,29 +48,31 @@ watch(
     @accept="handleAccept"
     @cancel-modal="handleCancel"
     @update:showModal="showModal = $event"
-    title-modal="Agregar Cuenta"
+    :title-modal="title"
   >
     <FcFormField
       v-model="account.name"
-      label="Nombre de la Cuenta"
-      placeholder="Ej: Ahorros, Efectivo, Tarjeta"
+      :label="t('accounts.form.name')"
+      :placeholder="t('accounts.form.namePlaceholder')"
       required
       :maxlength="40"
-      error-message="El nombre es obligatorio y debe tener un máximo de 40 caracteres"
+      :error-message="t('accounts.form.nameError')"
+      id="account-name"
     />
     <FcFormField
       v-model="account.balance"
-      label="Saldo Inicial"
+      :label="t('accounts.form.balance')"
       type="number"
       required
       min="0"
       step="0.01"
       format-thousands
-      error-message="El saldo es obligatorio y debe ser un número positivo"
+      :error-message="t('accounts.form.balanceError')"
+      id="account-balance"
+      :disabled="isEdit"
     />
   </FcModal>
 </template>
 
 <style scoped>
-
 </style>

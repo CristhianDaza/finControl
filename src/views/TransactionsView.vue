@@ -1,12 +1,15 @@
 <script setup>
 import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useTransactionsStore } from '@/stores/transactions.js'
+import { useAccountsStore } from '@/stores/accounts.js'
 import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
+import { t } from '@/i18n/index.js'
 
 const TransactionsModalComponent = defineAsyncComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
 const tx = useTransactionsStore()
+const acc = useAccountsStore()
 
 const showModal = ref(false)
 const modalTitle = ref('Agregar Transacción')
@@ -28,9 +31,11 @@ const months = computed(() => monthNames.map((label, idx) => ({ label, value: id
 const rows = computed(() => tx.items)
 const hasItems = computed(() => tx.hasItems)
 const isLoading = computed(() => tx.status === 'loading')
+const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
+const accountNameById = computed(() => acc.items.reduce((m, a) => { m[a.id] = a.name; return m }, {}))
 
-const openAdd = () => { editing.value = null; modalTitle.value = 'Agregar Transacción'; showModal.value = true }
-const openEdit = (item) => { editing.value = item; modalTitle.value = 'Editar Transacción'; showModal.value = true }
+const openAdd = () => { editing.value = null; modalTitle.value = t('transactions.addTitle'); showModal.value = true }
+const openEdit = (item) => { editing.value = item; modalTitle.value = t('transactions.editTitle'); showModal.value = true }
 const askRemove = (id) => { toDeleteId.value = id; confirmOpen.value = true }
 
 const onSave = async (payload) => {
@@ -72,7 +77,7 @@ const setMonth = (m) => {
   applyFilters()
 }
 
-onMounted(() => { setMonth(selectedMonth.value) })
+onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts() })
 </script>
 
 <template>
@@ -135,7 +140,7 @@ onMounted(() => { setMonth(selectedMonth.value) })
             <td>{{ item.date }}</td>
             <td>{{ item.note || item.description }}</td>
             <td>${{ Number(item.amount||0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
-            <td>{{ item.accountId }}</td>
+            <td>{{ accountNameById[item.accountId] || item.accountId }}</td>
             <td>{{ item.type==='income' ? 'Ingreso' : item.type==='expense' ? 'Gasto' : item.type }}</td>
             <td>
               <div class="actions">
@@ -156,14 +161,15 @@ onMounted(() => { setMonth(selectedMonth.value) })
       :show-modal-transaction="showModal"
       :initial="editing || undefined"
       :title="modalTitle"
+      :accounts-options="accountsOptions"
       @save="onSave"
       @update:showModalTransaction="showModal = $event"
     />
 
     <FCConfirmModal
       :open="confirmOpen"
-      title="Eliminar transacción"
-      message="Esta acción no se puede deshacer. ¿Deseas continuar?"
+      :title="t('transactions.confirmDelete.title')"
+      :message="t('transactions.confirmDelete.message')"
       confirm-text="Eliminar"
       cancel-text="Cancelar"
       @update:open="confirmOpen = $event"
