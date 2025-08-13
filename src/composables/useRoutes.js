@@ -31,12 +31,12 @@ export const useRoutes = () => {
       icon: AccountsIcon,
       url: 'accounts'
     },
-    {
-      id: 5,
-      name: 'Categorías',
-      icon: CategoriesIcon,
-      url: 'categories'
-    }
+    // {
+    //   id: 5,
+    //   name: 'Categorías',
+    //   icon: CategoriesIcon,
+    //   url: 'categories'
+    // }
   ])
   
   return {
