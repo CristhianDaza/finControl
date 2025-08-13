@@ -5,12 +5,12 @@ const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => impo
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
 
 const props = defineProps({
-  showModalTransaction: {
-    type: Boolean,
-    default: false,
-    attribute: 'show-modal-transaction'
-  }
+  showModalTransaction: { type: Boolean, default: false, attribute: 'show-modal-transaction' },
+  initial: { type: Object, default: null },
+  title: { type: String, default: 'Agregar Transacción' }
 })
+
+const emit = defineEmits(['save','update:showModalTransaction','cancel'])
 
 const transaction = ref({
   description: '',
@@ -23,12 +23,15 @@ const transaction = ref({
 const showModal = ref(false)
 
 const handleAccept = () => {
-  transaction.value.id = crypto.randomUUID()
-  console.log('Aceptar presionado', transaction.value)
+  const payload = { ...transaction.value }
+  emit('save', payload)
+  emit('update:showModalTransaction', false)
   resetTransaction()
 }
 
 const handleCancel = () => {
+  emit('cancel')
+  emit('update:showModalTransaction', false)
   resetTransaction()
 }
 
@@ -45,9 +48,29 @@ const resetTransaction = () => {
 
 watch(
   () => props.showModalTransaction,
-  (newValue) => {
-    showModal.value = newValue
-  }
+  (v) => { showModal.value = v }
+)
+
+watch(
+  () => props.initial,
+  (val) => {
+    if (val) {
+      transaction.value = {
+        id: val.id || '',
+        description: val.description || val.note || '',
+        amount: Number(val.amount) || 0,
+        type: val.type || '',
+        account: val.account || val.accountId || '',
+        date: val.date || new Date().toISOString().split('T')[0]
+      }
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  showModal,
+  (v) => emit('update:showModalTransaction', v)
 )
 </script>
 
@@ -57,7 +80,7 @@ watch(
     @accept="handleAccept"
     @cancel-modal="handleCancel"
     @update:showModal="showModal = $event"
-    title-modal="Agregar Transacción"
+    :title-modal="title"
   >
     <FcFormField
       v-model="transaction.description"
@@ -114,5 +137,4 @@ watch(
 </template>
 
 <style scoped>
-
 </style>

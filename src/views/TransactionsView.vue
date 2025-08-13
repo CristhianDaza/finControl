@@ -1,31 +1,95 @@
 <script setup>
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
+import { useTransactionsStore } from '@/stores/transactions.js'
+import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
-const TransactionsModalComponent = defineAsyncComponent(/* webpackChunkName: "TransactionsModalComponent" */ () => import('@/components/transactions/TransactionsModalComponent.vue'))
+const TransactionsModalComponent = defineAsyncComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
+const tx = useTransactionsStore()
 
 const showModal = ref(false)
+const modalTitle = ref('Agregar Transacción')
+const editing = ref(null)
+const confirmOpen = ref(false)
+const toDeleteId = ref(null)
+const busy = ref(false)
 
-const openModal = () => {
-  showModal.value = true
+const typeFilter = ref('')
+const from = ref('')
+const to = ref('')
+
+const rows = computed(() => tx.items)
+const hasItems = computed(() => tx.hasItems)
+const isLoading = computed(() => tx.status === 'loading')
+
+const openAdd = () => { editing.value = null; modalTitle.value = 'Agregar Transacción'; showModal.value = true }
+const openEdit = (item) => { editing.value = item; modalTitle.value = 'Editar Transacción'; showModal.value = true }
+const askRemove = (id) => { toDeleteId.value = id; confirmOpen.value = true }
+
+const onSave = async (payload) => {
+  busy.value = true
+  try {
+    if (editing.value && editing.value.id) {
+      await tx.edit(editing.value.id, payload)
+    } else {
+      await tx.add(payload)
+    }
+    showModal.value = false
+    editing.value = null
+  } finally {
+    busy.value = false
+  }
 }
 
-const closeModal = () => {
-  showModal.value = false
+const onConfirmRemove = async () => {
+  if (!toDeleteId.value) return
+  busy.value = true
+  try { await tx.remove(toDeleteId.value) } finally { busy.value = false; toDeleteId.value = null }
 }
+
+const applyFilters = () => {
+  const f = {}
+  if (typeFilter.value) f.type = typeFilter.value
+  if (from.value) f.from = from.value
+  if (to.value) f.to = to.value
+  tx.setFilters(f)
+}
+
+onMounted(() => { tx.init() })
 </script>
 
 <template>
   <section>
-    <button class="button" @click="openModal">
-      Agregar Transacción
-    </button>
-    <TransactionsModalComponent
-      :show-modal-transaction="showModal"
-      @update:showModal="closeModal"
-    />
-    <div class="table-container">
+    <div class="card" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+      <div style="min-width:200px">
+        <label style="display:block;margin-bottom:.25rem">Tipo</label>
+        <select class="input" v-model="typeFilter" @change="applyFilters">
+          <option value="">Todos</option>
+          <option value="income">Ingreso</option>
+          <option value="expense">Gasto</option>
+        </select>
+      </div>
+      <div>
+        <label style="display:block;margin-bottom:.25rem">Desde</label>
+        <input class="input" type="date" v-model="from" @change="applyFilters" />
+      </div>
+      <div>
+        <label style="display:block;margin-bottom:.25rem">Hasta</label>
+        <input class="input" type="date" v-model="to" @change="applyFilters" />
+      </div>
+      <div style="margin-left:auto">
+        <button class="button" @click="openAdd" :disabled="busy || isLoading">Agregar Transacción</button>
+      </div>
+    </div>
+
+    <div v-if="isLoading" class="card" style="margin-top:1rem">Cargando…</div>
+    <div v-else-if="!hasItems" class="card" style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
+      <span>No hay transacciones</span>
+      <button class="button" @click="openAdd">Agregar</button>
+    </div>
+
+    <div v-else class="table-container">
       <table>
         <thead>
           <tr>
@@ -38,52 +102,18 @@ const closeModal = () => {
           </tr>
         </thead>
         <tbody>
-          <tr class="row-income">
-            <td>2023-10-01</td>
-            <td>Compra de libros</td>
-            <td>$50.00</td>
-            <td>Cuenta de Ahorros</td>
-            <td>Gasto</td>
+          <tr v-for="item in rows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' }">
+            <td>{{ item.date }}</td>
+            <td>{{ item.note || item.description }}</td>
+            <td>${{ Number(item.amount||0).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
+            <td>{{ item.accountId }}</td>
+            <td>{{ item.type==='income' ? 'Ingreso' : item.type==='expense' ? 'Gasto' : item.type }}</td>
             <td>
               <div class="actions">
-                <button class="button button-edit">
+                <button class="button button-edit" @click="openEdit(item)" :disabled="busy">
                   <svg class="icon-edit" v-html="EditIcon"></svg>
                 </button>
-                <button class="button button-delete">
-                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr class="row-expense">
-            <td>2023-10-01</td>
-            <td>Compra de libros</td>
-            <td>$50.00</td>
-            <td>Cuenta de Ahorros</td>
-            <td>Gasto</td>
-            <td>
-              <div class="actions">
-                <button class="button button-edit">
-                  <svg class="icon-edit" v-html="EditIcon"></svg>
-                </button>
-                <button class="button button-delete">
-                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr class="row-debt">
-            <td>2023-10-01</td>
-            <td>Compra de libros</td>
-            <td>$50.00</td>
-            <td>Cuenta de Ahorros</td>
-            <td>Gasto</td>
-            <td>
-              <div class="actions">
-                <button class="button button-edit">
-                  <svg class="icon-edit" v-html="EditIcon"></svg>
-                </button>
-                <button class="button button-delete">
+                <button class="button button-delete" @click="askRemove(item.id)" :disabled="busy">
                   <svg class="icon-delete" v-html="DeleteIcon"></svg>
                 </button>
               </div>
@@ -92,6 +122,24 @@ const closeModal = () => {
         </tbody>
       </table>
     </div>
+
+    <TransactionsModalComponent
+      :show-modal-transaction="showModal"
+      :initial="editing || undefined"
+      :title="modalTitle"
+      @save="onSave"
+      @update:showModalTransaction="showModal = $event"
+    />
+
+    <FCConfirmModal
+      :open="confirmOpen"
+      title="Eliminar transacción"
+      message="Esta acción no se puede deshacer. ¿Deseas continuar?"
+      confirm-text="Eliminar"
+      cancel-text="Cancelar"
+      @update:open="confirmOpen = $event"
+      @confirm="onConfirmRemove"
+    />
   </section>
 </template>
 
@@ -184,9 +232,4 @@ tr::before {
 .row-expense::before {
   background-color: var(--error-color);
 }
-
-.row-debt::before {
-  background-color: var(--accent-color); /* azul */
-}
-
 </style>

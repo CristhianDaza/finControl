@@ -4,6 +4,7 @@ import { useIsMobile} from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
 
 const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
+const FCNotify = defineAsyncComponent(/* webpackChunkName: "FCNotify" */ () => import('@/components/global/FCNotify.vue'))
 
 const { isMobile } = useIsMobile()
 const auth = useAuthStore()
@@ -27,6 +28,7 @@ const clickMainContent = () => {
       </router-view>
     </main>
   </div>
+  <FCNotify />
 </template>
 
 <style scoped>
