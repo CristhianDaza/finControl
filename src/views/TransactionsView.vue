@@ -19,6 +19,12 @@ const typeFilter = ref('')
 const from = ref('')
 const to = ref('')
 
+const monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+const now = new Date()
+const selectedMonth = ref(now.getMonth())
+const currentYear = ref(now.getFullYear())
+const months = computed(() => monthNames.map((label, idx) => ({ label, value: idx })))
+
 const rows = computed(() => tx.items)
 const hasItems = computed(() => tx.hasItems)
 const isLoading = computed(() => tx.status === 'loading')
@@ -56,30 +62,53 @@ const applyFilters = () => {
   tx.setFilters(f)
 }
 
-onMounted(() => { tx.init() })
+const setMonth = (m) => {
+  selectedMonth.value = m
+  const first = new Date(currentYear.value, m, 1)
+  const last = new Date(currentYear.value, m + 1, 0)
+  const pad = (n) => String(n).padStart(2, '0')
+  from.value = `${first.getFullYear()}-${pad(first.getMonth() + 1)}-${pad(first.getDate())}`
+  to.value = `${last.getFullYear()}-${pad(last.getMonth() + 1)}-${pad(last.getDate())}`
+  applyFilters()
+}
+
+onMounted(() => { setMonth(selectedMonth.value) })
 </script>
 
 <template>
   <section>
-    <div class="card" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
-      <div style="min-width:200px">
-        <label style="display:block;margin-bottom:.25rem">Tipo</label>
-        <select class="input" v-model="typeFilter" @change="applyFilters">
-          <option value="">Todos</option>
-          <option value="income">Ingreso</option>
-          <option value="expense">Gasto</option>
-        </select>
+    <div class="card" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;justify-content:space-between">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button
+          v-for="m in months"
+          :key="m.value"
+          class="button"
+          :class="selectedMonth === m.value ? '' : 'button-secondary'"
+          @click="setMonth(m.value)"
+        >
+          {{ m.label }} {{ m.value === now.getMonth() ? '' : '' }}
+        </button>
       </div>
-      <div>
-        <label style="display:block;margin-bottom:.25rem">Desde</label>
-        <input class="input" type="date" v-model="from" @change="applyFilters" />
-      </div>
-      <div>
-        <label style="display:block;margin-bottom:.25rem">Hasta</label>
-        <input class="input" type="date" v-model="to" @change="applyFilters" />
-      </div>
-      <div style="margin-left:auto">
-        <button class="button" @click="openAdd" :disabled="busy || isLoading">Agregar Transacción</button>
+      <div style="display:flex;gap:1rem;align-items:flex-end">
+        <div style="min-width:200px">
+          <label style="display:block;margin-bottom:.25rem">Tipo</label>
+          <select class="input" v-model="typeFilter" @change="applyFilters">
+            <option value="">Todos</option>
+            <option value="income">Ingreso</option>
+            <option value="expense">Gasto</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:.25rem">Desde</label>
+          <input class="input" type="date" v-model="from" @change="applyFilters" />
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:.25rem">Hasta</label>
+          <input class="input" type="date" v-model="to" @change="applyFilters" />
+        </div>
+        <div>
+          <button class="button" @click="openAdd" :disabled="busy || isLoading">Agregar Transacción</button>
+        </div>
       </div>
     </div>
 

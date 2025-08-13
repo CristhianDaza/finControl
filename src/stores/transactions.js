@@ -71,7 +71,11 @@ export const useTransactionsStore = defineStore('transactions', () => {
     }
   }
 
-  const setFilters = f => { filters.value = { ...filters.value, ...f }; init() }
+  const setFilters = f => {
+    const clean = Object.fromEntries(Object.entries(f || {}).filter(([_, v]) => v !== '' && v != null))
+    filters.value = clean
+    init()
+  }
   const setOrder = o => { orderBy.value = Array.isArray(o) ? o : orderBy.value; init() }
 
   const hasItems = computed(() => items.value.length > 0)
@@ -82,4 +86,3 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   return { items, status, error, selected, filters, orderBy, unsubscribe, init, dispose, reload, add, edit, remove, setFilters, setOrder, hasItems, byId, totals }
 })
-
