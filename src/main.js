@@ -9,12 +9,13 @@ import { initI18n } from '@/i18n/index.js'
 const pinia = createPinia()
 const app = createApp(App)
 
-app.use(pinia)
-
-await initI18n()
-
-const auth = useAuthStore()
-await auth.initSessionListener()
-
-app.use(router)
-app.mount('#fin-control')
+;(async () => {
+  app.use(pinia)
+  
+  await initI18n()
+  const auth = useAuthStore(pinia)
+  await auth.initSessionListener()
+  
+  app.use(router)
+  app.mount('#fin-control')
+})()
