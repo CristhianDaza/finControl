@@ -27,6 +27,8 @@ const handleLogout = async () => {
   router.push({ name: 'login' })
 }
 
+const appVersion = import.meta.env.VITE_VERSION || '0.0.0'
+
 onMounted(() => { isMenuHidden.value = isMobile.value ? true : false })
 
 defineExpose({ handleMainClick })
@@ -59,6 +61,9 @@ defineExpose({ handleMainClick })
         <span>{{ t('auth.logout') }}</span>
         <svg class="icon-menu" v-html="LogoutIcon"></svg>
       </button>
+      <div v-if="isAuthenticated" class="version-container">
+        <span class="version-pill">{{ appVersion }}</span>
+      </div>
     </div>
   </aside>
 </template>
@@ -184,5 +189,28 @@ a:hover .icon-menu {
 .hidden-menu .icon-menu {
   width: 20px;
   height: 20px;
+}
+
+.version-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.version-label {
+  font-size: 0.75rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.version-pill {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--secondary-color);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--text-color);
+  background-color: transparent;
 }
 </style>
