@@ -1,0 +1,212 @@
+:root {
+    --primary-color: #243447;
+    --hover-prrimary-color: #2c3e50;
+    --secondary-color: #0D1117;
+    --hover-secondary-color: #161b22;
+    --background-color: #0A192F;
+    --hover-background-color: #0D1117;
+    --text-color: #E0E1E9;
+    --hover-text-color: #C9D1D9;
+    --accent-color: #3FA9F5;
+    --hover-accent-color: #3498db;
+    --muted-text-color: #A3A8B8;
+    --hover-muted-text-color: #8B95A1;
+    --success-color: #22C55E;
+    --hover-success-color: #16A34A;
+    --warning-color: #F59E0B;
+    --hover-warning-color: #D97706;
+    --error-color: #EF4444;
+    --hover-error-color: #DC2626;
+    --info-color: #11567e;
+    --hover-info-color: #0d4f6c;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.card {
+    background-color: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.card h2 {
+    color: var(--accent-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.card p {
+    color: var(--muted-text-color);
+    margin: 0.5rem 0 1rem;
+}
+
+.button {
+    background-color: var(--accent-color);
+    color: var(--background-color);
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 6px rgba(63, 169, 245, 0.3);
+}
+
+.button:hover {
+    background-color: #3498db;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.6rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--muted-text-color);
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+}
+
+select {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.6rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A3A8B8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 10px 6px;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+}
+
+input[type="date"] {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    padding: 0.6rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    appearance: none;
+    cursor: pointer;
+}
+
+input[type="date"]::placeholder {
+    color: var(--muted-text-color);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+}
+
+.alert-success {
+    background-color: var(--success-color);
+    color: #fff;
+    padding: 0.75rem;
+    border-radius: 6px;
+}
+
+.alert-warning {
+    background-color: var(--warning-color);
+    color: #000;
+    padding: 0.75rem;
+    border-radius: 6px;
+}
+
+.alert-error {
+    background-color: var(--error-color);
+    color: #fff;
+    padding: 0.75rem;
+    border-radius: 6px;
+}
+
+.button-delete {
+    background-color: var(--error-color);
+    color: var(--text-color);
+}
+
+
+.button-delete:hover {
+    background-color: var(--hover-error-color);
+}
+
+
+.button-edit {
+    background-color: var(--info-color);
+    color: var(--text-color);
+}
+
+.button-edit:hover {
+    background-color: var(--hover-info-color);
+}
+
+.button-secondary {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.button-secondary:hover {
+    background-color: var(--hover-secondary-color);
+}
+
+.icon-delete, .icon-edit {
+    width: 20px;
+    height: 20px;
+}
+
+button.button.button-edit,
+button.button.button-delete {
+    padding: 0.5rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}

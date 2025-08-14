@@ -1,0 +1,74 @@
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import { useAccounts } from '@/composables/useAccounts.js'
+import { useNotify } from '@/components/global/fcNotify.js'
+import { t } from '@/i18n/index.js'
+
+export const useAccountsStore = defineStore('accounts', () => {
+  const items = ref([])
+  const status = ref('idle')
+  const error = ref(null)
+  const _unsubscribe = ref(null)
+
+  const { subscribeAccounts, createAccount, updateAccountName, deleteAccount } = useAccounts()
+  const { success, error: notifyError } = useNotify()
+
+  const subscribeMyAccounts = async () => {
+    if (_unsubscribe.value) _unsubscribe.value()
+    status.value = 'loading'
+    try {
+      _unsubscribe.value = subscribeAccounts(list => { items.value = list; status.value = 'success' })
+    } catch (e) {
+      error.value = e?.message || 'Error'
+      status.value = 'error'
+    }
+  }
+
+  const unsubscribe = () => { if (_unsubscribe.value) { _unsubscribe.value(); _unsubscribe.value = null } }
+
+  const getAccountById = (id) => computed(() => items.value.find(a => a.id === id))
+
+  const create = async ({ name, balance, currency }) => {
+    if (Number(balance) < 0) { notifyError(t('accounts.form.balanceError')); throw new Error('invalid-balance') }
+    try {
+      const id = await createAccount({ name, balance: Number(balance), currency: currency || t('currency.default') })
+      success(t('accounts.notifications.created'))
+      return id
+    } catch (e) {
+      notifyError(e?.message || 'Error')
+      throw e
+    }
+  }
+
+  const updateName = async (id, name) => {
+    try { await updateAccountName(id, name); success(t('accounts.notifications.updated')) }
+    catch (e) { notifyError(e?.message || 'Error'); throw e }
+  }
+
+  const remove = async (id) => {
+    try {
+      await deleteAccount(id)
+      success(t('accounts.notifications.deleted'))
+    } catch (e) {
+      throw e
+    }
+  }
+
+  const totalBalance = computed(() => items.value.reduce((acc, a) => acc + Number(a.balance || 0), 0))
+  const hasItems = computed(() => items.value.length > 0)
+  
+  const createAccountAction = create
+  const updateAccountNameAction = updateName
+  const deleteAccountAction = remove
+
+  return {
+    items, status, error,
+    subscribeMyAccounts, unsubscribe,
+    getAccountById,
+    createAccount: createAccountAction,
+    updateAccountName: updateAccountNameAction,
+    deleteAccount: deleteAccountAction,
+    create, updateName, remove,
+    totalBalance, hasItems,
+  }
+})
