@@ -152,7 +152,6 @@ const buildGoalsProgress = () => {
   } catch { return { labels: [], data: [] } }
 }
 
-// Budgets widget
 const budgetsMonth = ref([])
 const budgetsPrevPct = ref({})
 const computeBudgetsMonth = async () => {
@@ -219,7 +218,6 @@ const buildNetLine = (daily) => {
 
 const updateCharts = async () => {
   await nextTick()
-  // Colores desde variables
   const colorText = getCssVar('--text-color')
   const colorMuted = getCssVar('--muted-text-color')
   const colorSuccess = getCssVar('--success-color')
@@ -309,7 +307,6 @@ const updateCharts = async () => {
     lineChart.update()
   }
 
-  // Goals chart (bar)
   if (goalsCanvas.value) {
     const data = {
       labels: goalsData.labels,

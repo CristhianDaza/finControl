@@ -24,7 +24,7 @@ export const useBudgets = () => {
       name: payload.name || '',
       targetAmount: Number(payload.targetAmount || 0),
       currency: payload.currency || 'COP',
-      periodType: payload.periodType || 'monthly', // 'monthly' | 'custom'
+      periodType: payload.periodType || 'monthly',
       periodFrom: payload.periodFrom || null,
       periodTo: payload.periodTo || null,
       categories: Array.isArray(payload.categories) ? payload.categories : [],
@@ -33,7 +33,7 @@ export const useBudgets = () => {
       carryover: !!payload.carryover,
       carryoverBalance: Number(payload.carryoverBalance || 0),
       lastClosedPeriodKey: payload.lastClosedPeriodKey || null,
-      currencyRates: payload.currencyRates || {}, // { USD: 4000 } means 1 USD -> 4000 budget currency
+      currencyRates: payload.currencyRates || {},
       active: payload.active != null ? !!payload.active : true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
