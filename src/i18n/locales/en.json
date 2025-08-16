@@ -15,7 +15,9 @@
     "all": "All",
     "confirm": "Confirm",
     "select-option": "Select an option",
-    "transfer": "Transfer"
+    "transfer": "Transfer",
+    "month": "Month",
+    "year": "Year"
   },
   "language": { "switcher": "Language" },
   "notification": { "dismiss": "Dismiss notification" },
@@ -24,7 +26,10 @@
     "transactions": "Transactions",
     "debts": "Debts",
     "accounts": "Accounts",
-    "categories": "Categories"
+    "categories": "Categories",
+    "recurring": "Recurring Payments",
+    "goals": "Savings Goals",
+    "budgets": "Budgets"
   },
   "auth": {
     "logout": "Log out",
@@ -143,7 +148,8 @@
       "account": "Account",
       "accountError": "Select a valid account",
       "date": "Date",
-      "dateError": "Date is required"
+      "dateError": "Date is required",
+      "goalSaving": "Add to goal"
     },
     "notifications": {
       "created": "Transaction created",
@@ -154,7 +160,8 @@
       "unauthorized": "Operation not authorized",
       "debtRemainingNegative": "Payment exceeds remaining debt",
       "debtRequired": "You must select a debt",
-      "debtNotFound": "Debt not found"
+      "debtNotFound": "Debt not found",
+      "goalRequired": "You must select a goal"
     },
     "confirmDelete": {
       "title": "Delete transaction",
@@ -168,7 +175,7 @@
       "type": "Type",
       "actions": "Actions"
     },
-    "filters": { "save": "Save filter", "clear": "Clear" },
+    "filters": { "save": "Save filter", "clear": "Clear", "search": "Search by name", "amount": "Minimum amount" },
     "exportCsv": "Export CSV"
   },
   "dashboard": {
@@ -191,6 +198,11 @@
       "title": "This month's transactions",
       "empty": "No transactions this month",
       "seeMore": "See more"
+    },
+    "budgets": {
+      "title": "Budgets (month)",
+      "empty": "No budgets",
+      "prev": "Prev month: {pct}%"
     }
   },
   "categories": {
@@ -219,5 +231,135 @@
     "confirm_delete_title": "Delete transfer",
     "confirm_delete_message": "This action will move the money back. Do you want to continue?",
     "empty": "No transfers"
+  },
+  "recurring": {
+    "title": "Recurring Payments",
+    "add": "Add Recurring Payment",
+    "edit": "Edit template",
+    "empty": "No recurring payment templates",
+    "paused": "Paused",
+    "active": "Active",
+    "pause": "Pause",
+    "resume": "Resume",
+    "badge": "Recurring",
+    "table": {
+      "name": "Name",
+      "next": "Next run",
+      "amount": "Amount",
+      "account": "Account",
+      "type": "Type",
+      "frequency": "Frequency",
+      "status": "Status"
+    },
+    "form": {
+      "name": "Name",
+      "category": "Category",
+      "frequency": "Frequency",
+      "nextRunAt": "Payment date",
+      "paused": "Paused"
+    },
+    "frequency": {
+      "monthly": "Monthly",
+      "biweekly": "Biweekly",
+      "weekly": "Weekly",
+      "yearly": "Yearly"
+    },
+    "notifications": {
+      "created": "Template created",
+      "updated": "Template updated",
+      "deleted": "Template deleted",
+      "processed": "Generated {count} recurring payment(s)"
+    }
+  },
+  "goals": {
+    "title": "Savings Goals",
+    "add": "Add goal",
+    "edit": "Edit goal",
+    "empty": "No savings goals",
+    "completed": "Completed",
+    "paused": "Paused",
+    "active": "Active",
+    "resume": "Resume",
+    "pause": "Pause",
+    "table": {
+      "name": "Name",
+      "account": "Account",
+      "target": "Target amount",
+      "progress": "Progress",
+      "dueDate": "Due date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "name": "Name",
+      "targetAmount": "Target amount",
+      "dueDate": "Due date (optional)",
+      "account": "Linked account",
+      "note": "Notes",
+      "goal": "Goal (optional)"
+    },
+    "notifications": {
+      "created": "Goal created",
+      "updated": "Goal updated",
+      "deleted": "Goal deleted"
+    }
+  },
+  "budgets": {
+    "title": "Budgets",
+    "add": "Add budget",
+    "edit": "Edit budget",
+    "empty": "No budgets",
+    "table": {
+      "name": "Name",
+      "period": "Period",
+      "target": "Target",
+      "spent": "Spent",
+      "remaining": "Remaining",
+      "progress": "Progress",
+      "alerts": "Alerts",
+      "actions": "Actions"
+    },
+    "form": {
+      "name": "Name",
+      "targetAmount": "Target amount",
+      "currency": "Currency",
+      "periodType": "Period",
+      "monthly": "Monthly",
+      "custom": "Custom range",
+      "from": "From",
+      "to": "To",
+      "categories": "Scope (categories)",
+      "excludeAccounts": "Exclude accounts",
+      "threshold": "Alert threshold (%)",
+      "carryover": "Carryover (carry surplus/deficit)",
+      "rates": "Conversion rates (e.g., USD=4000, EUR=4500)",
+      "noteRates": "Used to convert transactions to the budget currency"
+    },
+    "alerts": {
+      "ok": "Within target",
+      "warn": "> 80% consumed",
+      "over": "≥ 100% consumed"
+    },
+    "notifications": {
+      "created": "Budget created",
+      "updated": "Budget updated",
+      "deleted": "Budget deleted",
+      "closed": "Period closed"
+    },
+    "closePeriod": "Close period",
+    "periodMonthly": "{year} {month}",
+    "periodCustom": "{from} to {to}"
+  },
+  "settings": {
+    "title": "Settings",
+    "reset": "Reset",
+    "preview": "Preview",
+    "previewDesc": "This card and UI elements reflect the selected colors.",
+    "samplePrimary": "Primary action",
+    "sampleSecondary": "Secondary action",
+    "theme": {
+      "title": "Theme",
+      "subtitle": "Customize the app's main colors. Changes apply live."
+    }
   }
 }

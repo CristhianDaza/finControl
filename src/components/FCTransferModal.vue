@@ -132,8 +132,8 @@ const formattedAmountTo = useFormattedNumber(amountToModel)
 </template>
 
 <style scoped>
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
-.modal-content{background:var(--primary-color);color:var(--text-color);border-radius:12px;padding:1.5rem;min-width:320px;max-width:520px;width:100%;box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:1rem}
+.modal-overlay{position:fixed;inset:0;background:var(--overlay-50);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal-content{background:var(--primary-color);color:var(--text-color);border-radius:12px;padding:1.5rem;min-width:320px;max-width:520px;width:100%;box-shadow:0 4px 20px var(--shadow-elev-4);display:flex;flex-direction:column;gap:1rem}
 .modal-header{display:flex;justify-content:space-between;align-items:center}
 .modal-title{margin:0;font-size:1.1rem;font-weight:600;border-left:4px solid var(--accent-color);padding-left:.75rem;text-transform:uppercase;letter-spacing:1px}
 .modal-body{display:flex;flex-direction:column;gap:.75rem}

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-/* Simple i18n scanner: finds probable hardcoded UI strings in .vue/.js not wrapped in t('...') */
 import fs from 'fs'
 import path from 'path'
 
@@ -26,9 +24,7 @@ const ignore = [
 
 const scanFile = (file) => {
   const src = fs.readFileSync(file, 'utf8')
-  if (/t\s*\(/.test(src)) {
-    // already using i18n in places
-  }
+  if (/t\s*\(/.test(src)) {}
   const lines = src.split(/\r?\n/)
   lines.forEach((line, i) => {
     if (/t\s*\('/.test(line) || /:\s*t\(\'/.test(line)) return
@@ -39,7 +35,7 @@ const scanFile = (file) => {
     while ((m = literalRx.exec(line))) {
       const txt = (m[2] || '').trim()
       if (!txt) continue
-      if (/^[A-Za-z]{1,3}$/.test(txt)) continue // short codes like ES, EN
+      if (/^[A-Za-z]{1,3}$/.test(txt)) continue
       if (/^[_\-\w]+$/.test(txt)) continue
       if (/\{\{\s*t\(/.test(line)) continue
       if (ignore.some(k => line.includes(k))) continue

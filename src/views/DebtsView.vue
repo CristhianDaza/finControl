@@ -3,7 +3,7 @@ import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useTransactions } from '@/composables/useTransactions.js'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t, formatCurrency, formatDate } from '@/i18n/index.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
@@ -35,8 +35,7 @@ const askRemove = (id) => { toDeleteId.value = id; confirmOpen.value = true }
 
 const ensurePaymentsLoaded = async (debtId) => {
   if (paymentsByDebt.value[debtId]) return
-  const list = await fetchTransactions({ type: 'debtPayment', debtId, orderBy: [{ field: 'date', dir: 'desc' }, { field: 'createdAt', dir: 'desc' }] })
-  paymentsByDebt.value[debtId] = list
+  paymentsByDebt.value[debtId] = await fetchTransactions({ type: 'debtPayment', debtId, orderBy: [{ field: 'date', dir: 'desc' }, { field: 'createdAt', dir: 'desc' }] })
 }
 
 const toggleOpen = async (debtId) => {
@@ -72,9 +71,12 @@ onMounted(() => { deb.subscribeMyDebts() })
 
 <template>
   <section>
-    <button class="button" @click="openCreate" :disabled="busy || isLoading">
-      {{ t('debts.addButton') }}
-    </button>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
+      <h2 style="margin:0">{{ t('debts.title') }}</h2>
+      <div style="display:flex;gap:.5rem">
+        <button class="button" @click="openCreate" :disabled="busy || isLoading">{{ t('debts.addButton') }}</button>
+      </div>
+    </div>
 
     <DebtsModalComponent
       :show-modal-debts="showModal"
@@ -108,7 +110,7 @@ onMounted(() => { deb.subscribeMyDebts() })
           <li style="font-weight:600">{{ t('debts.card.payments') }}</li>
           <li v-if="!(paymentsByDebt[d.id] && paymentsByDebt[d.id].length)">{{ t('debts.card.emptyPayments') }}</li>
           <li v-for="p in (paymentsByDebt[d.id]||[])" :key="p.id">
-            <span>🗓 {{ p.date }}</span>
+            <span>🗓 {{ formatDate(p.date) }}</span>
             <span>{{ formatCurrency(p.amount) }}</span>
           </li>
         </ul>
@@ -163,7 +165,7 @@ onMounted(() => { deb.subscribeMyDebts() })
   border-left: 4px solid var(--accent-color);
   border-radius: 12px;
   padding: 1.25rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px var(--shadow-elev-1);
 }
 
 .debt-header {

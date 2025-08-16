@@ -16,7 +16,9 @@
     "confirm": "Confirmar",
     "select-option": "Selecciona una opción",
     "no-note": "Sin nota",
-    "transfer": "Transferir"
+    "transfer": "Transferir",
+    "month": "Mes",
+    "year": "Año"
   },
   "language": {
     "switcher": "Idioma"
@@ -29,7 +31,10 @@
     "transactions": "Transacciones",
     "debts": "Deudas",
     "accounts": "Cuentas",
-    "categories": "Categorías"
+    "categories": "Categorías",
+    "recurring": "Pagos Recurrentes",
+    "goals": "Metas de Ahorro",
+    "budgets": "Presupuestos"
   },
   "auth": {
     "logout": "Cerrar sesión",
@@ -148,7 +153,8 @@
       "account": "Cuenta",
       "accountError": "Selecciona una cuenta válida",
       "date": "Fecha",
-      "dateError": "La fecha es obligatoria"
+      "dateError": "La fecha es obligatoria",
+      "goalSaving": "Agregar a la meta"
     },
     "notifications": {
       "created": "Transacción creada",
@@ -159,7 +165,8 @@
       "unauthorized": "Operación no autorizada",
       "debtRemainingNegative": "El pago excede el saldo de la deuda",
       "debtRequired": "Debes seleccionar una deuda",
-      "debtNotFound": "Deuda no encontrada"
+      "debtNotFound": "Deuda no encontrada",
+      "goalRequired": "Debes seleccionar una meta"
     },
     "confirmDelete": {
       "title": "Eliminar transacción",
@@ -173,7 +180,7 @@
       "type": "Tipo",
       "actions": "Acciones"
     },
-    "filters": { "save": "Guardar filtro", "clear": "Limpiar" },
+    "filters": { "save": "Guardar filtro", "clear": "Limpiar", "search": "Buscar por nombre", "amount": "Monto mínimo" },
     "exportCsv": "Exportar CSV"
   },
   "dashboard": {
@@ -196,6 +203,11 @@
       "title": "Transacciones del mes",
       "empty": "Sin transacciones este mes",
       "seeMore": "Ver más"
+    },
+    "budgets": {
+      "title": "Presupuestos (mes)",
+      "empty": "Sin presupuestos",
+      "prev": "Mes anterior: {pct}%"
     }
   },
   "categories": {
@@ -233,5 +245,143 @@
     "confirm_delete_title": "Eliminar transferencia",
     "confirm_delete_message": "Esta acción moverá el dinero de vuelta. ¿Deseas continuar?",
     "empty": "No hay transferencias"
+  },
+  "recurring": {
+    "title": "Pagos Recurrentes",
+    "add": "Agregar Pago recurrente",
+    "edit": "Editar plantilla",
+    "empty": "No hay plantillas de pagos recurrentes",
+    "paused": "Pausada",
+    "active": "Activa",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "badge": "Recurrente",
+    "table": {
+      "name": "Nombre",
+      "next": "Próxima ejecución",
+      "amount": "Monto",
+      "account": "Cuenta",
+      "type": "Tipo",
+      "frequency": "Frecuencia",
+      "status": "Estado"
+    },
+    "form": {
+      "name": "Nombre",
+      "category": "Categoría",
+      "frequency": "Frecuencia",
+      "nextRunAt": "Fecha de pago",
+      "paused": "Pausada"
+    },
+    "frequency": {
+      "monthly": "Mensual",
+      "biweekly": "Quincenal",
+      "weekly": "Semanal",
+      "yearly": "Anual"
+    },
+    "notifications": {
+      "created": "Plantilla creada",
+      "updated": "Plantilla actualizada",
+      "deleted": "Plantilla eliminada",
+      "processed": "Se generaron {count} pago(s) recurrente(s)"
+    }
+  },
+  "goals": {
+    "title": "Metas de Ahorro",
+    "add": "Agregar meta",
+    "edit": "Editar meta",
+    "empty": "No hay metas de ahorro",
+    "completed": "Completada",
+    "paused": "Pausada",
+    "active": "Activa",
+    "resume": "Reanudar",
+    "pause": "Pausar",
+    "table": {
+      "name": "Nombre",
+      "account": "Cuenta",
+      "target": "Monto objetivo",
+      "progress": "Progreso",
+      "dueDate": "Fecha límite",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "form": {
+      "name": "Nombre",
+      "targetAmount": "Monto objetivo",
+      "dueDate": "Fecha límite (opcional)",
+      "account": "Cuenta asociada",
+      "note": "Notas",
+      "goal": "Meta (opcional)"
+    },
+    "notifications": {
+      "created": "Meta creada",
+      "updated": "Meta actualizada",
+      "deleted": "Meta eliminada"
+    }
+  },
+  "budgets": {
+    "title": "Presupuestos",
+    "add": "Agregar presupuesto",
+    "edit": "Editar presupuesto",
+    "empty": "No hay presupuestos",
+    "table": {
+      "name": "Nombre",
+      "period": "Periodo",
+      "target": "Objetivo",
+      "spent": "Gastado",
+      "remaining": "Restante",
+      "progress": "Progreso",
+      "alerts": "Alertas",
+      "actions": "Acciones"
+    },
+    "form": {
+      "name": "Nombre",
+      "targetAmount": "Monto objetivo",
+      "currency": "Moneda",
+      "periodType": "Periodo",
+      "monthly": "Mensual",
+      "custom": "Rango personalizado",
+      "from": "Desde",
+      "to": "Hasta",
+      "categories": "Ámbito (categorías)",
+      "excludeAccounts": "Excluir cuentas",
+      "threshold": "Umbral de alerta (%)",
+      "carryover": "Carryover (trasladar sobrante/déficit)",
+      "rates": "Tasas de conversión (ej: USD=4000, EUR=4500)",
+      "noteRates": "Se usa para convertir transacciones a la moneda del presupuesto"
+    },
+    "alerts": {
+      "ok": "Dentro del objetivo",
+      "warn": "> 80% consumido",
+      "over": "≥ 100% consumido"
+    },
+    "notifications": {
+      "created": "Presupuesto creado",
+      "updated": "Presupuesto actualizado",
+      "deleted": "Presupuesto eliminado",
+      "closed": "Periodo cerrado"
+    },
+    "closePeriod": "Cerrar periodo",
+    "periodMonthly": "{year} {month}",
+    "periodCustom": "{from} a {to}",
+    "sections": {
+      "general": "General",
+      "period": "Periodo",
+      "scope": "Ámbito",
+      "exclude": "Cuentas excluidas",
+      "alerts": "Alertas y carryover",
+      "conversion": "Conversión"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "reset": "Resetear",
+    "preview": "Vista previa",
+    "previewDesc": "Esta tarjeta y los elementos de la UI reflejan los colores seleccionados.",
+    "samplePrimary": "Acción primaria",
+    "sampleSecondary": "Acción secundaria",
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Personaliza los colores principales de la app. Los cambios se aplican en vivo."
+    }
   }
 }
