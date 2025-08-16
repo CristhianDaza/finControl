@@ -31,6 +31,7 @@ const form = ref({
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
 const debtsOptions = computed(() => deb.items.map(d => ({ label: d.name, value: d.id })))
 const isDebtPayment = computed(() => form.value.type === 'debtPayment')
+const accountNameById = computed(() => acc.items.reduce((m, a) => { m[a.id] = a.name; return m }, {}))
 
 const resetForm = () => {
   form.value = { name: '', type: 'expense', amount: 0, account: '', debt: '', note: '', frequency: 'monthly', nextRunAt: new Date().toISOString().split('T')[0], paused: false }
@@ -117,8 +118,8 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
             <td>{{ tpl.name || tpl.note || '-' }}</td>
             <td>{{ tpl.nextRunAt }}</td>
             <td>{{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2 }).format(Number(tpl.amount||0)) }}</td>
-            <td>{{ tpl.accountId }}</td>
-            <td>{{ tpl.type }}</td>
+            <td>{{ accountNameById[tpl.accountId] || tpl.accountId }}</td>
+            <td>{{ tpl.type==='income' ? t('transactions.form.income') : tpl.type==='expense' ? t('transactions.form.expense') : tpl.type==='debtPayment' ? t('transactions.form.debtPayment') : tpl.type }}</td>
             <td>{{ t(`recurring.frequency.${tpl.frequency||'monthly'}`) }}</td>
             <td>
               <span class="badge" :class="tpl.paused? 'badge-gray': 'badge-green'">{{ tpl.paused ? t('recurring.paused') : t('recurring.active') }}</span>

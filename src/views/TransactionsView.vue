@@ -329,7 +329,7 @@ watch(selectedYear, () => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="pair in transfers" :key="pair.transferId">
+            <tr v-for="pair in transfers" :key="pair.transferId" class="row-transfer">
               <td>{{ pair.out.date }}</td>
               <td>{{ t('common.transfer') }} · {{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }} · {{ pair.out.note }}</td>
               <td>{{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }}</td>
@@ -455,4 +455,9 @@ td:nth-child(4) {
   gap: 0.5rem;
   justify-content: flex-end;
 }
+
+/* Barra de color a la izquierda según tipo */
+tr.row-income { box-shadow: inset 6px 0 0 var(--success-color); }
+tr.row-expense { box-shadow: inset 6px 0 0 var(--error-color); }
+tr.row-transfer { box-shadow: inset 6px 0 0 #3FA9F5; }
 </style>
