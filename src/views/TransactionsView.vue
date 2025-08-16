@@ -284,7 +284,7 @@ watch(selectedYear, () => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredRows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' }">
+            <tr v-for="item in filteredRows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense', 'row-debt': item.type==='debtPayment' }">
               <td>{{ item.date }}</td>
               <td>
                 <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
@@ -459,5 +459,6 @@ td:nth-child(4) {
 /* Barra de color a la izquierda según tipo */
 tr.row-income { box-shadow: inset 6px 0 0 var(--success-color); }
 tr.row-expense { box-shadow: inset 6px 0 0 var(--error-color); }
+tr.row-debt { box-shadow: inset 6px 0 0 var(--debt-color); }
 tr.row-transfer { box-shadow: inset 6px 0 0 #3FA9F5; }
 </style>
