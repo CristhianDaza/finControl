@@ -48,7 +48,6 @@ const liveFor = (type) => type === 'error' ? 'assertive' : 'polite'
 .toast-close{background:transparent;border:0;color:inherit;font-size:1.1rem;cursor:pointer;line-height:1;padding:.25rem;border-radius:6px}
 .toast-close:hover{background:var(--secondary-color)}
 
-/* Animations */
 .toast-enter-active,.toast-leave-active{transition:opacity .18s ease, transform .18s ease}
 .toast-enter-from{opacity:0;transform:translateY(-8px)}
 .toast-leave-to{opacity:0;transform:translateY(8px)}

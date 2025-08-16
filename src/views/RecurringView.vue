@@ -170,7 +170,6 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
 .table-container::-webkit-scrollbar { height: 8px }
 .table-container::-webkit-scrollbar-thumb { background-color: var(--secondary-color); border-radius: 4px }
 
-/* Estilo de tabla igual al de Transacciones */
 table {
   margin-top: 2rem;
   width: 100%;

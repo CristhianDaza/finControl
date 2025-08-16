@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-/* Simple i18n scanner: finds probable hardcoded UI strings in .vue/.js not wrapped in t('...') */
 import fs from 'fs'
 import path from 'path'
 

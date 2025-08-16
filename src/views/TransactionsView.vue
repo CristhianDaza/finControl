@@ -469,7 +469,6 @@ td:nth-child(4) {
   justify-content: flex-end;
 }
 
-/* Barra de color a la izquierda según tipo */
 tr.row-income { box-shadow: inset 6px 0 0 var(--success-color); }
 tr.row-expense { box-shadow: inset 6px 0 0 var(--error-color); }
 tr.row-debt { box-shadow: inset 6px 0 0 var(--debt-color); }

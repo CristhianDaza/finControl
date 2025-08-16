@@ -21,18 +21,15 @@
     --hover-info-color: #0d4f6c;
     --debt-color: #8B5CF6;
     --hover-debt-color: #7C3AED;
-    /* Nuevas variables para evitar colores hardcodeados */
     --white: #ffffff;
     --black: #000000;
-    --badge-gray-color: #6b7280; /* gris neutro para badges */
-    --recurring-badge-color: #2563eb; /* azul para badge de recurrentes */
-    /* Sombras comunes */
+    --badge-gray-color: #6b7280;
+    --recurring-badge-color: #2563eb;
     --shadow-elev-2: rgba(0, 0, 0, 0.25);
     --shadow-elev-1: rgba(0, 0, 0, 0.2);
     --shadow-soft: rgba(0, 0, 0, 0.15);
     --shadow-accent: rgba(63, 169, 245, 0.3);
     --focus-accent-glow: rgba(63, 169, 245, 0.4);
-    /* Sombras/overlays adicionales */
     --shadow-elev-3: rgba(0, 0, 0, 0.3);
     --shadow-elev-4: rgba(0, 0, 0, 0.4);
     --overlay-40: rgba(0, 0, 0, 0.4);

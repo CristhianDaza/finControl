@@ -55,7 +55,7 @@ export const useRecurringStore = defineStore('recurring', () => {
       const res = await processDueOnce()
       if (res?.processed > 0) info(t('recurring.notifications.processed', { count: String(res.processed) }))
       return res
-    } catch (e) { /* silencioso */ return { processed: 0 } }
+    } catch (e) { return { processed: 0 } }
   }
 
   onUnmounted(() => dispose())

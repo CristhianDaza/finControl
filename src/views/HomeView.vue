@@ -48,7 +48,7 @@ const hexToRgba = (hex, alpha = 1) => {
       const b = parseInt(h.slice(4, 6), 16)
       return `rgba(${r}, ${g}, ${b}, ${alpha})`
     }
-  } catch { /* noop */ }
+  } catch {  }
   return `rgba(0,0,0,${alpha})`
 }
 
