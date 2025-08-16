@@ -58,7 +58,7 @@ const accept = () => {
   width: 100vw;
   height: 100dvh;
   backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--overlay-40);
   z-index: 999;
   display: flex;
   justify-content: center;
@@ -69,20 +69,22 @@ const accept = () => {
   background-color: var(--primary-color);
   color: var(--text-color);
   border-radius: 12px;
-  padding: 1.5rem;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  padding: 1rem 1.25rem;
+  width: 90vw;
+  max-width: 720px;
+  max-height: 90dvh;
+  box-shadow: 0 4px 20px var(--shadow-elev-4);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.25rem;
+  flex: 0 0 auto;
 }
 
 .modal-title {
@@ -97,15 +99,18 @@ const accept = () => {
 }
 
 .modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  display: block;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  flex: 1 1 auto;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+  padding-top: 0.5rem;
+  flex: 0 0 auto;
 }
 
 .btn {

@@ -2,26 +2,33 @@
 import { computed } from 'vue'
 import { localeRef, setLocale, t } from '@/i18n/index.js'
 
+const props = defineProps({ collapsed: { type: Boolean, default: false } })
 const current = computed(() => localeRef.value)
 const set = (lng) => setLocale(lng)
+const alt = computed(() => current.value === 'es' ? 'en' : 'es')
 </script>
 
 <template>
   <div class="lang-switcher" role="group" :aria-label="t('language.switcher')">
-    <button
-      class="chip"
-      :class="{ active: current==='es' }"
-      @click="set('es')"
-      type="button"
-      :aria-pressed="current==='es'"
-    >ES</button>
-    <button
-      class="chip"
-      :class="{ active: current==='en' }"
-      @click="set('en')"
-      type="button"
-      :aria-pressed="current==='en'"
-    >EN</button>
+    <template v-if="!props.collapsed">
+      <button
+        class="chip"
+        :class="{ active: current==='es' }"
+        @click="set('es')"
+        type="button"
+        :aria-pressed="current==='es'"
+      >ES</button>
+      <button
+        class="chip"
+        :class="{ active: current==='en' }"
+        @click="set('en')"
+        type="button"
+        :aria-pressed="current==='en'"
+      >EN</button>
+    </template>
+    <template v-else>
+      <button class="chip" type="button" @click="set(alt)">{{ String(alt).toUpperCase() }}</button>
+    </template>
   </div>
 </template>
 

@@ -1,4 +1,3 @@
-// Simple user preferences for saving transaction filters
 import { auth, db } from '@/services/firebase.js'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 

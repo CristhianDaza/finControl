@@ -1,12 +1,12 @@
 import { computed } from 'vue'
 import { intlLocale } from '@/i18n/index.js'
 
-const BOGOTA_OFFSET_HOURS = -5 // UTC-5
+const BOGOTA_OFFSET_HOURS = -5
 
 const toBogotaMonthIndex = (date = new Date()) => {
   const utcTime = date.getTime() + date.getTimezoneOffset() * 60_000
   const bogotaTime = new Date(utcTime + BOGOTA_OFFSET_HOURS * 3_600_000)
-  return bogotaTime.getUTCMonth() // 0-11
+  return bogotaTime.getUTCMonth()
 }
 
 const toBogotaYear = (date = new Date()) => {

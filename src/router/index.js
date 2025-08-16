@@ -35,6 +35,30 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "categoriesView" */  '@/views/CategoriesView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/recurring',
+      name: 'recurring',
+      component: () => import(/* webpackChunkName: "recurringView" */  '@/views/RecurringView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/goals',
+      name: 'goals',
+      component: () => import(/* webpackChunkName: "goalsView" */  '@/views/GoalsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/budgets',
+      name: 'budgets',
+      component: () => import(/* webpackChunkName: "budgetsView" */ '@/views/BudgetsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import(/* webpackChunkName: "settingsView" */ '@/views/SettingsView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

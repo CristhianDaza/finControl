@@ -15,6 +15,7 @@ export const useTransactions = () => {
     if (opts.accountId) clauses.push(where('accountId', '==', opts.accountId))
     if (opts.categoryId) clauses.push(where('categoryId', '==', opts.categoryId))
     if (opts.debtId) clauses.push(where('debtId', '==', opts.debtId))
+    if (opts.goalId) clauses.push(where('goalId', '==', opts.goalId))
     if (opts.from) clauses.push(where('date', '>=', opts.from))
     if (opts.to) clauses.push(where('date', '<=', opts.to))
     const orders = (opts.orderBy && Array.isArray(opts.orderBy) && opts.orderBy.length) ? opts.orderBy : [{ field: 'date', dir: 'desc' }, { field: 'createdAt', dir: 'desc' }]
@@ -87,7 +88,10 @@ export const useTransactions = () => {
       const nextBalC = currentBalC + deltaAccC
       if (nextBalC < 0) throw new Error('BalanceNegative')
       trx.update(accRef, { balance: fromCents(nextBalC), updatedAt: serverTimestamp() })
-      trx.set(txRef, { ownerId: uid, type, amount: fromCents(amountC), currency: payload.currency || acc.currency || 'COP', categoryId: payload.categoryId || '', accountId, debtId: extra.debtId || null, date: payload.date, note: payload.description || payload.note || '', createdAt: serverTimestamp(), updatedAt: serverTimestamp() })
+      const baseDoc = { ownerId: uid, type, amount: fromCents(amountC), currency: payload.currency || acc.currency || 'COP', categoryId: payload.categoryId || '', accountId, debtId: extra.debtId || null, date: payload.date, note: payload.description || payload.note || '', createdAt: serverTimestamp(), updatedAt: serverTimestamp() }
+      const meta = (payload && typeof payload.meta === 'object') ? payload.meta : null
+      const withGoal = payload.goalId ? { ...baseDoc, goalId: payload.goalId } : baseDoc
+      trx.set(txRef, meta ? { ...withGoal, ...meta } : withGoal)
     })
 
     return txRef.id
@@ -157,6 +161,7 @@ export const useTransactions = () => {
       if (patch.account) { patch.accountId = patch.account; delete patch.account }
       if (patch.debt) { patch.debtId = patch.debt; delete patch.debt }
       if (patch.description) { patch.note = patch.description; delete patch.description }
+      if (patch.goal) { patch.goalId = patch.goal; delete patch.goal }
       patch.ownerId = prev.ownerId || uid
       patch.updatedAt = serverTimestamp()
       trx.update(txRef, patch)

@@ -89,7 +89,7 @@ const handleCancel = () => {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay-50);
   backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
@@ -106,7 +106,7 @@ const handleCancel = () => {
   border-radius: 12px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px var(--shadow-elev-4);
 }
 
 .modal-logo {
