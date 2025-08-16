@@ -25,11 +25,12 @@ Chart.register(
 const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
 const transfersStore = useTransfersStore()
+import { useRecurringStore } from '@/stores/recurring.js'
+const recurringStore = useRecurringStore()
 
 const { currentMonthIndex, currentYear, labels, daysInMonth } = useMonthlyRange()
 const monthLabels = labels
 
-// Selección de periodo (año/mes)
 const selectedMonth = ref(Number(sessionStorage.getItem('dash:month') ?? currentMonthIndex))
 const selectedYear = ref(Number(sessionStorage.getItem('dash:year') ?? currentYear))
 const availableYears = computed(() => transactionsStore.availablePeriods.years || [])
@@ -52,7 +53,6 @@ const applyMonthFilter = (y, m) => {
 onMounted(async () => {
   await accountsStore.subscribeMyAccounts()
   transfersStore.init()
-  // cargar periodos disponibles y ajustar selección si es necesario
   await transactionsStore.loadAvailablePeriods()
   if (!availableYears.value.includes(selectedYear.value)) {
     const lastY = availableYears.value[availableYears.value.length - 1]
@@ -63,17 +63,16 @@ onMounted(async () => {
     if (months.length) selectedMonth.value = months[months.length - 1]
   }
   applyMonthFilter(selectedYear.value, selectedMonth.value)
+  await recurringStore.processDue()
 })
 
 watch(selectedYear, () => {
-  // si el mes actual no existe para el nuevo año, elegir el último disponible
   if (!availableMonths.value.includes(selectedMonth.value) && availableMonths.value.length) {
     selectedMonth.value = availableMonths.value[availableMonths.value.length - 1]
   }
 })
 watch([selectedMonth, selectedYear], ([m, y]) => applyMonthFilter(y, m))
 
-// KPIs
 const totalBalance = computed(() => accountsStore.totalBalance)
 const monthTx = computed(() => transactionsStore.items)
 const monthTransferPairs = computed(() => transfersStore.filtered)
@@ -101,7 +100,6 @@ const formatDate = (d) => {
   } catch { return '' }
 }
 
-// Gráficas
 const barCanvas = ref(null)
 const doughnutCanvas = ref(null)
 const lineCanvas = ref(null)
@@ -310,7 +308,10 @@ onBeforeUnmount(() => {
         <li v-for="it in visibleTx" :key="it.id" class="tx-item">
           <div class="tx-left">
             <div class="tx-date">{{ formatDate(it.date) }}</div>
-            <div class="tx-note">{{ it.note || '-' }}</div>
+            <div class="tx-note">
+              <span>{{ it.note || '-' }}</span>
+              <span v-if="it.isRecurring || it.recurringTemplateId" class="badge badge-rec">{{ t('recurring.badge') }}</span>
+            </div>
           </div>
           <div class="tx-right">
             <div class="tx-account">{{ getAccountName(it.accountId) }}</div>
@@ -379,4 +380,6 @@ onBeforeUnmount(() => {
 .see-more { margin-top: 1rem; text-align: center; }
 
 .error-state, .loading-state { margin-top: 1rem; }
+.badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
+.badge-rec { background: #2563eb; color: white; margin-left: .5rem }
 </style>

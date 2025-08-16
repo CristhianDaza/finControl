@@ -30,7 +30,6 @@ const transferOpen = ref(false)
 const editingTransfer = ref(null)
 const busy = ref(false)
 
-// Filtros
 const typeFilter = ref('')
 const accountFilter = ref('')
 const from = ref('')
@@ -38,7 +37,6 @@ const to = ref('')
 const searchText = ref('')
 const minAmount = ref('')
 
-// Periodos disponibles para selects
 const { labels: monthLabels, daysInMonth } = useMonthlyRange()
 const availableYears = computed(() => tx.availablePeriods.years || [])
 const selectedYear = ref(new Date().getFullYear())
@@ -166,7 +164,6 @@ const exportCsv = () => {
 
 onMounted(async () => {
   acc.subscribeMyAccounts(); deb.subscribeMyDebts(); tx.init(); tr.init(); await tx.loadAvailablePeriods();
-  // inicializar selects a último periodo disponible si no coincide
   if (!availableYears.value.includes(selectedYear.value)) {
     const lastY = availableYears.value[availableYears.value.length - 1]
     if (lastY != null) selectedYear.value = lastY
@@ -289,7 +286,12 @@ watch(selectedYear, () => {
           <tbody>
             <tr v-for="item in filteredRows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' }">
               <td>{{ item.date }}</td>
-              <td>{{ item.note || item.description }}</td>
+              <td>
+                <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+                  <span>{{ item.note || item.description }}</span>
+                  <span v-if="item.isRecurring || item.recurringTemplateId" class="badge badge-rec">{{ t('recurring.badge') }}</span>
+                </div>
+              </td>
               <td>{{ formatCurrency(item.amount) }}</td>
               <td>{{ accountNameById[item.accountId] || item.accountId }}</td>
               <td>{{ item.type==='income' ? t('transactions.form.income') : item.type==='expense' ? t('transactions.form.expense') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : item.type }}</td>
@@ -399,6 +401,9 @@ watch(selectedYear, () => {
   background-color: var(--secondary-color);
   border-radius: 4px;
 }
+
+.badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
+.badge-rec { background: #2563eb; color: white }
 
 table {
   margin-top: 2rem;

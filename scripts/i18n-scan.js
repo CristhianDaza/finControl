@@ -26,9 +26,7 @@ const ignore = [
 
 const scanFile = (file) => {
   const src = fs.readFileSync(file, 'utf8')
-  if (/t\s*\(/.test(src)) {
-    // already using i18n in places
-  }
+  if (/t\s*\(/.test(src)) {}
   const lines = src.split(/\r?\n/)
   lines.forEach((line, i) => {
     if (/t\s*\('/.test(line) || /:\s*t\(\'/.test(line)) return
@@ -39,7 +37,7 @@ const scanFile = (file) => {
     while ((m = literalRx.exec(line))) {
       const txt = (m[2] || '').trim()
       if (!txt) continue
-      if (/^[A-Za-z]{1,3}$/.test(txt)) continue // short codes like ES, EN
+      if (/^[A-Za-z]{1,3}$/.test(txt)) continue
       if (/^[_\-\w]+$/.test(txt)) continue
       if (/\{\{\s*t\(/.test(line)) continue
       if (ignore.some(k => line.includes(k))) continue

@@ -71,9 +71,12 @@ onMounted(() => { deb.subscribeMyDebts() })
 
 <template>
   <section>
-    <button class="button" @click="openCreate" :disabled="busy || isLoading">
-      {{ t('debts.addButton') }}
-    </button>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
+      <h2 style="margin:0">{{ t('debts.title') }}</h2>
+      <div style="display:flex;gap:.5rem">
+        <button class="button" @click="openCreate" :disabled="busy || isLoading">{{ t('debts.addButton') }}</button>
+      </div>
+    </div>
 
     <DebtsModalComponent
       :show-modal-debts="showModal"

@@ -31,7 +31,8 @@
     "transactions": "Transacciones",
     "debts": "Deudas",
     "accounts": "Cuentas",
-    "categories": "Categorías"
+    "categories": "Categorías",
+    "recurring": "Pagos Recurrentes"
   },
   "auth": {
     "logout": "Cerrar sesión",
@@ -235,5 +236,44 @@
     "confirm_delete_title": "Eliminar transferencia",
     "confirm_delete_message": "Esta acción moverá el dinero de vuelta. ¿Deseas continuar?",
     "empty": "No hay transferencias"
+  },
+  "recurring": {
+    "title": "Pagos Recurrentes",
+    "add": "Agregar Pago recurrente",
+    "edit": "Editar plantilla",
+    "empty": "No hay plantillas de pagos recurrentes",
+    "paused": "Pausada",
+    "active": "Activa",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "badge": "Recurrente",
+    "table": {
+      "name": "Nombre",
+      "next": "Próxima ejecución",
+      "amount": "Monto",
+      "account": "Cuenta",
+      "type": "Tipo",
+      "frequency": "Frecuencia",
+      "status": "Estado"
+    },
+    "form": {
+      "name": "Nombre",
+      "category": "Categoría",
+      "frequency": "Frecuencia",
+      "nextRunAt": "Fecha de pago",
+      "paused": "Pausada"
+    },
+    "frequency": {
+      "monthly": "Mensual",
+      "biweekly": "Quincenal",
+      "weekly": "Semanal",
+      "yearly": "Anual"
+    },
+    "notifications": {
+      "created": "Plantilla creada",
+      "updated": "Plantilla actualizada",
+      "deleted": "Plantilla eliminada",
+      "processed": "Se generaron {count} pago(s) recurrente(s)"
+    }
   }
 }

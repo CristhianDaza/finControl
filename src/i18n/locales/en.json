@@ -26,7 +26,8 @@
     "transactions": "Transactions",
     "debts": "Debts",
     "accounts": "Accounts",
-    "categories": "Categories"
+    "categories": "Categories",
+    "recurring": "Recurring Payments"
   },
   "auth": {
     "logout": "Log out",
@@ -221,5 +222,44 @@
     "confirm_delete_title": "Delete transfer",
     "confirm_delete_message": "This action will move the money back. Do you want to continue?",
     "empty": "No transfers"
+  },
+  "recurring": {
+    "title": "Recurring Payments",
+    "add": "Add template",
+    "edit": "Edit template",
+    "empty": "No recurring payment templates",
+    "paused": "Paused",
+    "active": "Active",
+    "pause": "Pause",
+    "resume": "Resume",
+    "badge": "Recurring",
+    "table": {
+      "name": "Name",
+      "next": "Next run",
+      "amount": "Amount",
+      "account": "Account",
+      "type": "Type",
+      "frequency": "Frequency",
+      "status": "Status"
+    },
+    "form": {
+      "name": "Name",
+      "category": "Category",
+      "frequency": "Frequency",
+      "nextRunAt": "Payment date",
+      "paused": "Paused"
+    },
+    "frequency": {
+      "monthly": "Monthly",
+      "biweekly": "Biweekly",
+      "weekly": "Weekly",
+      "yearly": "Yearly"
+    },
+    "notifications": {
+      "created": "Template created",
+      "updated": "Template updated",
+      "deleted": "Template deleted",
+      "processed": "Generated {count} recurring payment(s)"
+    }
   }
 }

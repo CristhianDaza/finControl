@@ -1,7 +1,8 @@
 <script setup>
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, ref, watch, onMounted } from 'vue'
 import { useIsMobile} from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
+import { useRecurringStore } from '@/stores/recurring.js'
 
 const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
 const FCNotify = defineAsyncComponent(/* webpackChunkName: "FCNotify" */ () => import('@/components/global/FCNotify.vue'))
@@ -9,12 +10,25 @@ const FCNotify = defineAsyncComponent(/* webpackChunkName: "FCNotify" */ () => i
 const { isMobile } = useIsMobile()
 const auth = useAuthStore()
 const sidebarRef = ref()
+const recurring = useRecurringStore()
 
 const clickMainContent = () => {
   if (isMobile.value) {
     sidebarRef.value?.handleMainClick?.();
   }
 }
+
+onMounted(async () => {
+  if (auth.isAuthenticated) {
+    try { await recurring.processDue() } catch {}
+  }
+})
+
+watch(() => auth.isAuthenticated, async (v) => {
+  if (v) {
+    try { await recurring.processDue() } catch {}
+  }
+})
 </script>
 
 <template>

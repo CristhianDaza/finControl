@@ -87,7 +87,9 @@ export const useTransactions = () => {
       const nextBalC = currentBalC + deltaAccC
       if (nextBalC < 0) throw new Error('BalanceNegative')
       trx.update(accRef, { balance: fromCents(nextBalC), updatedAt: serverTimestamp() })
-      trx.set(txRef, { ownerId: uid, type, amount: fromCents(amountC), currency: payload.currency || acc.currency || 'COP', categoryId: payload.categoryId || '', accountId, debtId: extra.debtId || null, date: payload.date, note: payload.description || payload.note || '', createdAt: serverTimestamp(), updatedAt: serverTimestamp() })
+      const baseDoc = { ownerId: uid, type, amount: fromCents(amountC), currency: payload.currency || acc.currency || 'COP', categoryId: payload.categoryId || '', accountId, debtId: extra.debtId || null, date: payload.date, note: payload.description || payload.note || '', createdAt: serverTimestamp(), updatedAt: serverTimestamp() }
+      const meta = (payload && typeof payload.meta === 'object') ? payload.meta : null
+      trx.set(txRef, meta ? { ...baseDoc, ...meta } : baseDoc)
     })
 
     return txRef.id

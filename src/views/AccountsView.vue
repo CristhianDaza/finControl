@@ -56,9 +56,12 @@ onMounted(() => { acc.subscribeMyAccounts() })
 
 <template>
   <section>
-    <button class="button" @click="openCreate" :disabled="busy || isLoading">
-      {{ t('accounts.addButton') }}
-    </button>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
+      <h2 style="margin:0">{{ t('accounts.title') }}</h2>
+      <div style="display:flex;gap:.5rem">
+        <button class="button" @click="openCreate" :disabled="busy || isLoading">{{ t('accounts.addButton') }}</button>
+      </div>
+    </div>
 
     <AccountsModalComponent
       :show-modal-accounts="showModal"
