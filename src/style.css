@@ -21,6 +21,22 @@
     --hover-info-color: #0d4f6c;
     --debt-color: #8B5CF6;
     --hover-debt-color: #7C3AED;
+    /* Nuevas variables para evitar colores hardcodeados */
+    --white: #ffffff;
+    --black: #000000;
+    --badge-gray-color: #6b7280; /* gris neutro para badges */
+    --recurring-badge-color: #2563eb; /* azul para badge de recurrentes */
+    /* Sombras comunes */
+    --shadow-elev-2: rgba(0, 0, 0, 0.25);
+    --shadow-elev-1: rgba(0, 0, 0, 0.2);
+    --shadow-soft: rgba(0, 0, 0, 0.15);
+    --shadow-accent: rgba(63, 169, 245, 0.3);
+    --focus-accent-glow: rgba(63, 169, 245, 0.4);
+    /* Sombras/overlays adicionales */
+    --shadow-elev-3: rgba(0, 0, 0, 0.3);
+    --shadow-elev-4: rgba(0, 0, 0, 0.4);
+    --overlay-40: rgba(0, 0, 0, 0.4);
+    --overlay-50: rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -36,7 +52,7 @@ body {
     border: 1px solid var(--secondary-color);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 8px var(--shadow-elev-2);
 }
 
 .card h2 {
@@ -58,11 +74,11 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 6px rgba(63, 169, 245, 0.3);
+    box-shadow: 0 2px 6px var(--shadow-accent);
 }
 
 .button:hover {
-    background-color: #3498db;
+    background-color: var(--hover-accent-color);
 }
 
 input[type="text"],
@@ -89,7 +105,7 @@ input:focus,
 textarea:focus {
     outline: none;
     border-color: var(--accent-color);
-    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+    box-shadow: 0 0 4px var(--focus-accent-glow);
 }
 
 select {
@@ -112,7 +128,7 @@ select {
 select:focus {
     outline: none;
     border-color: var(--accent-color);
-    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+    box-shadow: 0 0 4px var(--focus-accent-glow);
 }
 
 input[type="date"] {
@@ -140,26 +156,26 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 input[type="date"]:focus {
     outline: none;
     border-color: var(--accent-color);
-    box-shadow: 0 0 4px rgba(63, 169, 245, 0.4);
+    box-shadow: 0 0 4px var(--focus-accent-glow);
 }
 
 .alert-success {
     background-color: var(--success-color);
-    color: #fff;
+    color: var(--white);
     padding: 0.75rem;
     border-radius: 6px;
 }
 
 .alert-warning {
     background-color: var(--warning-color);
-    color: #000;
+    color: var(--black);
     padding: 0.75rem;
     border-radius: 6px;
 }
 
 .alert-error {
     background-color: var(--error-color);
-    color: #fff;
+    color: var(--white);
     padding: 0.75rem;
     border-radius: 6px;
 }
@@ -187,7 +203,7 @@ input[type="date"]:focus {
 .button-secondary {
     background-color: var(--secondary-color);
     color: var(--text-color);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 6px var(--shadow-elev-1);
 }
 
 .button-secondary:hover {

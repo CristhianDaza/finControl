@@ -403,7 +403,7 @@ watch(selectedYear, () => {
   width: 100%;
   overflow-x: auto;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px var(--shadow-elev-1);
 }
 
 .table-container::-webkit-scrollbar {
@@ -416,7 +416,7 @@ watch(selectedYear, () => {
 }
 
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
-.badge-rec { background: #2563eb; color: white }
+.badge-rec { background: var(--recurring-badge-color); color: var(--white) }
 
 table {
   margin-top: 2rem;
@@ -426,7 +426,7 @@ table {
   color: var(--text-color);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px var(--shadow-elev-1);
 }
 
 th, td {
@@ -473,6 +473,6 @@ td:nth-child(4) {
 tr.row-income { box-shadow: inset 6px 0 0 var(--success-color); }
 tr.row-expense { box-shadow: inset 6px 0 0 var(--error-color); }
 tr.row-debt { box-shadow: inset 6px 0 0 var(--debt-color); }
-tr.row-transfer { box-shadow: inset 6px 0 0 #3FA9F5; }
-tr.row-goal { box-shadow: inset 6px 0 0 #f59e0b; }
+tr.row-transfer { box-shadow: inset 6px 0 0 var(--accent-color); }
+tr.row-goal { box-shadow: inset 6px 0 0 var(--warning-color); }
 </style>

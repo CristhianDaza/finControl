@@ -58,7 +58,7 @@ const accept = () => {
   width: 100vw;
   height: 100dvh;
   backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--overlay-40);
   z-index: 999;
   display: flex;
   justify-content: center;
@@ -73,7 +73,7 @@ const accept = () => {
   width: 90vw;
   max-width: 720px;
   max-height: 90dvh;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px var(--shadow-elev-4);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;

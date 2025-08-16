@@ -191,6 +191,13 @@ const buildNetLine = (daily) => {
 
 const updateCharts = async () => {
   await nextTick()
+  // Colores desde variables
+  const colorText = getCssVar('--text-color')
+  const colorMuted = getCssVar('--muted-text-color')
+  const colorSuccess = getCssVar('--success-color')
+  const colorError = getCssVar('--error-color')
+  const colorAccent = getCssVar('--accent-color')
+
   const y = selectedYear.value
   const m = selectedMonth.value
   const items = monthTx.value
@@ -202,8 +209,8 @@ const updateCharts = async () => {
   const barData = {
     labels: daily.labels,
     datasets: [
-      { label: t('transactions.form.income'), data: daily.income, backgroundColor: 'rgba(34, 197, 94, 0.6)' },
-      { label: t('transactions.form.expense'), data: daily.expense, backgroundColor: 'rgba(239, 68, 68, 0.6)' },
+      { label: t('transactions.form.income'), data: daily.income, backgroundColor: hexToRgba(colorSuccess, 0.6) },
+      { label: t('transactions.form.expense'), data: daily.expense, backgroundColor: hexToRgba(colorError, 0.6) },
     ]
   }
   if (!barChart && barCanvas.value) {
@@ -213,12 +220,12 @@ const updateCharts = async () => {
       options: {
         responsive: true,
         plugins: {
-          legend: { position: 'top', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-color') } },
+          legend: { position: 'top', labels: { color: colorText } },
           tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}` } },
         },
         scales: {
-          x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted-text-color') } },
-          y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted-text-color') } },
+          x: { ticks: { color: colorMuted } },
+          y: { ticks: { color: colorMuted } },
         },
       }
     })
@@ -229,7 +236,7 @@ const updateCharts = async () => {
 
   const doughnutData = {
     labels: breakdown.labels,
-    datasets: [{ data: breakdown.data, backgroundColor: ['#22C55E', '#EF4444', '#3FA9F5'] }]
+    datasets: [{ data: breakdown.data, backgroundColor: [colorSuccess, colorError, colorAccent] }]
   }
   if (!doughnutChart && doughnutCanvas.value) {
     doughnutChart = new Chart(doughnutCanvas.value.getContext('2d'), {
@@ -238,7 +245,7 @@ const updateCharts = async () => {
       options: {
         responsive: true,
         plugins: {
-          legend: { position: 'bottom', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-color') } },
+          legend: { position: 'bottom', labels: { color: colorText } },
           tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatCurrency(ctx.parsed)}` } },
         },
         cutout: '60%'
@@ -251,7 +258,7 @@ const updateCharts = async () => {
 
   const lineData = {
     labels: net.labels,
-    datasets: [{ label: t('dashboard.charts.net'), data: net.net, fill: false, borderColor: '#3FA9F5', tension: 0.2, pointRadius: 2 }]
+    datasets: [{ label: t('dashboard.charts.net'), data: net.net, fill: false, borderColor: colorAccent, tension: 0.2, pointRadius: 2 }]
   }
   if (!lineChart && lineCanvas.value) {
     lineChart = new Chart(lineCanvas.value.getContext('2d'), {
@@ -260,12 +267,12 @@ const updateCharts = async () => {
       options: {
         responsive: true,
         plugins: {
-          legend: { position: 'top', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-color') } },
+          legend: { position: 'top', labels: { color: colorText } },
           tooltip: { callbacks: { label: ctx => `${formatCurrency(ctx.parsed.y)}` } },
         },
         scales: {
-          x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted-text-color') } },
-          y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted-text-color') } },
+          x: { ticks: { color: colorMuted } },
+          y: { ticks: { color: colorMuted } },
         },
       }
     })
@@ -278,7 +285,7 @@ const updateCharts = async () => {
   if (goalsCanvas.value) {
     const data = {
       labels: goalsData.labels,
-      datasets: [{ label: t('goals.table.progress'), data: goalsData.data, backgroundColor: '#3FA9F5' }]
+      datasets: [{ label: t('goals.table.progress'), data: goalsData.data, backgroundColor: colorAccent }]
     }
     if (!goalsChart) {
       goalsChart = new Chart(goalsCanvas.value.getContext('2d'), {
@@ -287,12 +294,12 @@ const updateCharts = async () => {
         options: {
           responsive: true,
           plugins: {
-            legend: { position: 'top', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-color') } },
+            legend: { position: 'top', labels: { color: colorText } },
             tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y}%` } },
           },
           scales: {
-            x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted-text-color') } },
-            y: { beginAtZero: true, max: 100, ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted-text-color'), callback: (v)=> `${v}%` } },
+            x: { ticks: { color: colorMuted } },
+            y: { beginAtZero: true, max: 100, ticks: { color: colorMuted, callback: (v)=> `${v}%` } },
           },
         }
       })
@@ -473,7 +480,7 @@ onBeforeUnmount(() => {
   background-color: var(--primary-color);
   padding: 1.5rem;
   border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-soft);
   border-left: 6px solid var(--accent-color);
   transition: transform 0.2s ease;
 }
@@ -502,8 +509,8 @@ onBeforeUnmount(() => {
 .progress { display:flex; align-items:center; gap:.5rem }
 .progress .bar { width: 160px; height: 8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
 .progress .fill { height: 100%; background: var(--accent-color) }
-.progress .fill.warn { background: #f59e0b }
-.progress .fill.over { background: #ef4444 }
+.progress .fill.warn { background: var(--warning-color) }
+.progress .fill.over { background: var(--error-color) }
 .progress .pct { color: var(--muted-text-color); font-size: .85rem }
 
 .goals-card { margin-top: 1rem }
@@ -517,7 +524,7 @@ onBeforeUnmount(() => {
 .progress .fill { height: 100%; background: var(--accent-color) }
 .progress .pct { color: var(--muted-text-color); font-size: .85rem }
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
-.badge-green { background: #16a34a; color: white }
+.badge-green { background: var(--hover-success-color); color: var(--white) }
 
 .tx-list { margin-top: 1.5rem; }
 .tx-ul { list-style: none; padding: 0; margin: 0; }
@@ -534,5 +541,5 @@ onBeforeUnmount(() => {
 
 .error-state, .loading-state { margin-top: 1rem; }
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
-.badge-rec { background: #2563eb; color: white; margin-left: .5rem }
+.badge-rec { background: var(--recurring-badge-color); color: var(--white); margin-left: .5rem }
 </style>

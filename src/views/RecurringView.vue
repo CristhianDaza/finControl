@@ -165,7 +165,7 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
 </template>
 
 <style scoped>
-.table-container { width:100%; overflow-x:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.2) }
+.table-container { width:100%; overflow-x:auto; border-radius:12px; box-shadow:0 2px 8px var(--shadow-elev-1) }
 
 .table-container::-webkit-scrollbar { height: 8px }
 .table-container::-webkit-scrollbar-thumb { background-color: var(--secondary-color); border-radius: 4px }
@@ -179,7 +179,7 @@ table {
   color: var(--text-color);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px var(--shadow-elev-1);
 }
 
 th, td {
@@ -201,8 +201,8 @@ tr:last-child td { border-bottom: none }
 tr:hover { background-color: var(--hover-prrimary-color); }
 
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
-.badge-gray { background: #6b7280; color: white }
-.badge-green { background: #16a34a; color: white }
+.badge-gray { background: var(--badge-gray-color); color: var(--white) }
+.badge-green { background: var(--hover-success-color); color: var(--white) }
 .actions { display:flex; gap:.5rem; justify-content:flex-end }
 
 .page-header { display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap }

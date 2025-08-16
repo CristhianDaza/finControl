@@ -82,7 +82,7 @@ defineExpose({ handleMainClick })
   max-height: 100dvh;
   transition: all 0.3s ease;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px var(--shadow-soft);
   justify-content: space-between;
 }
 

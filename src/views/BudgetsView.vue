@@ -249,29 +249,29 @@ watch(() => transactions.items, () => recompute(), { deep: true })
 </template>
 
 <style scoped>
-.table-container { width:100%; overflow-x:auto; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.2) }
+.table-container { width:100%; overflow-x:auto; border-radius:12px; box-shadow:0 2px 8px var(--shadow-elev-1) }
 .table-container::-webkit-scrollbar { height:8px }
 .table-container::-webkit-scrollbar-thumb { background-color: var(--secondary-color); border-radius: 4px }
 
-table { margin-top: 2rem; width:100%; border-collapse: collapse; background-color: var(--primary-color); color: var(--text-color); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.2) }
+table { margin-top: 2rem; width:100%; border-collapse: collapse; background-color: var(--primary-color); color: var(--text-color); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px var(--shadow-elev-1) }
 th, td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--secondary-color) }
 th { background-color: var(--secondary-color); color: var(--accent-color); font-weight: 600; text-transform: uppercase; font-size: .85rem; letter-spacing: 1px }
 tr:last-child td { border-bottom: none }
 tr:hover { background-color: var(--hover-prrimary-color) }
 
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
-.badge-gray { background:#6b7280; color:#fff }
-.badge-blue { background:#3FA9F5; color:#0A192F }
-.badge-green { background:#16a34a; color:#fff }
-.badge-yellow { background:#f59e0b; color:#0A192F }
-.badge-red { background:#ef4444; color:#fff }
+.badge-gray { background: var(--badge-gray-color); color: var(--white) }
+.badge-blue { background: var(--accent-color); color: var(--background-color) }
+.badge-green { background: var(--hover-success-color); color: var(--white) }
+.badge-yellow { background: var(--warning-color); color: var(--background-color) }
+.badge-red { background: var(--error-color); color: var(--white) }
 .actions { display:flex; gap:.5rem; justify-content:flex-end }
 
 .progress-row { display:flex; align-items:center; gap:.5rem }
 .progress-bar { width:140px; height:8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
 .progress-fill { height:100%; background: var(--accent-color) }
-.progress-fill.warn { background:#f59e0b }
-.progress-fill.over { background:#ef4444 }
+.progress-fill.warn { background: var(--warning-color) }
+.progress-fill.over { background: var(--error-color) }
 .progress-text { font-size: .85rem; color: var(--muted-text-color) }
 
 .field { min-width: 160px }

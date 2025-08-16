@@ -128,7 +128,7 @@ onMounted(() => { acc.subscribeMyAccounts() })
   border-radius: 16px;
   padding: 1.25rem 1.5rem;
   color: var(--text-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px var(--shadow-elev-2);
   width: 100%;
   max-width: 320px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -136,7 +136,7 @@ onMounted(() => { acc.subscribeMyAccounts() })
 
 .account-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 16px var(--shadow-elev-3);
 }
 
 .account-header {

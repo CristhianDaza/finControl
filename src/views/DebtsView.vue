@@ -165,7 +165,7 @@ onMounted(() => { deb.subscribeMyDebts() })
   border-left: 4px solid var(--accent-color);
   border-radius: 12px;
   padding: 1.25rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px var(--shadow-elev-1);
 }
 
 .debt-header {
