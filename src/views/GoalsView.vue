@@ -36,8 +36,7 @@ const save = async () => {
 const askPauseResume = async (g) => { if (g.paused) await goals.resume(g.id); else await goals.pause(g.id) }
 const remove = async (id) => { await goals.remove(id); await goals.loadProgress() }
 
-const progressValue = (id) => Number(goals.progressById[id] || 0)
-const progressPct = (id) => Math.round(goals.progressPct(id))
+const goalProgressPct = (id) => Math.round(goals.progressPct(id))
 const isCompleted = (id) => goals.isCompleted(id)
 
 onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); await goals.loadProgress() })
@@ -45,9 +44,9 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
 
 <template>
   <section>
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
-      <h2 style="margin:0">{{ t('goals.title') }}</h2>
-      <div style="display:flex;gap:.5rem">
+    <div class="card page-header">
+      <h2 class="page-title">{{ t('goals.title') }}</h2>
+      <div class="page-actions">
         <button class="button" @click="openCreate">{{ t('goals.add') }}</button>
       </div>
     </div>
@@ -78,8 +77,8 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
             <td>{{ formatCurrency(g.targetAmount) }}</td>
             <td>
               <div class="progress-row">
-                <div class="progress-bar"><div class="progress-fill" :style="{ width: progressPct(g.id)+'%' }"></div></div>
-                <span class="progress-text">{{ progressPct(g.id) }}%</span>
+                <div class="progress-bar"><div class="progress-fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div>
+                <span class="progress-text">{{ goalProgressPct(g.id) }}%</span>
               </div>
             </td>
             <td>{{ g.dueDate || '-' }}</td>
@@ -100,7 +99,7 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
     </div>
 
     <FcModal :show-modal="showModal" :title-modal="isEditing? t('goals.edit') : t('goals.add')" @accept="save" @cancel-modal="showModal=false">
-      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1rem;">
+      <div class="grid modal-grid">
         <FcFormField v-model="form.name" :label="t('goals.form.name')" :maxlength="50" required />
         <FcFormField v-model="form.targetAmount" :label="t('goals.form.targetAmount')" type="number" min="1" step="0.01" format-thousands required />
         <FcFormField v-model="form.account" :label="t('goals.form.account')" type="select" :options="accountsOptions" required />
@@ -136,4 +135,9 @@ tr:hover { background-color: var(--hover-prrimary-color) }
 .progress-bar { width:140px; height:8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
 .progress-fill { height:100%; background: var(--accent-color) }
 .progress-text { font-size: .85rem; color: var(--muted-text-color) }
+
+.page-header { display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap }
+.page-title { margin:0 }
+.page-actions { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap }
+.modal-grid { grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1rem; }
 </style>

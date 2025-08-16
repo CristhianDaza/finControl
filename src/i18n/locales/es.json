@@ -33,7 +33,8 @@
     "accounts": "Cuentas",
     "categories": "Categorías",
     "recurring": "Pagos Recurrentes",
-    "goals": "Metas de Ahorro"
+    "goals": "Metas de Ahorro",
+    "budgets": "Presupuestos"
   },
   "auth": {
     "logout": "Cerrar sesión",
@@ -202,6 +203,11 @@
       "title": "Transacciones del mes",
       "empty": "Sin transacciones este mes",
       "seeMore": "Ver más"
+    },
+    "budgets": {
+      "title": "Presupuestos (mes)",
+      "empty": "Sin presupuestos",
+      "prev": "Mes anterior: {pct}%"
     }
   },
   "categories": {
@@ -310,6 +316,60 @@
       "created": "Meta creada",
       "updated": "Meta actualizada",
       "deleted": "Meta eliminada"
+    }
+  },
+  "budgets": {
+    "title": "Presupuestos",
+    "add": "Agregar presupuesto",
+    "edit": "Editar presupuesto",
+    "empty": "No hay presupuestos",
+    "table": {
+      "name": "Nombre",
+      "period": "Periodo",
+      "target": "Objetivo",
+      "spent": "Gastado",
+      "remaining": "Restante",
+      "progress": "Progreso",
+      "alerts": "Alertas",
+      "actions": "Acciones"
+    },
+    "form": {
+      "name": "Nombre",
+      "targetAmount": "Monto objetivo",
+      "currency": "Moneda",
+      "periodType": "Periodo",
+      "monthly": "Mensual",
+      "custom": "Rango personalizado",
+      "from": "Desde",
+      "to": "Hasta",
+      "categories": "Ámbito (categorías)",
+      "excludeAccounts": "Excluir cuentas",
+      "threshold": "Umbral de alerta (%)",
+      "carryover": "Carryover (trasladar sobrante/déficit)",
+      "rates": "Tasas de conversión (ej: USD=4000, EUR=4500)",
+      "noteRates": "Se usa para convertir transacciones a la moneda del presupuesto"
+    },
+    "alerts": {
+      "ok": "Dentro del objetivo",
+      "warn": "> 80% consumido",
+      "over": "≥ 100% consumido"
+    },
+    "notifications": {
+      "created": "Presupuesto creado",
+      "updated": "Presupuesto actualizado",
+      "deleted": "Presupuesto eliminado",
+      "closed": "Periodo cerrado"
+    },
+    "closePeriod": "Cerrar periodo",
+    "periodMonthly": "{year} {month}",
+    "periodCustom": "{from} a {to}",
+    "sections": {
+      "general": "General",
+      "period": "Periodo",
+      "scope": "Ámbito",
+      "exclude": "Cuentas excluidas",
+      "alerts": "Alertas y carryover",
+      "conversion": "Conversión"
     }
   }
 }

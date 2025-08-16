@@ -4,7 +4,7 @@ import { useFormattedNumber } from '@/composables/useFormattedNumber.js'
 import { t } from '@/i18n/index.js'
 
 const props = defineProps({
-  modelValue: [String, Number],
+  modelValue: [String, Number, Array],
   type: { type: String, default: 'text' },
   label: String,
   name: String,
@@ -105,7 +105,7 @@ const togglePassword = () => {
       @blur="touched = true"
       :class="{ invalid: touched && !isValid }"
     >
-      <option disabled value="">-- {{ t('common.select-option') }} --</option>
+      <option v-if="!attrs.multiple" disabled value="">-- {{ t('common.select-option') }} --</option>
       <option
         v-for="(option, index) in options"
         :key="index"
@@ -122,6 +122,7 @@ const togglePassword = () => {
 </template>
 
 <style scoped>
+.form-field { margin-bottom: .75rem }
 .input-wrapper {
   position: relative;
 }

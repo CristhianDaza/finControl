@@ -14,6 +14,7 @@ import {
   DoughnutController, ArcElement,
   LineController, LineElement, PointElement
 } from 'chart.js'
+import { useBudgetsStore } from '@/stores/budgets.js'
 
 Chart.register(
   BarController, BarElement,
@@ -29,6 +30,7 @@ const transfersStore = useTransfersStore()
 const goalsStore = useGoalsStore()
 import { useRecurringStore } from '@/stores/recurring.js'
 const recurringStore = useRecurringStore()
+const budgetsStore = useBudgetsStore()
 
 const goalsList = computed(() => goalsStore.items || [])
 const goalProgressPct = (id) => {
@@ -76,6 +78,8 @@ onMounted(async () => {
   await recurringStore.processDue()
   await goalsStore.init()
   await goalsStore.loadProgress()
+  await budgetsStore.init()
+  await computeBudgetsMonth()
 })
 
 watch(selectedYear, () => {
@@ -83,7 +87,7 @@ watch(selectedYear, () => {
     selectedMonth.value = availableMonths.value[availableMonths.value.length - 1]
   }
 })
-watch([selectedMonth, selectedYear], ([m, y]) => applyMonthFilter(y, m))
+watch([selectedMonth, selectedYear], async ([m, y]) => { applyMonthFilter(y, m); await computeBudgetsMonth() })
 
 const totalBalance = computed(() => accountsStore.totalBalance)
 const monthTx = computed(() => transactionsStore.items)
@@ -119,6 +123,25 @@ const buildGoalsProgress = () => {
     return { labels, data }
   } catch { return { labels: [], data: [] } }
 }
+
+// Budgets widget
+const budgetsMonth = ref([])
+const budgetsPrevPct = ref({})
+const computeBudgetsMonth = async () => {
+  const y = selectedYear.value, m = selectedMonth.value
+  const res = await budgetsStore.computeForMonth(y, m)
+  const arr = (budgetsStore.items || []).map(b => ({ b, r: res[b.id] || { pct: 0, spent: 0, remaining: 0 } }))
+  arr.sort((a,b)=> (b.r?.pct||0) - (a.r?.pct||0))
+  budgetsMonth.value = arr
+  const prevMap = {}
+  for (const it of arr) {
+    try { prevMap[it.b.id] = Math.round(await budgetsStore.computePrevMonthPct(it.b, y, m)) } catch { prevMap[it.b.id] = 0 }
+  }
+  budgetsPrevPct.value = prevMap
+}
+
+watch(monthTx, async () => { await computeBudgetsMonth() })
+watch(() => budgetsStore.items, async () => { await computeBudgetsMonth() }, { deep: true })
 
 const barCanvas = ref(null)
 const doughnutCanvas = ref(null)
@@ -359,6 +382,29 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
+    <section class="card budgets-card" v-if="!isLoading && !hasError">
+      <h3>{{ t('dashboard.budgets.title') }}</h3>
+      <div v-if="!(budgetsMonth && budgetsMonth.length)" class="empty">{{ t('dashboard.budgets.empty') }}</div>
+      <ul v-else class="budgets-ul">
+        <li v-for="it in budgetsMonth.slice(0,3)" :key="it.b.id" class="budget-item">
+          <div class="b-left">
+            <div class="b-name">{{ it.b.name }}</div>
+            <div class="b-period">{{ it.b.periodType==='monthly' ? (monthLabels[selectedMonth] + ' ' + selectedYear) : (it.b.periodFrom + ' → ' + it.b.periodTo) }}</div>
+          </div>
+          <div class="b-center">
+            <div class="progress">
+              <div class="bar"><div class="fill" :class="{ warn: (it.r?.pct||0)>= (it.b.alertThresholdPct||80) && (it.r?.pct||0) < 100, over: (it.r?.pct||0) >= 100 }" :style="{ width: Math.min(100, Math.max(0, Math.round(it.r?.pct||0))) + '%' }"></div></div>
+              <div class="pct">{{ Math.round(it.r?.pct||0) }}%</div>
+            </div>
+          </div>
+          <div class="b-right">
+            <div class="b-remaining">{{ formatCurrency(it.r?.remaining||0, it.b.currency) }}</div>
+            <div class="b-prev">{{ t('dashboard.budgets.prev', { pct: budgetsPrevPct[it.b.id] || 0 }) }}</div>
+          </div>
+        </li>
+      </ul>
+    </section>
+
     <section class="card goals-card" v-if="!isLoading && !hasError">
       <h3>{{ t('goals.title') }}</h3>
       <div v-if="!(goalsList && goalsList.length)" class="empty">{{ t('goals.empty') }}</div>
@@ -445,6 +491,21 @@ onBeforeUnmount(() => {
 }
 .chart-card h3 { margin-top: 0; color: var(--muted-text-color); }
 
+.budgets-card { margin-top: 1rem }
+.budgets-ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .75rem }
+.budget-item { display:flex; justify-content: space-between; align-items: center; padding:.5rem 0; border-bottom: 1px solid var(--primary-color) }
+.b-left { display:grid }
+.b-name { color: var(--text-color); font-weight: 600 }
+.b-period { color: var(--muted-text-color); font-size: .9rem }
+.b-center { flex: 1; display:flex; align-items:center; justify-content:center }
+.b-right { text-align:right; display:grid }
+.progress { display:flex; align-items:center; gap:.5rem }
+.progress .bar { width: 160px; height: 8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
+.progress .fill { height: 100%; background: var(--accent-color) }
+.progress .fill.warn { background: #f59e0b }
+.progress .fill.over { background: #ef4444 }
+.progress .pct { color: var(--muted-text-color); font-size: .85rem }
+
 .goals-card { margin-top: 1rem }
 .goals-ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .75rem }
 .goal-item { display:flex; justify-content: space-between; align-items: center; padding:.5rem 0; border-bottom: 1px solid var(--primary-color) }
@@ -452,7 +513,6 @@ onBeforeUnmount(() => {
 .goal-name { color: var(--text-color); font-weight: 600 }
 .goal-note { color: var(--muted-text-color); font-size: .9rem }
 .goal-right { display:flex; align-items:center; gap: .75rem }
-.progress { display:flex; align-items:center; gap:.5rem }
 .progress .bar { width: 160px; height: 8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
 .progress .fill { height: 100%; background: var(--accent-color) }
 .progress .pct { color: var(--muted-text-color); font-size: .85rem }

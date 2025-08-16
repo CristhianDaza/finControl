@@ -87,9 +87,9 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
 
 <template>
   <section>
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
-      <h2 style="margin:0">{{ t('recurring.title') }}</h2>
-      <div style="display:flex;gap:.5rem">
+    <div class="card page-header">
+      <h2 class="page-title">{{ t('recurring.title') }}</h2>
+      <div class="page-actions">
         <button class="button" @click="openCreate">{{ t('recurring.add') }}</button>
       </div>
     </div>
@@ -137,7 +137,7 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
     </div>
 
     <FcModal :show-modal="showModal" :title-modal="isEditing? t('recurring.edit') : t('recurring.add')" @accept="save" @cancel-modal="showModal=false">
-      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1rem;">
+      <div class="grid modal-grid">
         <FcFormField v-model="form.name" :label="t('recurring.form.name')" :maxlength="50" />
         <FcFormField v-model="form.type" :label="t('transactions.form.type')" type="select" :options="[
           { label: t('transactions.form.income'), value: 'income' },
@@ -204,4 +204,9 @@ tr:hover { background-color: var(--hover-prrimary-color); }
 .badge-gray { background: #6b7280; color: white }
 .badge-green { background: #16a34a; color: white }
 .actions { display:flex; gap:.5rem; justify-content:flex-end }
+
+.page-header { display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap }
+.page-title { margin:0 }
+.page-actions { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap }
+.modal-grid { grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1rem; }
 </style>

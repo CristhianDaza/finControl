@@ -28,7 +28,8 @@
     "accounts": "Accounts",
     "categories": "Categories",
     "recurring": "Recurring Payments",
-    "goals": "Savings Goals"
+    "goals": "Savings Goals",
+    "budgets": "Budgets"
   },
   "auth": {
     "logout": "Log out",
@@ -197,6 +198,11 @@
       "title": "This month's transactions",
       "empty": "No transactions this month",
       "seeMore": "See more"
+    },
+    "budgets": {
+      "title": "Budgets (month)",
+      "empty": "No budgets",
+      "prev": "Prev month: {pct}%"
     }
   },
   "categories": {
@@ -297,5 +303,51 @@
       "updated": "Goal updated",
       "deleted": "Goal deleted"
     }
+  },
+  "budgets": {
+    "title": "Budgets",
+    "add": "Add budget",
+    "edit": "Edit budget",
+    "empty": "No budgets",
+    "table": {
+      "name": "Name",
+      "period": "Period",
+      "target": "Target",
+      "spent": "Spent",
+      "remaining": "Remaining",
+      "progress": "Progress",
+      "alerts": "Alerts",
+      "actions": "Actions"
+    },
+    "form": {
+      "name": "Name",
+      "targetAmount": "Target amount",
+      "currency": "Currency",
+      "periodType": "Period",
+      "monthly": "Monthly",
+      "custom": "Custom range",
+      "from": "From",
+      "to": "To",
+      "categories": "Scope (categories)",
+      "excludeAccounts": "Exclude accounts",
+      "threshold": "Alert threshold (%)",
+      "carryover": "Carryover (carry surplus/deficit)",
+      "rates": "Conversion rates (e.g., USD=4000, EUR=4500)",
+      "noteRates": "Used to convert transactions to the budget currency"
+    },
+    "alerts": {
+      "ok": "Within target",
+      "warn": "> 80% consumed",
+      "over": "≥ 100% consumed"
+    },
+    "notifications": {
+      "created": "Budget created",
+      "updated": "Budget updated",
+      "deleted": "Budget deleted",
+      "closed": "Period closed"
+    },
+    "closePeriod": "Close period",
+    "periodMonthly": "{year} {month}",
+    "periodCustom": "{from} to {to}"
   }
 }
