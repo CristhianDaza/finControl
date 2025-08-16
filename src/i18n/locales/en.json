@@ -27,7 +27,8 @@
     "debts": "Debts",
     "accounts": "Accounts",
     "categories": "Categories",
-    "recurring": "Recurring Payments"
+    "recurring": "Recurring Payments",
+    "goals": "Savings Goals"
   },
   "auth": {
     "logout": "Log out",
@@ -146,7 +147,8 @@
       "account": "Account",
       "accountError": "Select a valid account",
       "date": "Date",
-      "dateError": "Date is required"
+      "dateError": "Date is required",
+      "goalSaving": "Add to goal"
     },
     "notifications": {
       "created": "Transaction created",
@@ -157,7 +159,8 @@
       "unauthorized": "Operation not authorized",
       "debtRemainingNegative": "Payment exceeds remaining debt",
       "debtRequired": "You must select a debt",
-      "debtNotFound": "Debt not found"
+      "debtNotFound": "Debt not found",
+      "goalRequired": "You must select a goal"
     },
     "confirmDelete": {
       "title": "Delete transaction",
@@ -225,7 +228,7 @@
   },
   "recurring": {
     "title": "Recurring Payments",
-    "add": "Add template",
+    "add": "Add Recurring Payment",
     "edit": "Edit template",
     "empty": "No recurring payment templates",
     "paused": "Paused",
@@ -260,6 +263,39 @@
       "updated": "Template updated",
       "deleted": "Template deleted",
       "processed": "Generated {count} recurring payment(s)"
+    }
+  },
+  "goals": {
+    "title": "Savings Goals",
+    "add": "Add goal",
+    "edit": "Edit goal",
+    "empty": "No savings goals",
+    "completed": "Completed",
+    "paused": "Paused",
+    "active": "Active",
+    "resume": "Resume",
+    "pause": "Pause",
+    "table": {
+      "name": "Name",
+      "account": "Account",
+      "target": "Target amount",
+      "progress": "Progress",
+      "dueDate": "Due date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "name": "Name",
+      "targetAmount": "Target amount",
+      "dueDate": "Due date (optional)",
+      "account": "Linked account",
+      "note": "Notes",
+      "goal": "Goal (optional)"
+    },
+    "notifications": {
+      "created": "Goal created",
+      "updated": "Goal updated",
+      "deleted": "Goal deleted"
     }
   }
 }

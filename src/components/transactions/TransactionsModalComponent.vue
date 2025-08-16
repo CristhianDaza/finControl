@@ -11,7 +11,8 @@ const props = defineProps({
   initial: { type: Object, default: null },
   title: { type: String, default: () => t('transactions.addTitle') },
   accountsOptions: { type: Array, default: () => [] },
-  debtsOptions: { type: Array, default: () => [] }
+  debtsOptions: { type: Array, default: () => [] },
+  goalsOptions: { type: Array, default: () => [] }
 })
 
 const emit = defineEmits(['save','update:showModalTransaction','cancel'])
@@ -23,15 +24,21 @@ const transaction = ref({
   type: '',
   account: '',
   debt: '',
+  goal: '',
   date: new Date().toISOString().split('T')[0],
   id: ''
 })
 const showModal = ref(false)
 const isDebtPayment = computed(() => transaction.value.type === 'debtPayment')
+const isGoalSaving = computed(() => transaction.value.type === 'expense:goal')
 
 const handleAccept = () => {
   if (isDebtPayment.value && !transaction.value.debt) { notifyError(t('transactions.notifications.debtRequired')); return }
+  if (isGoalSaving.value && !transaction.value.goal) { notifyError(t('transactions.notifications.goalRequired')); return }
   const payload = { ...transaction.value }
+  if (payload.type === 'expense:goal') {
+    payload.type = 'expense'
+  }
   emit('save', payload)
   emit('update:showModalTransaction', false)
   resetTransaction()
@@ -50,6 +57,7 @@ const resetTransaction = () => {
     type: '',
     account: '',
     debt: '',
+    goal: '',
     date: new Date().toISOString().split('T')[0],
     id: ''
   }
@@ -68,9 +76,10 @@ watch(
         id: val.id || '',
         description: val.description || val.note || '',
         amount: Number(val.amount) || 0,
-        type: val.type || '',
+        type: (val.type === 'expense' && (val.goal || val.goalId)) ? 'expense:goal' : (val.type || ''),
         account: val.account || val.accountId || '',
         debt: val.debt || val.debtId || '',
+        goal: val.goal || val.goalId || '',
         date: val.date || new Date().toISOString().split('T')[0]
       }
     }
@@ -81,6 +90,14 @@ watch(
 watch(
   showModal,
   (v) => emit('update:showModalTransaction', v)
+)
+
+watch(
+  () => transaction.value.type,
+  (typ) => {
+    if (typ !== 'expense:goal') transaction.value.goal = ''
+    if (typ !== 'debtPayment') transaction.value.debt = ''
+  }
 )
 </script>
 
@@ -117,6 +134,7 @@ watch(
       :options="[
         { label: t('transactions.form.income'), value: 'income' },
         { label: t('transactions.form.expense'), value: 'expense' },
+        { label: t('transactions.form.goalSaving'), value: 'expense:goal' },
         { label: t('transactions.form.debtPayment'), value: 'debtPayment' }
       ]"
       required
@@ -138,6 +156,14 @@ watch(
       :options="accountsOptions"
       required
       :error-message="t('transactions.form.accountError')"
+    />
+    <FcFormField
+      v-if="isGoalSaving"
+      v-model="transaction.goal"
+      :label="t('goals.form.goal')"
+      type="select"
+      :options="goalsOptions"
+      required
     />
     <FcFormField
       v-model="transaction.date"

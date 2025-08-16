@@ -5,7 +5,7 @@ import TransactionsIcon from '@/assets/icons/transactions.svg?raw'
 import RecurringIcon from '@/assets/icons/recurring.svg?raw'
 import DebtsIcon from '@/assets/icons/debts.svg?raw'
 import AccountsIcon from '@/assets/icons/accounts.svg?raw'
-import CategoriesIcon from '@/assets/icons/categories.svg?raw'
+import GoalsIcon from '@/assets/icons/goals.svg?raw'
 
 export const useRoutes = () => {
   const base = ref([
@@ -15,6 +15,7 @@ export const useRoutes = () => {
     { id: 4, key: 'navigation.accounts', icon: AccountsIcon, url: 'accounts' },
     // { id: 5, key: 'navigation.categories', icon: CategoriesIcon, url: 'categories' },
     { id: 6, key: 'navigation.recurring', icon: RecurringIcon, url: 'recurring' },
+    { id: 7, key: 'navigation.goals', icon: GoalsIcon, url: 'goals' },
   ])
 
   const routes = computed(() => base.value.map(r => ({ ...r, name: t(r.key) })))

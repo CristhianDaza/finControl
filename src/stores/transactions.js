@@ -43,7 +43,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   const add = async payload => {
     try {
-      const id = await createTransaction({ type: payload.type, amount: payload.amount, accountId: payload.account, date: payload.date, note: payload.description, debtId: payload.debt })
+      const id = await createTransaction({ type: payload.type, amount: payload.amount, accountId: payload.account, date: payload.date, note: payload.description, debtId: payload.debt, goalId: payload.goal })
       success(t('transactions.notifications.created'))
       return id
     } catch (e) {

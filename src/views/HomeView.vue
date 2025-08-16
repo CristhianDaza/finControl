@@ -5,6 +5,7 @@ import { useTransactionsStore } from '@/stores/transactions.js'
 import { useTransfersStore } from '@/stores/transfers.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
 import { t, formatCurrency } from '@/i18n/index.js'
+import { useGoalsStore } from '@/stores/goals.js'
 import {
   Chart,
   BarController, BarElement,
@@ -25,8 +26,17 @@ Chart.register(
 const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
 const transfersStore = useTransfersStore()
+const goalsStore = useGoalsStore()
 import { useRecurringStore } from '@/stores/recurring.js'
 const recurringStore = useRecurringStore()
+
+const goalsList = computed(() => goalsStore.items || [])
+const goalProgressPct = (id) => {
+  try { return Math.round(goalsStore.progressPct(id)) } catch { return 0 }
+}
+const goalCompleted = (id) => {
+  try { return !!goalsStore.isCompleted(id) } catch { return false }
+}
 
 const { currentMonthIndex, currentYear, labels, daysInMonth } = useMonthlyRange()
 const monthLabels = labels
@@ -64,6 +74,8 @@ onMounted(async () => {
   }
   applyMonthFilter(selectedYear.value, selectedMonth.value)
   await recurringStore.processDue()
+  await goalsStore.init()
+  await goalsStore.loadProgress()
 })
 
 watch(selectedYear, () => {
@@ -100,12 +112,22 @@ const formatDate = (d) => {
   } catch { return '' }
 }
 
+const buildGoalsProgress = () => {
+  try {
+    const labels = (goalsList.value || []).map(g => g.name || '')
+    const data = (goalsList.value || []).map(g => Math.round(goalsStore.progressPct(g.id)))
+    return { labels, data }
+  } catch { return { labels: [], data: [] } }
+}
+
 const barCanvas = ref(null)
 const doughnutCanvas = ref(null)
 const lineCanvas = ref(null)
+const goalsCanvas = ref(null)
 let barChart = null
 let doughnutChart = null
 let lineChart = null
+let goalsChart = null
 
 const buildDailySeries = (items, y, m) => {
   const days = daysInMonth(y, m)
@@ -152,6 +174,7 @@ const updateCharts = async () => {
   const daily = buildDailySeries(items, y, m)
   const breakdown = buildBreakdown(items)
   const net = buildNetLine(daily)
+  const goalsData = buildGoalsProgress()
 
   const barData = {
     labels: daily.labels,
@@ -227,14 +250,45 @@ const updateCharts = async () => {
     lineChart.data = lineData
     lineChart.update()
   }
+
+  // Goals chart (bar)
+  if (goalsCanvas.value) {
+    const data = {
+      labels: goalsData.labels,
+      datasets: [{ label: t('goals.table.progress'), data: goalsData.data, backgroundColor: '#3FA9F5' }]
+    }
+    if (!goalsChart) {
+      goalsChart = new Chart(goalsCanvas.value.getContext('2d'), {
+        type: 'bar',
+        data,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-color') } },
+            tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y}%` } },
+          },
+          scales: {
+            x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted-text-color') } },
+            y: { beginAtZero: true, max: 100, ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted-text-color'), callback: (v)=> `${v}%` } },
+          },
+        }
+      })
+    } else {
+      goalsChart.data = data
+      goalsChart.update()
+    }
+  }
 }
 
 watch(monthTx, () => updateCharts())
+watch(() => goalsStore.progressById, () => updateCharts(), { deep: true })
+watch(() => goalsStore.items, () => updateCharts(), { deep: true })
 
 onBeforeUnmount(() => {
   if (barChart) { barChart.destroy(); barChart = null }
   if (doughnutChart) { doughnutChart.destroy(); doughnutChart = null }
   if (lineChart) { lineChart.destroy(); lineChart = null }
+  if (goalsChart) { goalsChart.destroy(); goalsChart = null }
 })
 </script>
 
@@ -299,6 +353,31 @@ onBeforeUnmount(() => {
         <h3>{{ t('dashboard.charts.net') }}</h3>
         <canvas ref="lineCanvas" :aria-label="t('dashboard.charts.net')" role="img"></canvas>
       </div>
+      <div class="card chart-card">
+        <h3>{{ t('goals.title') }}</h3>
+        <canvas ref="goalsCanvas" :aria-label="t('goals.title')" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="card goals-card" v-if="!isLoading && !hasError">
+      <h3>{{ t('goals.title') }}</h3>
+      <div v-if="!(goalsList && goalsList.length)" class="empty">{{ t('goals.empty') }}</div>
+      <ul v-else class="goals-ul">
+        <li v-for="g in goalsList" :key="g.id" class="goal-item">
+          <div class="goal-left">
+            <div class="goal-name">{{ g.name }}</div>
+            <div class="goal-note">{{ g.note || '' }}</div>
+          </div>
+          <div class="goal-right">
+            <div class="progress">
+              <div class="bar"><div class="fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div>
+              <div class="pct">{{ goalProgressPct(g.id) }}%</div>
+            </div>
+            <div class="goal-target">{{ formatCurrency(g.targetAmount) }}</div>
+            <span v-if="goalCompleted(g.id)" class="badge badge-green">{{ t('goals.completed') }}</span>
+          </div>
+        </li>
+      </ul>
     </section>
 
     <section class="card tx-list" v-if="!isLoading && !hasError">
@@ -365,6 +444,20 @@ onBeforeUnmount(() => {
   gap: 1rem;
 }
 .chart-card h3 { margin-top: 0; color: var(--muted-text-color); }
+
+.goals-card { margin-top: 1rem }
+.goals-ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .75rem }
+.goal-item { display:flex; justify-content: space-between; align-items: center; padding:.5rem 0; border-bottom: 1px solid var(--primary-color) }
+.goal-left { display:grid }
+.goal-name { color: var(--text-color); font-weight: 600 }
+.goal-note { color: var(--muted-text-color); font-size: .9rem }
+.goal-right { display:flex; align-items:center; gap: .75rem }
+.progress { display:flex; align-items:center; gap:.5rem }
+.progress .bar { width: 160px; height: 8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
+.progress .fill { height: 100%; background: var(--accent-color) }
+.progress .pct { color: var(--muted-text-color); font-size: .85rem }
+.badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
+.badge-green { background: #16a34a; color: white }
 
 .tx-list { margin-top: 1.5rem; }
 .tx-ul { list-style: none; padding: 0; margin: 0; }

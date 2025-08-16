@@ -32,7 +32,8 @@
     "debts": "Deudas",
     "accounts": "Cuentas",
     "categories": "Categorías",
-    "recurring": "Pagos Recurrentes"
+    "recurring": "Pagos Recurrentes",
+    "goals": "Metas de Ahorro"
   },
   "auth": {
     "logout": "Cerrar sesión",
@@ -151,7 +152,8 @@
       "account": "Cuenta",
       "accountError": "Selecciona una cuenta válida",
       "date": "Fecha",
-      "dateError": "La fecha es obligatoria"
+      "dateError": "La fecha es obligatoria",
+      "goalSaving": "Agregar a la meta"
     },
     "notifications": {
       "created": "Transacción creada",
@@ -162,7 +164,8 @@
       "unauthorized": "Operación no autorizada",
       "debtRemainingNegative": "El pago excede el saldo de la deuda",
       "debtRequired": "Debes seleccionar una deuda",
-      "debtNotFound": "Deuda no encontrada"
+      "debtNotFound": "Deuda no encontrada",
+      "goalRequired": "Debes seleccionar una meta"
     },
     "confirmDelete": {
       "title": "Eliminar transacción",
@@ -274,6 +277,39 @@
       "updated": "Plantilla actualizada",
       "deleted": "Plantilla eliminada",
       "processed": "Se generaron {count} pago(s) recurrente(s)"
+    }
+  },
+  "goals": {
+    "title": "Metas de Ahorro",
+    "add": "Agregar meta",
+    "edit": "Editar meta",
+    "empty": "No hay metas de ahorro",
+    "completed": "Completada",
+    "paused": "Pausada",
+    "active": "Activa",
+    "resume": "Reanudar",
+    "pause": "Pausar",
+    "table": {
+      "name": "Nombre",
+      "account": "Cuenta",
+      "target": "Monto objetivo",
+      "progress": "Progreso",
+      "dueDate": "Fecha límite",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "form": {
+      "name": "Nombre",
+      "targetAmount": "Monto objetivo",
+      "dueDate": "Fecha límite (opcional)",
+      "account": "Cuenta asociada",
+      "note": "Notas",
+      "goal": "Meta (opcional)"
+    },
+    "notifications": {
+      "created": "Meta creada",
+      "updated": "Meta actualizada",
+      "deleted": "Meta eliminada"
     }
   }
 }

@@ -41,6 +41,12 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "recurringView" */  '@/views/RecurringView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/goals',
+      name: 'goals',
+      component: () => import(/* webpackChunkName: "goalsView" */  '@/views/GoalsView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

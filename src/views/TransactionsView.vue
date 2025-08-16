@@ -4,6 +4,7 @@ import { useTransactionsStore } from '@/stores/transactions.js'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useTransfersStore } from '@/stores/transfers.js'
+import { useGoalsStore } from '@/stores/goals.js'
 import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
 import FCTransferModal from '@/components/FCTransferModal.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
@@ -17,6 +18,7 @@ const tx = useTransactionsStore()
 const acc = useAccountsStore()
 const deb = useDebtsStore()
 const tr = useTransfersStore()
+const goals = useGoalsStore()
 
 const tab = ref('transactions')
 
@@ -60,6 +62,7 @@ const hasItems = computed(() => tx.hasItems)
 const isLoading = computed(() => tx.status === 'loading')
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
 const debtsOptions = computed(() => deb.items.map(d => ({ label: d.name, value: d.id })))
+const goalsOptions = computed(() => goals.items.map(g => ({ label: g.name, value: g.id })))
 const accountNameById = computed(() => acc.items.reduce((m, a) => { m[a.id] = a.name; return m }, {}))
 
 const transfers = computed(() => tr.filtered)
@@ -148,7 +151,14 @@ const exportCsv = () => {
   for (const item of filteredRows.value) {
     const desc = (item.note || item.description || '').replace(/"/g, '""')
     const accName = accountNameById.value[item.accountId] || item.accountId
-    const typ = item.type==='income' ? t('transactions.form.income') : item.type==='expense' ? t('transactions.form.expense') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : item.type
+    const isGoal = item.type === 'expense' && (item.goalId || item.goal)
+    const typ = item.type==='income'
+      ? t('transactions.form.income')
+      : item.type==='debtPayment'
+        ? t('transactions.form.debtPayment')
+        : isGoal
+          ? t('transactions.form.goalSaving')
+          : t('transactions.form.expense')
     csvRows.push([item.date, `"${desc}"`, item.amount, `"${accName}"`, `"${typ}"`].join(','))
   }
   const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
@@ -163,7 +173,7 @@ const exportCsv = () => {
 }
 
 onMounted(async () => {
-  acc.subscribeMyAccounts(); deb.subscribeMyDebts(); tx.init(); tr.init(); await tx.loadAvailablePeriods();
+  acc.subscribeMyAccounts(); deb.subscribeMyDebts(); tx.init(); tr.init(); await tx.loadAvailablePeriods(); goals.init();
   if (!availableYears.value.includes(selectedYear.value)) {
     const lastY = availableYears.value[availableYears.value.length - 1]
     if (lastY != null) selectedYear.value = lastY
@@ -284,7 +294,7 @@ watch(selectedYear, () => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredRows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense', 'row-debt': item.type==='debtPayment' }">
+            <tr v-for="item in filteredRows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' && !(item.goalId || item.goal), 'row-debt': item.type==='debtPayment', 'row-goal': item.type==='expense' && (item.goalId || item.goal) }">
               <td>{{ item.date }}</td>
               <td>
                 <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
@@ -294,7 +304,9 @@ watch(selectedYear, () => {
               </td>
               <td>{{ formatCurrency(item.amount) }}</td>
               <td>{{ accountNameById[item.accountId] || item.accountId }}</td>
-              <td>{{ item.type==='income' ? t('transactions.form.income') : item.type==='expense' ? t('transactions.form.expense') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : item.type }}</td>
+              <td>
+                {{ item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : (item.type==='expense' && (item.goalId || item.goal)) ? t('transactions.form.goalSaving') : t('transactions.form.expense') }}
+              </td>
               <td>
                 <div class="actions">
                   <button class="button button-edit" @click="openEdit(item)" :disabled="busy">
@@ -361,6 +373,7 @@ watch(selectedYear, () => {
       :title="modalTitle"
       :accounts-options="accountsOptions"
       :debts-options="debtsOptions"
+      :goals-options="goalsOptions"
       @save="onSave"
       @update:showModalTransaction="showModal = $event"
     />
@@ -461,4 +474,5 @@ tr.row-income { box-shadow: inset 6px 0 0 var(--success-color); }
 tr.row-expense { box-shadow: inset 6px 0 0 var(--error-color); }
 tr.row-debt { box-shadow: inset 6px 0 0 var(--debt-color); }
 tr.row-transfer { box-shadow: inset 6px 0 0 #3FA9F5; }
+tr.row-goal { box-shadow: inset 6px 0 0 #f59e0b; }
 </style>
