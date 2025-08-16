@@ -110,7 +110,35 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const byId = id => computed(() => items.value.find(ti => ti.id === id))
   const totals = computed(() => { const income = items.value.filter(i => i.type === 'income').reduce((a,b)=>a+Number(b.amount||0),0); const expense = items.value.filter(i => i.type === 'expense').reduce((a,b)=>a+Number(b.amount||0),0); return { income, expense, balance: income - expense } })
 
+  // Periodos disponibles (años y meses con transacciones)
+  const availablePeriods = ref({ years: [], monthsByYear: {} })
+  const loadAvailablePeriods = async () => {
+    try {
+      const all = await fetchTransactions({})
+      const monthsMap = {}
+      for (const it of all) {
+        const ds = String(it.date || '') // esperado YYYY-MM-DD
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(ds)) continue
+        const y = Number(ds.slice(0, 4))
+        const m = Number(ds.slice(5, 7)) - 1 // 0-11
+        if (!monthsMap[y]) monthsMap[y] = new Set()
+        monthsMap[y].add(m)
+      }
+      const years = Object.keys(monthsMap).map(n => Number(n)).sort((a,b)=>a-b)
+      const monthsByYear = {}
+      for (const y of years) {
+        monthsByYear[y] = Array.from(monthsMap[y]).sort((a,b)=>a-b)
+      }
+      availablePeriods.value = { years, monthsByYear }
+      return availablePeriods.value
+    } catch (e) {
+      // si falla, dejar vacío
+      availablePeriods.value = { years: [], monthsByYear: {} }
+      return availablePeriods.value
+    }
+  }
+
   onUnmounted(() => dispose())
 
-  return { items, status, error, selected, filters, orderBy, unsubscribe, init, dispose, reload, add, edit, remove, setFilters, setOrder, hasItems, byId, totals }
+  return { items, status, error, selected, filters, orderBy, unsubscribe, init, dispose, reload, add, edit, remove, setFilters, setOrder, hasItems, byId, totals, availablePeriods, loadAvailablePeriods }
 })

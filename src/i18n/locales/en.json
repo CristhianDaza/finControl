@@ -15,7 +15,9 @@
     "all": "All",
     "confirm": "Confirm",
     "select-option": "Select an option",
-    "transfer": "Transfer"
+    "transfer": "Transfer",
+    "month": "Month",
+    "year": "Year"
   },
   "language": { "switcher": "Language" },
   "notification": { "dismiss": "Dismiss notification" },
@@ -168,7 +170,7 @@
       "type": "Type",
       "actions": "Actions"
     },
-    "filters": { "save": "Save filter", "clear": "Clear" },
+    "filters": { "save": "Save filter", "clear": "Clear", "search": "Search by name", "amount": "Minimum amount" },
     "exportCsv": "Export CSV"
   },
   "dashboard": {

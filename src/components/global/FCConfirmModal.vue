@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue'
 import { t } from '@/i18n/index.js'
 const props = defineProps({ open: Boolean, title: String, message: String, confirmText: { type: String, default: '' }, cancelText: { type: String, default: '' } })
 const emit = defineEmits(['update:open','confirm','cancel'])

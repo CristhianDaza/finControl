@@ -3,7 +3,7 @@ import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useTransactions } from '@/composables/useTransactions.js'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t, formatCurrency, formatDate } from '@/i18n/index.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
@@ -35,8 +35,7 @@ const askRemove = (id) => { toDeleteId.value = id; confirmOpen.value = true }
 
 const ensurePaymentsLoaded = async (debtId) => {
   if (paymentsByDebt.value[debtId]) return
-  const list = await fetchTransactions({ type: 'debtPayment', debtId, orderBy: [{ field: 'date', dir: 'desc' }, { field: 'createdAt', dir: 'desc' }] })
-  paymentsByDebt.value[debtId] = list
+  paymentsByDebt.value[debtId] = await fetchTransactions({ type: 'debtPayment', debtId, orderBy: [{ field: 'date', dir: 'desc' }, { field: 'createdAt', dir: 'desc' }] })
 }
 
 const toggleOpen = async (debtId) => {
@@ -108,7 +107,7 @@ onMounted(() => { deb.subscribeMyDebts() })
           <li style="font-weight:600">{{ t('debts.card.payments') }}</li>
           <li v-if="!(paymentsByDebt[d.id] && paymentsByDebt[d.id].length)">{{ t('debts.card.emptyPayments') }}</li>
           <li v-for="p in (paymentsByDebt[d.id]||[])" :key="p.id">
-            <span>🗓 {{ p.date }}</span>
+            <span>🗓 {{ formatDate(p.date) }}</span>
             <span>{{ formatCurrency(p.amount) }}</span>
           </li>
         </ul>

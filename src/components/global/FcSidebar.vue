@@ -55,14 +55,16 @@ defineExpose({ handleMainClick })
         </RouterLink>
       </nav>
     </div>
-    <div style="display:flex;flex-direction:column;gap:.5rem">
-      <LanguageSwitcher />
+    <div class="bottom-area">
       <button v-if="isAuthenticated" class="button button-delete" @click="handleLogout">
         <span>{{ t('auth.logout') }}</span>
         <svg class="icon-menu" v-html="LogoutIcon"></svg>
       </button>
-      <div v-if="isAuthenticated" class="version-container">
-        <span class="version-pill">{{ appVersion }}</span>
+      <div class="bottom-bar" :class="{ 'lang-collapsed' : isMenuHidden }">
+        <div v-if="isAuthenticated" class="version-container">
+          <span class="version-pill">{{ appVersion }}</span>
+        </div>
+        <LanguageSwitcher :collapsed="isMenuHidden" />
       </div>
     </div>
   </aside>
@@ -72,7 +74,7 @@ defineExpose({ handleMainClick })
 .sidebar {
   min-width: 220px;
   background-color: var(--primary-color);
-  padding: 2rem 1rem;
+  padding: 2rem 1rem 1rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -189,6 +191,18 @@ a:hover .icon-menu {
 .hidden-menu .icon-menu {
   width: 20px;
   height: 20px;
+}
+
+.bottom-area { display:flex; flex-direction: column; gap:.5rem }
+.bottom-bar {
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding-top: 1rem;
+}
+
+.lang-collapsed {
+  justify-content: center;
 }
 
 .version-container {

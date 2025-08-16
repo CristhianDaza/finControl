@@ -1,5 +1,5 @@
 <script setup>
-import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
+import { defineAsyncComponent, ref, computed, onMounted, watch } from 'vue'
 import { useTransactionsStore } from '@/stores/transactions.js'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useDebtsStore } from '@/stores/debts.js'
@@ -30,18 +30,34 @@ const transferOpen = ref(false)
 const editingTransfer = ref(null)
 const busy = ref(false)
 
+// Filtros
 const typeFilter = ref('')
 const accountFilter = ref('')
 const from = ref('')
 const to = ref('')
+const searchText = ref('')
+const minAmount = ref('')
 
-const { labels: monthLabels } = useMonthlyRange()
-const now = new Date()
-const selectedMonth = ref(now.getMonth())
-const currentYear = ref(now.getFullYear())
-const months = computed(() => monthLabels.value.map((label, idx) => ({ label, value: idx })))
+// Periodos disponibles para selects
+const { labels: monthLabels, daysInMonth } = useMonthlyRange()
+const availableYears = computed(() => tx.availablePeriods.years || [])
+const selectedYear = ref(new Date().getFullYear())
+const availableMonths = computed(() => (tx.availablePeriods.monthsByYear && tx.availablePeriods.monthsByYear[selectedYear.value]) || [])
+const selectedMonth = ref(new Date().getMonth())
 
 const rows = computed(() => tx.items)
+const filteredRows = computed(() => {
+  let list = rows.value
+  if (searchText.value) {
+    const q = searchText.value.toLowerCase()
+    list = list.filter(it => String(it.note || it.description || '').toLowerCase().includes(q))
+  }
+  if (minAmount.value) {
+    const min = Number(minAmount.value)
+    if (!isNaN(min) && min > 0) list = list.filter(it => Number(it.amount || 0) >= min)
+  }
+  return list
+})
 const hasItems = computed(() => tx.hasItems)
 const isLoading = computed(() => tx.status === 'loading')
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
@@ -100,13 +116,14 @@ const applyFilters = () => {
   tr.setFilters(tf)
 }
 
+const pad2 = (n) => String(n).padStart(2, '0')
 const setMonth = (m) => {
   selectedMonth.value = m
-  const first = new Date(currentYear.value, m, 1)
-  const last = new Date(currentYear.value, m + 1, 0)
-  const pad = (n) => String(n).padStart(2, '0')
-  from.value = `${first.getFullYear()}-${pad(first.getMonth() + 1)}-${pad(first.getDate())}`
-  to.value = `${last.getFullYear()}-${pad(last.getMonth() + 1)}-${pad(last.getDate())}`
+  const y = selectedYear.value
+  const fromStr = `${y}-${pad2(m + 1)}-01`
+  const toStr = `${y}-${pad2(m + 1)}-${pad2(daysInMonth(y, m))}`
+  from.value = fromStr
+  to.value = toStr
   applyFilters()
 }
 
@@ -114,7 +131,7 @@ const saveFilters = async () => {
   const current = { type: typeFilter.value || '', from: from.value || '', to: to.value || '' }
   await saveTxFilters(current)
 }
-const clearFilters = () => { typeFilter.value = ''; from.value = ''; to.value = ''; accountFilter.value=''; applyFilters() }
+const clearFilters = () => { typeFilter.value = ''; from.value = ''; to.value = ''; accountFilter.value=''; searchText.value=''; minAmount.value=''; applyFilters() }
 const loadSavedFilters = async () => {
   try {
     const saved = await getTxFilters()
@@ -130,7 +147,7 @@ const loadSavedFilters = async () => {
 const exportCsv = () => {
   const headers = [t('transactions.table.date'), t('transactions.table.description'), t('transactions.table.amount'), t('transactions.table.account'), t('transactions.table.type')]
   const csvRows = [headers.join(',')]
-  for (const item of rows.value) {
+  for (const item of filteredRows.value) {
     const desc = (item.note || item.description || '').replace(/"/g, '""')
     const accName = accountNameById.value[item.accountId] || item.accountId
     const typ = item.type==='income' ? t('transactions.form.income') : item.type==='expense' ? t('transactions.form.expense') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : item.type
@@ -147,29 +164,60 @@ const exportCsv = () => {
   URL.revokeObjectURL(url)
 }
 
-onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.subscribeMyDebts(); tx.init(); tr.init(); loadSavedFilters() })
+onMounted(async () => {
+  acc.subscribeMyAccounts(); deb.subscribeMyDebts(); tx.init(); tr.init(); await tx.loadAvailablePeriods();
+  // inicializar selects a último periodo disponible si no coincide
+  if (!availableYears.value.includes(selectedYear.value)) {
+    const lastY = availableYears.value[availableYears.value.length - 1]
+    if (lastY != null) selectedYear.value = lastY
+  }
+  if (!availableMonths.value.includes(selectedMonth.value)) {
+    const months = availableMonths.value
+    if (months.length) selectedMonth.value = months[months.length - 1]
+  }
+  setMonth(selectedMonth.value)
+  loadSavedFilters()
+})
+
+watch(selectedYear, () => {
+  if (!availableMonths.value.includes(selectedMonth.value) && availableMonths.value.length) {
+    selectedMonth.value = availableMonths.value[availableMonths.value.length - 1]
+  }
+  setMonth(selectedMonth.value)
+})
 </script>
 
 <template>
   <section>
+    <!-- Barra de acciones separada -->
     <div class="card" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;justify-content:space-between">
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button
-          v-for="m in months"
-          :key="m.value"
-          class="button"
-          :class="selectedMonth === m.value ? '' : 'button-secondary'"
-          @click="setMonth(m.value)"
-        >
-          {{ m.label }}
-        </button>
+        <button class="button" :class="tab==='transactions'? '' : 'button-secondary'" @click="tab='transactions'">{{ t('navigation.transactions') }}</button>
+        <button class="button" :class="tab==='transfers'? '' : 'button-secondary'" @click="tab='transfers'">{{ t('transfers.title') }}</button>
       </div>
-      <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
-        <div style="display:flex;gap:.5rem">
-          <button class="button" :class="tab==='transactions'?'':'button-secondary'" @click="tab='transactions'">{{ t('navigation.transactions') }}</button>
-          <button class="button" :class="tab==='transfers'?'':'button-secondary'" @click="tab='transfers'">{{ t('transfers.title') }}</button>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button v-if="tab==='transactions'" class="button" @click="openAdd" :disabled="busy || isLoading">{{ t('transactions.addTitle') }}</button>
+        <button v-else class="button" @click="openAddTransfer" :disabled="busy || isLoadingTransfers">{{ t('common.transfer') }}</button>
+        <button class="button button-secondary" @click="exportCsv" :title="t('transactions.exportCsv')">{{ t('transactions.exportCsv') }}</button>
+      </div>
+    </div>
+
+    <!-- Panel de filtros -->
+    <div class="card" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap; margin-top: .75rem; justify-content:space-between">
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <div>
+          <label style="display:block;margin-bottom:.25rem">{{ t('common.year') }}</label>
+          <select class="input" v-model.number="selectedYear">
+            <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
+          </select>
         </div>
-        <div v-if="tab==='transactions'" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+        <div>
+          <label style="display:block;margin-bottom:.25rem">{{ t('common.month') }}</label>
+          <select class="input" v-model.number="selectedMonth" @change="setMonth(selectedMonth)">
+            <option v-for="m in availableMonths" :key="m" :value="m">{{ monthLabels[m] }}</option>
+          </select>
+        </div>
+        <template v-if="tab==='transactions'">
           <div style="min-width:200px">
             <label style="display:block;margin-bottom:.25rem">{{ t('common.type') }}</label>
             <select class="input" v-model="typeFilter" @change="applyFilters">
@@ -180,6 +228,14 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
             </select>
           </div>
           <div>
+            <label style="display:block;margin-bottom:.25rem">{{ t('transactions.filters.search') }}</label>
+            <input class="input" type="text" v-model.trim="searchText" placeholder="Ej: arriendo" />
+          </div>
+          <div>
+            <label style="display:block;margin-bottom:.25rem">{{ t('transactions.filters.amount') }}</label>
+            <input class="input" type="number" min="0" step="0.01" v-model="minAmount" />
+          </div>
+          <div>
             <label style="display:block;margin-bottom:.25rem">{{ t('common.from') }}</label>
             <input class="input" type="date" v-model="from" @change="applyFilters" />
           </div>
@@ -188,13 +244,11 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
             <input class="input" type="date" v-model="to" @change="applyFilters" />
           </div>
           <div style="display:flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap">
-            <button class="button" @click="openAdd" :disabled="busy || isLoading">{{ t('transactions.addTitle') }}</button>
             <button class="button button-secondary" @click="saveFilters" :title="t('transactions.filters.save')">{{ t('transactions.filters.save') }}</button>
             <button class="button button-secondary" @click="clearFilters" :title="t('transactions.filters.clear')">{{ t('transactions.filters.clear') }}</button>
-            <button class="button button-secondary" @click="exportCsv" :title="t('transactions.exportCsv')">{{ t('transactions.exportCsv') }}</button>
           </div>
-        </div>
-        <div v-else style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+        </template>
+        <template v-else>
           <div style="min-width:200px">
             <label style="display:block;margin-bottom:.25rem">{{ t('accounts.title') }}</label>
             <select class="input" v-model="accountFilter" @change="applyFilters">
@@ -210,10 +264,7 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
             <label style="display:block;margin-bottom:.25rem">{{ t('common.to') }}</label>
             <input class="input" type="date" v-model="to" @change="applyFilters" />
           </div>
-          <div style="display:flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap">
-            <button class="button" @click="openAddTransfer" :disabled="busy || isLoadingTransfers">{{ t('common.transfer') }}</button>
-          </div>
-        </div>
+        </template>
       </div>
     </div>
 
@@ -236,7 +287,7 @@ onMounted(() => { setMonth(selectedMonth.value); acc.subscribeMyAccounts(); deb.
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in rows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' }">
+            <tr v-for="item in filteredRows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' }">
               <td>{{ item.date }}</td>
               <td>{{ item.note || item.description }}</td>
               <td>{{ formatCurrency(item.amount) }}</td>
@@ -399,21 +450,4 @@ td:nth-child(4) {
   gap: 0.5rem;
   justify-content: flex-end;
 }
-
-tr {
-  position: relative;
-}
-
-tr::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  border-radius: 4px 0 0 4px;
-}
-
-.row-income::before { background-color: var(--success-color) }
-.row-expense::before { background-color: var(--error-color) }
 </style>

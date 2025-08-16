@@ -26,11 +26,14 @@ const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
 const transfersStore = useTransfersStore()
 
-const { currentMonthIndex, currentYear, labels, monthRange, daysInMonth } = useMonthlyRange()
+const { currentMonthIndex, currentYear, labels, daysInMonth } = useMonthlyRange()
 const monthLabels = labels
 
+// Selección de periodo (año/mes)
 const selectedMonth = ref(Number(sessionStorage.getItem('dash:month') ?? currentMonthIndex))
 const selectedYear = ref(Number(sessionStorage.getItem('dash:year') ?? currentYear))
+const availableYears = computed(() => transactionsStore.availablePeriods.years || [])
+const availableMonths = computed(() => (transactionsStore.availablePeriods.monthsByYear && transactionsStore.availablePeriods.monthsByYear[selectedYear.value]) || [])
 
 const isLoading = computed(() => accountsStore.status === 'loading' || transactionsStore.status === 'loading')
 const hasError = computed(() => accountsStore.status === 'error' || transactionsStore.status === 'error')
@@ -49,9 +52,25 @@ const applyMonthFilter = (y, m) => {
 onMounted(async () => {
   await accountsStore.subscribeMyAccounts()
   transfersStore.init()
+  // cargar periodos disponibles y ajustar selección si es necesario
+  await transactionsStore.loadAvailablePeriods()
+  if (!availableYears.value.includes(selectedYear.value)) {
+    const lastY = availableYears.value[availableYears.value.length - 1]
+    if (lastY != null) selectedYear.value = lastY
+  }
+  if (!availableMonths.value.includes(selectedMonth.value)) {
+    const months = availableMonths.value
+    if (months.length) selectedMonth.value = months[months.length - 1]
+  }
   applyMonthFilter(selectedYear.value, selectedMonth.value)
 })
 
+watch(selectedYear, () => {
+  // si el mes actual no existe para el nuevo año, elegir el último disponible
+  if (!availableMonths.value.includes(selectedMonth.value) && availableMonths.value.length) {
+    selectedMonth.value = availableMonths.value[availableMonths.value.length - 1]
+  }
+})
 watch([selectedMonth, selectedYear], ([m, y]) => applyMonthFilter(y, m))
 
 // KPIs
@@ -219,30 +238,23 @@ onBeforeUnmount(() => {
   if (doughnutChart) { doughnutChart.destroy(); doughnutChart = null }
   if (lineChart) { lineChart.destroy(); lineChart = null }
 })
-
-const monthsNav = ref(null)
-const onKeydownMonths = (e) => {
-  const key = e.key
-  if (key !== 'ArrowLeft' && key !== 'ArrowRight') return
-  e.preventDefault()
-  let next = selectedMonth.value + (key === 'ArrowRight' ? 1 : -1)
-  if (next < 0) next = 11
-  if (next > 11) next = 0
-  selectedMonth.value = next
-}
 </script>
 
 <template>
   <section>
-    <div class="months-toolbar" role="toolbar" :aria-label="t('dashboard.filter.ariaLabel')" ref="monthsNav" @keydown="onKeydownMonths">
-      <button
-        v-for="(lab, idx) in monthLabels"
-        :key="idx"
-        class="month-btn"
-        :class="{ active: idx === selectedMonth }"
-        :aria-pressed="idx === selectedMonth"
-        @click="selectedMonth = idx"
-      >{{ lab }}</button>
+    <div class="period-toolbar" role="toolbar" :aria-label="t('dashboard.filter.ariaLabel')">
+      <div class="field">
+        <label>{{ t('common.year') }}</label>
+        <select class="input" v-model.number="selectedYear">
+          <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>{{ t('common.month') }}</label>
+        <select class="input" v-model.number="selectedMonth">
+          <option v-for="m in availableMonths" :key="m" :value="m">{{ monthLabels[m] }}</option>
+        </select>
+      </div>
     </div>
 
     <section class="dashboard-grid">
@@ -316,24 +328,15 @@ const onKeydownMonths = (e) => {
 </template>
 
 <style scoped>
-.months-toolbar {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(48px, 1fr));
-  gap: .5rem;
+.period-toolbar {
+  display: flex;
+  gap: 1rem;
   margin-bottom: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
 }
-.month-btn {
-  background: var(--secondary-color);
-  color: var(--text-color);
-  border: 1px solid var(--primary-color);
-  padding: .5rem .25rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.month-btn.active {
-  outline: 2px solid var(--accent-color);
-  background: var(--hover-secondary-color);
-}
+.field { min-width: 160px }
+.field label { display:block; margin-bottom:.25rem; color: var(--muted-text-color) }
 
 .dashboard-grid {
   display: grid;
