@@ -24,6 +24,34 @@ Chart.register(
   LineController, LineElement, PointElement
 )
 
+const getCssVar = (name) => {
+  try {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name)
+    return (v || '').trim()
+  } catch { return '' }
+}
+const hexToRgba = (hex, alpha = 1) => {
+  try {
+    if (!hex) return `rgba(0,0,0,${alpha})`
+    let h = hex.trim()
+    if (h.startsWith('rgba(') || h.startsWith('rgb(')) return h
+    if (h.startsWith('#')) h = h.slice(1)
+    if (h.length === 3) {
+      const r = parseInt(h[0] + h[0], 16)
+      const g = parseInt(h[1] + h[1], 16)
+      const b = parseInt(h[2] + h[2], 16)
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    }
+    if (h.length >= 6) {
+      const r = parseInt(h.slice(0, 2), 16)
+      const g = parseInt(h.slice(2, 4), 16)
+      const b = parseInt(h.slice(4, 6), 16)
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    }
+  } catch { /* noop */ }
+  return `rgba(0,0,0,${alpha})`
+}
+
 const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
 const transfersStore = useTransfersStore()
