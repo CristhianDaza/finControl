@@ -371,5 +371,17 @@
       "alerts": "Alertas y carryover",
       "conversion": "Conversión"
     }
+  },
+  "settings": {
+    "title": "Configuración",
+    "reset": "Resetear",
+    "preview": "Vista previa",
+    "previewDesc": "Esta tarjeta y los elementos de la UI reflejan los colores seleccionados.",
+    "samplePrimary": "Acción primaria",
+    "sampleSecondary": "Acción secundaria",
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Personaliza los colores principales de la app. Los cambios se aplican en vivo."
+    }
   }
 }

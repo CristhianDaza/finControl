@@ -41,6 +41,7 @@ watch(() => auth.isAuthenticated, async (v) => {
         </transition>
       </router-view>
     </main>
+    <router-link v-if="auth.isAuthenticated" to="/settings" class="settings-fab" title="Configuración">⚙</router-link>
   </div>
   <FCNotify />
 </template>
@@ -77,4 +78,23 @@ watch(() => auth.isAuthenticated, async (v) => {
   filter: blur(4px);
   opacity: 0;
 }
+
+.settings-fab {
+  position: fixed;
+  right: clamp(12px, 2vw, 20px);
+  bottom: clamp(12px, 2vw, 20px);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background: var(--secondary-color);
+  color: var(--accent-color);
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 2px 8px var(--shadow-elev-2);
+  font-size: 20px;
+}
+.settings-fab:hover { background: var(--hover-secondary-color); }
 </style>

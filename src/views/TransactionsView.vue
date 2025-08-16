@@ -469,9 +469,9 @@ td:nth-child(4) {
   justify-content: flex-end;
 }
 
-tr.row-income { box-shadow: inset 6px 0 0 var(--success-color); }
-tr.row-expense { box-shadow: inset 6px 0 0 var(--error-color); }
-tr.row-debt { box-shadow: inset 6px 0 0 var(--debt-color); }
-tr.row-transfer { box-shadow: inset 6px 0 0 var(--accent-color); }
-tr.row-goal { box-shadow: inset 6px 0 0 var(--warning-color); }
+tr.row-income { box-shadow: inset 6px 0 0 var(--tx-income-color); }
+tr.row-expense { box-shadow: inset 6px 0 0 var(--tx-expense-color); }
+tr.row-debt { box-shadow: inset 6px 0 0 var(--tx-debtPayment-color); }
+tr.row-transfer { box-shadow: inset 6px 0 0 var(--tx-transfer-color); }
+tr.row-goal { box-shadow: inset 6px 0 0 var(--tx-goal-color); }
 </style>

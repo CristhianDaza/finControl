@@ -34,6 +34,12 @@
     --shadow-elev-4: rgba(0, 0, 0, 0.4);
     --overlay-40: rgba(0, 0, 0, 0.4);
     --overlay-50: rgba(0, 0, 0, 0.5);
+
+    --tx-expense-color: #EF4444;
+    --tx-goal-color: #F59E0B;
+    --tx-debtPayment-color: #8B5CF6;
+    --tx-income-color: #22C55E;
+    --tx-transfer-color: #3FA9F5;
 }
 
 body {

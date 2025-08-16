@@ -53,6 +53,12 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "budgetsView" */ '@/views/BudgetsView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import(/* webpackChunkName: "settingsView" */ '@/views/SettingsView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

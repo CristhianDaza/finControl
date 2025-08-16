@@ -349,5 +349,17 @@
     "closePeriod": "Close period",
     "periodMonthly": "{year} {month}",
     "periodCustom": "{from} to {to}"
+  },
+  "settings": {
+    "title": "Settings",
+    "reset": "Reset",
+    "preview": "Preview",
+    "previewDesc": "This card and UI elements reflect the selected colors.",
+    "samplePrimary": "Primary action",
+    "sampleSecondary": "Secondary action",
+    "theme": {
+      "title": "Theme",
+      "subtitle": "Customize the app's main colors. Changes apply live."
+    }
   }
 }
