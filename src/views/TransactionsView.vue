@@ -295,19 +295,19 @@ watch(selectedYear, () => {
           </thead>
           <tbody>
             <tr v-for="item in filteredRows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' && !(item.goalId || item.goal), 'row-debt': item.type==='debtPayment', 'row-goal': item.type==='expense' && (item.goalId || item.goal) }">
-              <td>{{ item.date }}</td>
-              <td>
+              <td :data-label="t('transactions.table.date')">{{ item.date }}</td>
+              <td :data-label="t('transactions.table.description')">
                 <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
                   <span>{{ item.note || item.description }}</span>
                   <span v-if="item.isRecurring || item.recurringTemplateId" class="badge badge-rec">{{ t('recurring.badge') }}</span>
                 </div>
               </td>
-              <td>{{ formatCurrency(item.amount) }}</td>
-              <td>{{ accountNameById[item.accountId] || item.accountId }}</td>
-              <td>
+              <td :data-label="t('transactions.table.amount')">{{ formatCurrency(item.amount) }}</td>
+              <td :data-label="t('transactions.table.account')">{{ accountNameById[item.accountId] || item.accountId }}</td>
+              <td :data-label="t('transactions.table.type')">
                 {{ item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : (item.type==='expense' && (item.goalId || item.goal)) ? t('transactions.form.goalSaving') : t('transactions.form.expense') }}
               </td>
-              <td>
+              <td :data-label="t('transactions.table.actions')">
                 <div class="actions">
                   <button class="button button-edit" @click="openEdit(item)" :disabled="busy">
                     <svg class="icon-edit" v-html="EditIcon"></svg>
@@ -342,16 +342,16 @@ watch(selectedYear, () => {
           </thead>
           <tbody>
             <tr v-for="pair in transfers" :key="pair.transferId" class="row-transfer">
-              <td>{{ pair.out.date }}</td>
-              <td>{{ t('common.transfer') }} · {{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }} · {{ pair.out.note }}</td>
-              <td>{{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }}</td>
-              <td>
+              <td :data-label="t('transactions.table.date')">{{ pair.out.date }}</td>
+              <td :data-label="t('transactions.table.description')">{{ t('common.transfer') }} · {{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }} · {{ pair.out.note }}</td>
+              <td :data-label="t('transactions.table.account')">{{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }}</td>
+              <td :data-label="t('transactions.table.amount')">
                 <div style="display:flex;flex-direction:column;gap:.25rem">
                   <span>-{{ formatCurrency(pair.out.amountFrom, pair.out.currencyFrom) }}</span>
                   <span>+{{ formatCurrency(pair.inn.amountTo, pair.inn.currencyTo) }}</span>
                 </div>
               </td>
-              <td>
+              <td :data-label="t('transactions.table.actions')">
                 <div class="actions">
                   <button class="button button-edit" @click="openEditTransfer(pair)" :disabled="busy">
                     <svg class="icon-edit" v-html="EditIcon"></svg>

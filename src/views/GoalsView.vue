@@ -72,21 +72,21 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
         </thead>
         <tbody>
           <tr v-for="g in goals.items" :key="g.id">
-            <td>{{ g.name }}</td>
-            <td>{{ accountNameById[g.accountId] || g.accountId }}</td>
-            <td>{{ formatCurrency(g.targetAmount) }}</td>
-            <td>
+            <td :data-label="t('goals.table.name')">{{ g.name }}</td>
+            <td :data-label="t('goals.table.account')">{{ accountNameById[g.accountId] || g.accountId }}</td>
+            <td :data-label="t('goals.table.target')">{{ formatCurrency(g.targetAmount) }}</td>
+            <td :data-label="t('goals.table.progress')">
               <div class="progress-row">
                 <div class="progress-bar"><div class="progress-fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div>
                 <span class="progress-text">{{ goalProgressPct(g.id) }}%</span>
               </div>
             </td>
-            <td>{{ g.dueDate || '-' }}</td>
-            <td>
+            <td :data-label="t('goals.table.dueDate')">{{ g.dueDate || '-' }}</td>
+            <td :data-label="t('goals.table.status')">
               <span v-if="isCompleted(g.id)" class="badge badge-green">{{ t('goals.completed') }}</span>
               <span v-else class="badge" :class="g.paused ? 'badge-gray' : 'badge-blue'">{{ g.paused ? t('goals.paused') : t('goals.active') }}</span>
             </td>
-            <td>
+            <td :data-label="t('goals.table.actions')">
               <div class="actions">
                 <button class="button button-edit" @click="openEdit(g)">{{ t('common.edit') }}</button>
                 <button class="button button-secondary" @click="askPauseResume(g)">{{ g.paused ? t('goals.resume') : t('goals.pause') }}</button>

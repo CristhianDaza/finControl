@@ -33,8 +33,8 @@ const closeModal = () => { showModal.value = false }
           </thead>
           <tbody>
             <tr>
-              <td>{{ t('categories.samples.salary') }}</td>
-              <td class="actions">
+              <td :data-label="t('categories.table.name')">{{ t('categories.samples.salary') }}</td>
+              <td class="actions" :data-label="t('categories.table.actions')">
                 <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')">
                   <svg class="icon-edit" v-html="EditIcon"></svg>
                 </button>
@@ -58,8 +58,8 @@ const closeModal = () => { showModal.value = false }
           </thead>
           <tbody>
           <tr>
-            <td>{{ t('categories.samples.rent') }}</td>
-            <td class="actions">
+            <td :data-label="t('categories.table.name')">{{ t('categories.samples.rent') }}</td>
+            <td class="actions" :data-label="t('categories.table.actions')">
               <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')">
                 <svg class="icon-edit" v-html="EditIcon"></svg>
               </button>

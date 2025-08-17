@@ -107,16 +107,16 @@ onMounted(() => { deb.subscribeMyDebts() })
         <tbody>
           <template v-for="d in rows" :key="d.id">
             <tr>
-              <td>
+              <td :data-label="t('recurring.table.name')">
                 <button class="link-like" @click="toggleOpen(d.id)">{{ d.name }}</button>
               </td>
-              <td>{{ formatCurrency(d.originalAmount) }}</td>
-              <td>{{ formatCurrency(d.remainingAmount) }}</td>
-              <td>{{ d.dueDate || '-' }}</td>
-              <td>
+              <td :data-label="t('debts.card.total')">{{ formatCurrency(d.originalAmount) }}</td>
+              <td :data-label="t('debts.card.remaining')">{{ formatCurrency(d.remainingAmount) }}</td>
+              <td :data-label="t('debts.form.dueDate')">{{ d.dueDate || '-' }}</td>
+              <td :data-label="t('debts.card.status')">
                 <span class="badge" :class="d.status === 'paid' ? 'badge-green' : 'badge-blue'">{{ d.status === 'paid' ? t('debts.card.paid') : t('debts.card.active') }}</span>
               </td>
-              <td>
+              <td :data-label="t('transactions.table.actions')">
                 <div class="actions">
                   <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')" @click="openEdit(d)">
                     <svg class="icon-edit" v-html="EditIcon"></svg>

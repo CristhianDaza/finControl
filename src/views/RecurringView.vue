@@ -115,16 +115,16 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
         </thead>
         <tbody>
           <tr v-for="tpl in rec.items" :key="tpl.id">
-            <td>{{ tpl.name || tpl.note || '-' }}</td>
-            <td>{{ tpl.nextRunAt }}</td>
-            <td>{{ formatCurrency(Number(tpl.amount||0)) }}</td>
-            <td>{{ accountNameById[tpl.accountId] || tpl.accountId }}</td>
-            <td>{{ tpl.type==='income' ? t('transactions.form.income') : tpl.type==='expense' ? t('transactions.form.expense') : tpl.type==='debtPayment' ? t('transactions.form.debtPayment') : tpl.type }}</td>
-            <td>{{ t(`recurring.frequency.${tpl.frequency||'monthly'}`) }}</td>
-            <td>
+            <td :data-label="t('recurring.table.name')">{{ tpl.name || tpl.note || '-' }}</td>
+            <td :data-label="t('recurring.table.next')">{{ tpl.nextRunAt }}</td>
+            <td :data-label="t('recurring.table.amount')">{{ formatCurrency(Number(tpl.amount||0)) }}</td>
+            <td :data-label="t('recurring.table.account')">{{ accountNameById[tpl.accountId] || tpl.accountId }}</td>
+            <td :data-label="t('recurring.table.type')">{{ tpl.type==='income' ? t('transactions.form.income') : tpl.type==='expense' ? t('transactions.form.expense') : tpl.type==='debtPayment' ? t('transactions.form.debtPayment') : tpl.type }}</td>
+            <td :data-label="t('recurring.table.frequency')">{{ t(`recurring.frequency.${tpl.frequency||'monthly'}`) }}</td>
+            <td :data-label="t('recurring.table.status')">
               <span class="badge" :class="tpl.paused? 'badge-gray': 'badge-green'">{{ tpl.paused ? t('recurring.paused') : t('recurring.active') }}</span>
             </td>
-            <td>
+            <td :data-label="t('transactions.table.actions')">
               <div class="actions">
                 <button class="button button-edit" @click="openEdit(tpl)">{{ t('common.edit') }}</button>
                 <button class="button button-secondary" @click="askPauseResume(tpl)">{{ tpl.paused ? t('recurring.resume') : t('recurring.pause') }}</button>

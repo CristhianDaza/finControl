@@ -170,12 +170,12 @@ watch(() => transactions.items, () => recompute(), { deep: true })
         </thead>
         <tbody>
           <tr v-for="b in budgets.items" :key="b.id">
-            <td>{{ b.name }}</td>
-            <td>{{ periodDisplay(b) }}</td>
-            <td>{{ formatCurrency(b.targetAmount, b.currency) }}</td>
-            <td>{{ formatCurrency(results[b.id]?.spent||0, b.currency) }}</td>
-            <td>{{ formatCurrency(results[b.id]?.remaining||0, b.currency) }}</td>
-            <td>
+            <td :data-label="t('budgets.table.name')">{{ b.name }}</td>
+            <td :data-label="t('budgets.table.period')">{{ periodDisplay(b) }}</td>
+            <td :data-label="t('budgets.table.target')">{{ formatCurrency(b.targetAmount, b.currency) }}</td>
+            <td :data-label="t('budgets.table.spent')">{{ formatCurrency(results[b.id]?.spent||0, b.currency) }}</td>
+            <td :data-label="t('budgets.table.remaining')">{{ formatCurrency(results[b.id]?.remaining||0, b.currency) }}</td>
+            <td :data-label="t('budgets.table.progress')">
               <div class="progress-row">
                 <div class="progress-bar">
                   <div class="progress-fill" :class="alertLevel(b)" :style="{ width: Math.min(100, Math.max(0, Math.round(results[b.id]?.pct||0))) + '%' }"></div>
@@ -183,14 +183,14 @@ watch(() => transactions.items, () => recompute(), { deep: true })
                 <span class="progress-text">{{ fmtPct(results[b.id]?.pct) }}</span>
               </div>
             </td>
-            <td>
+            <td :data-label="t('budgets.table.alerts')">
               <span class="badge" :class="{
                 'badge-yellow': alertLevel(b)==='warn',
                 'badge-red': alertLevel(b)==='over',
                 'badge-green': alertLevel(b)==='ok'
               }">{{ t(alertLevel(b)==='ok' ? 'budgets.alerts.ok' : alertLevel(b)==='warn' ? 'budgets.alerts.warn' : 'budgets.alerts.over') }}</span>
             </td>
-            <td>
+            <td :data-label="t('budgets.table.actions')">
               <div class="actions">
                 <button class="button button-edit" @click="openEdit(b)">{{ t('common.edit') }}</button>
                 <button class="button button-secondary" @click="closePeriod(b)" :disabled="!b.carryover">{{ t('budgets.closePeriod') }}</button>

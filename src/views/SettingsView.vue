@@ -42,13 +42,13 @@ const applyPreset = (id) => settings.applyPreset(id)
         <h3 class="group-title">{{ t('settings.theme.presets.light') }}</h3>
         <div class="presets">
           <button v-for="p in lightPresets" :key="p.id" class="preset" type="button" @click="applyPreset(p.id)" :aria-label="t(p.nameKey)">
-            <div class="swatches">
+            <span class="swatches">
               <span class="sw" :style="{ background: p.vars['--background-color'] }" title="bg"></span>
               <span class="sw" :style="{ background: p.vars['--primary-color'] }" title="primary"></span>
               <span class="sw" :style="{ background: p.vars['--secondary-color'] }" title="secondary"></span>
               <span class="sw" :style="{ background: p.vars['--accent-color'] }" title="accent"></span>
               <span class="sw" :style="{ background: p.vars['--text-color'] }" title="text"></span>
-            </div>
+            </span>
             <span class="preset-name">{{ t(p.nameKey) }}</span>
           </button>
         </div>
@@ -58,13 +58,13 @@ const applyPreset = (id) => settings.applyPreset(id)
         <h3 class="group-title">{{ t('settings.theme.presets.dark') }}</h3>
         <div class="presets">
           <button v-for="p in darkPresets" :key="p.id" class="preset" type="button" @click="applyPreset(p.id)" :aria-label="t(p.nameKey)">
-            <div class="swatches">
+            <span class="swatches">
               <span class="sw" :style="{ background: p.vars['--background-color'] }" title="bg"></span>
               <span class="sw" :style="{ background: p.vars['--primary-color'] }" title="primary"></span>
               <span class="sw" :style="{ background: p.vars['--secondary-color'] }" title="secondary"></span>
               <span class="sw" :style="{ background: p.vars['--accent-color'] }" title="accent"></span>
               <span class="sw" :style="{ background: p.vars['--text-color'] }" title="text"></span>
-            </div>
+            </span>
             <span class="preset-name">{{ t(p.nameKey) }}</span>
           </button>
         </div>
@@ -79,7 +79,7 @@ const applyPreset = (id) => settings.applyPreset(id)
 
       <div class="grid">
         <div v-for="v in EDITABLE_VARS" :key="v.key" class="row">
-          <label :for="v.key">{{ v.label }} <small style="opacity:.7">({{ v.key }})</small></label>
+          <label :for="v.key">{{ v.label }}</label>
           <input :id="v.key" type="color" :value="settings.themeVars[v.key]" @input="onInput(v.key, $event)" />
           <input class="text" type="text" :value="settings.themeVars[v.key]" @input="onInput(v.key, $event)" />
         </div>
@@ -134,6 +134,6 @@ const applyPreset = (id) => settings.applyPreset(id)
 .badge { display:inline-block; padding:.25rem .5rem; border-radius:999px; font-size:.8rem }
 
 @media (max-width: 720px) {
-  .grid { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr auto; }
 }
 </style>

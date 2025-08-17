@@ -498,7 +498,7 @@ onBeforeUnmount(() => {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1.5rem;
 }
 .dashboard-card {
@@ -518,7 +518,7 @@ onBeforeUnmount(() => {
 .charts-grid {
   margin-top: 1.5rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
 }
 .chart-card h3 { margin-top: 0; color: var(--muted-text-color); }
@@ -551,7 +551,7 @@ onBeforeUnmount(() => {
 
 .tx-list { margin-top: 1.5rem; }
 .tx-ul { list-style: none; padding: 0; margin: 0; }
-.tx-item { display: flex; justify-content: space-between; align-items: center; padding: .75rem 0; border-bottom: 1px solid var(--primary-color); }
+.tx-item { display: flex; justify-content: space-between; align-items: center; padding: .75rem 0; border-bottom: 1px solid var(--secondary-color); }
 .tx-left { display: grid; }
 .tx-date { color: var(--muted-text-color); font-size: .9rem }
 .tx-note { color: var(--text-color); }
@@ -572,5 +572,6 @@ onBeforeUnmount(() => {
   .b-right { order: 2; text-align: left }
   .goal-item { flex-direction: column; align-items: stretch }
   .goal-right { justify-content: space-between }
+  .field { min-width: 120px }
 }
 </style>

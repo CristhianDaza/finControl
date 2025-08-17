@@ -231,3 +231,47 @@ button.button.button-delete {
 .fade-leave-to {
     opacity: 0;
 }
+
+html, body { overflow-x: hidden; }
+
+img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
+
+@media (max-width: 720px) {
+  .table-container { overflow-x: visible; box-shadow: none; }
+  .table-container table,
+  .category-table { border: 0; box-shadow: none; }
+  .table-container thead,
+  .category-table thead { display: none; }
+  .table-container tbody tr,
+  .category-table tbody tr {
+    display: block;
+    border: 1px solid var(--secondary-color);
+    overflow: hidden;
+    box-shadow: 0 1px 3px var(--shadow-elev-1);
+  }
+  .table-container tbody td,
+  .category-table tbody td {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .5rem;
+    padding: .6rem .8rem;
+    border-bottom: 1px solid var(--secondary-color);
+  }
+  .table-container tbody td,
+  .category-table tbody td { border-bottom: 0; }
+
+  .table-container tbody td::before,
+  .category-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--muted-text-color);
+    text-transform: uppercase;
+    font-size: .75rem;
+    letter-spacing: 1px;
+  }
+
+  .actions { justify-content: flex-start !important; }
+
+
+  .button { padding: 0.6rem 1rem; }
+}
