@@ -545,7 +545,7 @@ onBeforeUnmount(() => {
 .goal-name { color: var(--text-color); font-weight: 600 }
 .goal-note { color: var(--muted-text-color); font-size: .9rem }
 .goal-right { display:flex; align-items:center; gap: .75rem; flex-wrap: wrap }
-/* Reusar estilos de progress ya ajustados a width:100% */
+
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
 .badge-green { background: var(--hover-success-color); color: var(--white) }
 

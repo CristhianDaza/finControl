@@ -44,14 +44,12 @@ export const useSettingsStore = defineStore('settings', {
       }
       this.initialDefaults = defaults
 
-      // Cargar de caché local primero
       let cached = {}
       try {
         const raw = localStorage.getItem(STORAGE_KEY)
         if (raw) cached = JSON.parse(raw)
       } catch {}
 
-      // Intentar cargar de Firestore si hay usuario
       let remote = null
       if (auth.currentUser) {
         try {
@@ -65,7 +63,6 @@ export const useSettingsStore = defineStore('settings', {
       this._applyAll(this.themeVars)
       this.loaded = true
 
-      // Actualizar caché si hubo remoto
       if (remote) {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
       }
@@ -75,10 +72,8 @@ export const useSettingsStore = defineStore('settings', {
       this._applyVar(key, value)
     },
     async save() {
-      // Guardar en caché local
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
 
-      // Guardar en Firestore si autenticado
       if (auth.currentUser) {
         try {
           const { saveThemeVars } = useUserPrefs()
@@ -93,7 +88,6 @@ export const useSettingsStore = defineStore('settings', {
     },
     clearCacheOnLogout() {
       try { localStorage.removeItem(STORAGE_KEY) } catch {}
-      // Revertir a defaults visualmente
       if (Object.keys(this.initialDefaults).length) {
         this.themeVars = { ...this.initialDefaults }
         this._applyAll(this.themeVars)

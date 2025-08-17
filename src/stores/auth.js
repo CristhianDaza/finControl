@@ -59,7 +59,6 @@ export const useAuthStore = defineStore('auth', {
       try {
         await logout()
       } finally {
-        // limpiar tema local y revertir a defaults
         try { useSettingsStore().clearCacheOnLogout() } catch {}
         this.user = null
         this.status = 'unauthenticated'

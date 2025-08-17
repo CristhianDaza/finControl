@@ -95,10 +95,8 @@ const handleKeyDown = (e) => {
   } else if (isDecimal) {
     desired = digitsLeft
   } else if (key && key.length > 1) {
-    // Teclas especiales (flechas, Home/End, Tab, etc.): no forzar caret
     desired = null
   } else {
-    // Otros caracteres no numéricos: no forzar caret
     desired = null
   }
 

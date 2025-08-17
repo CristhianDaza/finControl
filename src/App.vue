@@ -21,7 +21,6 @@ const clickMainContent = () => {
 }
 
 onMounted(async () => {
-  // Inicializar tema al inicio
   try { await settings.initTheme() } catch {}
 
   if (auth.isAuthenticated) {
@@ -31,11 +30,9 @@ onMounted(async () => {
 
 watch(() => auth.isAuthenticated, async (v) => {
   if (v) {
-    // cargar tema remoto al autenticar
     try { settings.loaded = false; await settings.initTheme() } catch {}
     try { await recurring.processDue() } catch {}
   } else {
-    // al cerrar sesión el store de settings ya limpia la caché; aseguramos aplicar defaults
     try { settings.clearCacheOnLogout() } catch {}
   }
 })
