@@ -380,6 +380,10 @@
           "lightAmber": "Amber (light)"
         }
       }
+    },
+    "notifications": {
+      "saved": "Theme saved",
+      "reset": "Theme reset"
     }
   }
 }

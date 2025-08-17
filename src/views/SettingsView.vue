@@ -3,8 +3,10 @@ import { onMounted, computed } from 'vue'
 import { useSettingsStore, EDITABLE_VARS, THEME_PRESETS } from '@/stores/settings.js'
 import { t } from '@/i18n/index.js'
 import SettingsIcon from '@/assets/icons/settings.svg?raw'
+import { useNotify } from '@/components/global/fcNotify.js'
 
 const settings = useSettingsStore()
+const { success: notifySuccess } = useNotify()
 
 onMounted(() => {
   settings.initTheme()
@@ -14,8 +16,8 @@ const onInput = (key, e) => {
   settings.setVar(key, e.target.value)
 }
 
-const save = () => settings.save()
-const reset = () => settings.reset()
+const save = async () => { await settings.save(); notifySuccess(t('settings.notifications.saved')) }
+const reset = async () => { await settings.reset(); notifySuccess(t('settings.notifications.reset')) }
 
 const lightPresets = computed(() => THEME_PRESETS.filter(p => p.mode === 'light'))
 const darkPresets = computed(() => THEME_PRESETS.filter(p => p.mode === 'dark'))

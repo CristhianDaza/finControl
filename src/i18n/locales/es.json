@@ -402,6 +402,10 @@
           "lightAmber": "Ámbar (claro)"
         }
       }
+    },
+    "notifications": {
+      "saved": "Tema guardado",
+      "reset": "Tema reseteado"
     }
   }
 }
