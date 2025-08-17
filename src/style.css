@@ -81,7 +81,7 @@ body {
 }
 
 .button:hover {
-    background-color: var(--hover-accent-color);
+    background-color: color-mix(in srgb, var(--accent-color) 85%, var(--black));
 }
 
 input[type="text"],
@@ -190,7 +190,7 @@ input[type="date"]:focus {
 
 
 .button-delete:hover {
-    background-color: var(--hover-error-color);
+    background-color: color-mix(in srgb, var(--error-color) 85%, var(--black));
 }
 
 
@@ -200,7 +200,7 @@ input[type="date"]:focus {
 }
 
 .button-edit:hover {
-    background-color: var(--hover-info-color);
+    background-color: color-mix(in srgb, var(--info-color) 85%, var(--black));
 }
 
 .button-secondary {
@@ -210,7 +210,7 @@ input[type="date"]:focus {
 }
 
 .button-secondary:hover {
-    background-color: var(--hover-secondary-color);
+    background-color: color-mix(in srgb, var(--secondary-color) 85%, var(--text-color));
 }
 
 .icon-delete, .icon-edit {
