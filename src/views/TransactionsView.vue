@@ -449,8 +449,7 @@ tr:last-child td {
 }
 
 tr:hover {
-  background-color: var(--hover-prrimary-color);
-  color: var(--secondary-color);
+  background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color));
 }
 
 td {

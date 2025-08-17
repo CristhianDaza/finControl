@@ -132,7 +132,7 @@ const closeModal = () => { showModal.value = false }
 }
 
 .category-table tr:hover {
-  background-color: var(--hover-prrimary-color);
+  background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color));
 }
 
 .actions {

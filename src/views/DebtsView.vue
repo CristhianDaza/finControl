@@ -71,9 +71,9 @@ onMounted(() => { deb.subscribeMyDebts() })
 
 <template>
   <section>
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
-      <h2 style="margin:0">{{ t('debts.title') }}</h2>
-      <div style="display:flex;gap:.5rem">
+    <div class="card page-header">
+      <h2 class="page-title">{{ t('debts.title') }}</h2>
+      <div class="page-actions">
         <button class="button" @click="openCreate" :disabled="busy || isLoading">{{ t('debts.addButton') }}</button>
       </div>
     </div>
@@ -92,39 +92,59 @@ onMounted(() => { deb.subscribeMyDebts() })
       <button class="button" @click="openCreate">{{ t('common.add') }}</button>
     </div>
 
-    <section v-else class="debt-list">
-      <article class="debt-card" v-for="d in rows" :key="d.id">
-        <header class="debt-header">
-          <div class="debt-title" @click="toggleOpen(d.id)" style="cursor:pointer">
-            <h3>{{ d.name }}</h3>
-          </div>
-          <p class="debt-total">{{ t('debts.card.total') }}: {{ formatCurrency(d.originalAmount) }}</p>
-        </header>
-
-        <div class="debt-summary">
-          <p class="debt-saldo">{{ t('debts.card.remaining') }}: {{ formatCurrency(d.remainingAmount) }}</p>
-          <p class="debt-saldo">{{ t('debts.card.status') }}: {{ d.status === 'paid' ? t('debts.card.paid') : t('debts.card.active') }}</p>
-        </div>
-
-        <ul v-if="opened[d.id]" class="debt-payments">
-          <li style="font-weight:600">{{ t('debts.card.payments') }}</li>
-          <li v-if="!(paymentsByDebt[d.id] && paymentsByDebt[d.id].length)">{{ t('debts.card.emptyPayments') }}</li>
-          <li v-for="p in (paymentsByDebt[d.id]||[])" :key="p.id">
-            <span>🗓 {{ formatDate(p.date) }}</span>
-            <span>{{ formatCurrency(p.amount) }}</span>
-          </li>
-        </ul>
-
-        <div class="actions">
-          <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')" @click="openEdit(d)">
-            <svg class="icon-edit" v-html="EditIcon"></svg>
-          </button>
-          <button class="button button-delete" :aria-label="t('common.delete')" :title="t('common.delete')" @click="askRemove(d.id)">
-            <svg class="icon-delete" v-html="DeleteIcon"></svg>
-          </button>
-        </div>
-      </article>
-    </section>
+    <div v-else class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ t('recurring.table.name') }}</th>
+            <th>{{ t('debts.card.total') }}</th>
+            <th>{{ t('debts.card.remaining') }}</th>
+            <th>{{ t('debts.form.dueDate') }}</th>
+            <th>{{ t('debts.card.status') }}</th>
+            <th>{{ t('transactions.table.actions') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="d in rows" :key="d.id">
+            <tr>
+              <td>
+                <button class="link-like" @click="toggleOpen(d.id)">{{ d.name }}</button>
+              </td>
+              <td>{{ formatCurrency(d.originalAmount) }}</td>
+              <td>{{ formatCurrency(d.remainingAmount) }}</td>
+              <td>{{ d.dueDate || '-' }}</td>
+              <td>
+                <span class="badge" :class="d.status === 'paid' ? 'badge-green' : 'badge-blue'">{{ d.status === 'paid' ? t('debts.card.paid') : t('debts.card.active') }}</span>
+              </td>
+              <td>
+                <div class="actions">
+                  <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')" @click="openEdit(d)">
+                    <svg class="icon-edit" v-html="EditIcon"></svg>
+                  </button>
+                  <button class="button button-delete" :aria-label="t('common.delete')" :title="t('common.delete')" @click="askRemove(d.id)">
+                    <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="opened[d.id]">
+              <td :colspan="6" class="details-cell">
+                <div class="payments-block">
+                  <div class="payments-header">{{ t('debts.card.payments') }}</div>
+                  <div v-if="!(paymentsByDebt[d.id] && paymentsByDebt[d.id].length)" class="empty">{{ t('debts.card.emptyPayments') }}</div>
+                  <ul v-else class="payments-list">
+                    <li v-for="p in paymentsByDebt[d.id]" :key="p.id">
+                      <span>📓 {{ formatDate(p.date) }}</span>
+                      <span>{{ formatCurrency(p.amount) }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
 
     <FcModal
       :show-modal="confirmOpen"
@@ -152,73 +172,32 @@ onMounted(() => { deb.subscribeMyDebts() })
 </template>
 
 <style scoped>
-.debt-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
+.table-container { width:100%; overflow-x:auto; border-radius:12px; box-shadow:0 2px 8px var(--shadow-elev-1) }
+.table-container::-webkit-scrollbar { height: 8px }
+.table-container::-webkit-scrollbar-thumb { background-color: var(--secondary-color); border-radius: 4px }
 
-.debt-card {
-  background-color: var(--primary-color);
-  border: 1px solid var(--secondary-color);
-  border-left: 4px solid var(--accent-color);
-  border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: 0 2px 6px var(--shadow-elev-1);
-}
+table { margin-top: 2rem; width: 100%; border-collapse: collapse; background-color: var(--primary-color); color: var(--text-color); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px var(--shadow-elev-1) }
+th, td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--secondary-color) }
+th { background-color: var(--secondary-color); color: var(--accent-color); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px }
+tr:last-child td { border-bottom: none }
+tr:hover { background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color)); }
 
-.debt-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
+.actions { display:flex; gap:.5rem; justify-content:flex-end }
+.badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
+.badge-blue { background: var(--accent-color); color: var(--background-color) }
+.badge-green { background: var(--hover-success-color); color: var(--white) }
 
-.debt-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: var(--accent-color);
-}
+.page-header { display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap }
+.page-title { margin:0 }
+.page-actions { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap }
 
-.debt-total {
-  font-size: 0.95rem;
-  color: var(--muted-text-color);
-}
+.link-like { background:none; border:none; color: var(--text-color); cursor:pointer; padding:0; text-align:left }
+.link-like:hover { color: var(--accent-color) }
 
-.debt-summary {
-  margin-bottom: 1rem;
-}
-
-.debt-saldo {
-  font-size: 1rem;
-  font-weight: bold;
-  color: var(--text-color);
-}
-
-.debt-payments {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.debt-payments li {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.95rem;
-  padding: 0.5rem;
-  background-color: var(--secondary-color);
-  border-radius: 6px;
-  color: var(--text-color);
-}
-
-.actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  justify-content: flex-end;
-}
+.details-cell { background: var(--secondary-color) }
+.payments-block { padding: .75rem 0 }
+.payments-header { font-weight:600; color: var(--muted-text-color); margin-bottom:.5rem }
+.payments-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:.25rem }
+.payments-list li { display:flex; justify-content:space-between; padding:.5rem; background: color-mix(in srgb, var(--secondary-color) 85%, var(--text-color)); border-radius: 6px }
+.empty { color: var(--muted-text-color) }
 </style>

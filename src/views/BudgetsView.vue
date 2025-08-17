@@ -257,7 +257,7 @@ table { margin-top: 2rem; width:100%; border-collapse: collapse; background-colo
 th, td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--secondary-color) }
 th { background-color: var(--secondary-color); color: var(--accent-color); font-weight: 600; text-transform: uppercase; font-size: .85rem; letter-spacing: 1px }
 tr:last-child td { border-bottom: none }
-tr:hover { background-color: var(--hover-prrimary-color) }
+tr:hover { background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color)); }
 
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
 .badge-gray { background: var(--badge-gray-color); color: var(--white) }

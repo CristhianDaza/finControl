@@ -3,7 +3,7 @@ import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useRecurringStore } from '@/stores/recurring.js'
-import { t } from '@/i18n/index.js'
+import { t, formatCurrency } from '@/i18n/index.js'
 
 const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(() => import('@/components/global/FcFormField.vue'))
@@ -117,7 +117,7 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
           <tr v-for="tpl in rec.items" :key="tpl.id">
             <td>{{ tpl.name || tpl.note || '-' }}</td>
             <td>{{ tpl.nextRunAt }}</td>
-            <td>{{ Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 2 }).format(Number(tpl.amount||0)) }}</td>
+            <td>{{ formatCurrency(Number(tpl.amount||0)) }}</td>
             <td>{{ accountNameById[tpl.accountId] || tpl.accountId }}</td>
             <td>{{ tpl.type==='income' ? t('transactions.form.income') : tpl.type==='expense' ? t('transactions.form.expense') : tpl.type==='debtPayment' ? t('transactions.form.debtPayment') : tpl.type }}</td>
             <td>{{ t(`recurring.frequency.${tpl.frequency||'monthly'}`) }}</td>
@@ -197,7 +197,7 @@ th {
 }
 
 tr:last-child td { border-bottom: none }
-tr:hover { background-color: var(--hover-prrimary-color); }
+tr:hover { background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color)); }
 
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
 .badge-gray { background: var(--badge-gray-color); color: var(--white) }
