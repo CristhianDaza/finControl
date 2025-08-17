@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useAccounts } from '@/composables/useAccounts.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { t } from '@/i18n/index.js'
+import { useAuth } from '@/composables/useAuth.js'
 
 export const useAccountsStore = defineStore('accounts', () => {
   const items = ref([])
@@ -17,6 +18,9 @@ export const useAccountsStore = defineStore('accounts', () => {
     if (_unsubscribe.value) _unsubscribe.value()
     status.value = 'loading'
     try {
+      const { onAuthReady } = useAuth()
+      const user = await onAuthReady()
+      if (!user) { items.value = []; status.value = 'success'; return }
       _unsubscribe.value = subscribeAccounts(list => { items.value = list; status.value = 'success' })
     } catch (e) {
       error.value = e?.message || 'Error'

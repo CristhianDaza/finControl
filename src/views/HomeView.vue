@@ -167,7 +167,7 @@ const computeBudgetsMonth = async () => {
   budgetsPrevPct.value = prevMap
 }
 
-watch(monthTx, async () => { await computeBudgetsMonth() })
+watch(monthTx, async () => { await computeBudgetsMonth(); await goalsStore.loadProgress() })
 watch(() => budgetsStore.items, async () => { await computeBudgetsMonth() }, { deep: true })
 
 const barCanvas = ref(null)
@@ -518,21 +518,21 @@ onBeforeUnmount(() => {
 .charts-grid {
   margin-top: 1.5rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 .chart-card h3 { margin-top: 0; color: var(--muted-text-color); }
 
 .budgets-card { margin-top: 1rem }
 .budgets-ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .75rem }
-.budget-item { display:flex; justify-content: space-between; align-items: center; padding:.5rem 0; border-bottom: 1px solid var(--primary-color) }
-.b-left { display:grid }
+.budget-item { display:flex; justify-content: space-between; align-items: center; padding:.5rem 0; border-bottom: 1px solid var(--primary-color); gap:.75rem; flex-wrap: wrap }
+.b-left { display:grid; min-width: 180px }
 .b-name { color: var(--text-color); font-weight: 600 }
 .b-period { color: var(--muted-text-color); font-size: .9rem }
-.b-center { flex: 1; display:flex; align-items:center; justify-content:center }
-.b-right { text-align:right; display:grid }
-.progress { display:flex; align-items:center; gap:.5rem }
-.progress .bar { width: 160px; height: 8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
+.b-center { flex: 1 1 240px; display:flex; align-items:center; justify-content:center; min-width: 200px }
+.b-right { text-align:right; display:grid; min-width: 140px }
+.progress { display:flex; align-items:center; gap:.5rem; width: 100%; max-width: 360px }
+.progress .bar { width: 100%; height: 8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
 .progress .fill { height: 100%; background: var(--accent-color) }
 .progress .fill.warn { background: var(--warning-color) }
 .progress .fill.over { background: var(--error-color) }
@@ -540,14 +540,12 @@ onBeforeUnmount(() => {
 
 .goals-card { margin-top: 1rem }
 .goals-ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .75rem }
-.goal-item { display:flex; justify-content: space-between; align-items: center; padding:.5rem 0; border-bottom: 1px solid var(--primary-color) }
-.goal-left { display:grid }
+.goal-item { display:flex; justify-content: space-between; align-items: center; padding:.5rem 0; border-bottom: 1px solid var(--primary-color); gap:.75rem; flex-wrap: wrap }
+.goal-left { display:grid; min-width: 160px }
 .goal-name { color: var(--text-color); font-weight: 600 }
 .goal-note { color: var(--muted-text-color); font-size: .9rem }
-.goal-right { display:flex; align-items:center; gap: .75rem }
-.progress .bar { width: 160px; height: 8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
-.progress .fill { height: 100%; background: var(--accent-color) }
-.progress .pct { color: var(--muted-text-color); font-size: .85rem }
+.goal-right { display:flex; align-items:center; gap: .75rem; flex-wrap: wrap }
+/* Reusar estilos de progress ya ajustados a width:100% */
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
 .badge-green { background: var(--hover-success-color); color: var(--white) }
 
@@ -567,4 +565,12 @@ onBeforeUnmount(() => {
 .error-state, .loading-state { margin-top: 1rem; }
 .badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
 .badge-rec { background: var(--recurring-badge-color); color: var(--white); margin-left: .5rem }
+
+@media (max-width: 600px) {
+  .budget-item { flex-direction: column; align-items: stretch }
+  .b-center { order: 3 }
+  .b-right { order: 2; text-align: left }
+  .goal-item { flex-direction: column; align-items: stretch }
+  .goal-right { justify-content: space-between }
+}
 </style>

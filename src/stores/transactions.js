@@ -3,6 +3,7 @@ import { ref, computed, onUnmounted } from 'vue'
 import { useTransactions } from '@/composables/useTransactions.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { t } from '@/i18n/index.js'
+import { useAuth } from '@/composables/useAuth.js'
 
 export const useTransactionsStore = defineStore('transactions', () => {
   const items = ref([])
@@ -10,7 +11,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const error = ref(null)
   const selected = ref(null)
   const filters = ref({})
-  const orderBy = ref([{ field: 'date', dir: 'desc' }, { field: 'createdAt', dir: 'desc' }])
+  const orderBy = ref([{ field: 'date', dir: 'desc' }, { field: 'createdAt', 'dir': 'desc' }])
   const unsubscribe = ref(null)
 
   const { subscribeTransactions, fetchTransactions, createTransaction, updateTransaction, deleteTransaction } = useTransactions()
@@ -20,6 +21,9 @@ export const useTransactionsStore = defineStore('transactions', () => {
     if (unsubscribe.value) unsubscribe.value()
     status.value = 'loading'
     try {
+      const { onAuthReady } = useAuth()
+      const user = await onAuthReady()
+      if (!user) { items.value = []; status.value = 'success'; return }
       unsubscribe.value = subscribeTransactions(list => { items.value = list; status.value = 'success' }, { ...filters.value, orderBy: orderBy.value })
     } catch (e) {
       error.value = e && e.message ? e.message : 'Error'
@@ -32,6 +36,9 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const reload = async () => {
     status.value = 'loading'
     try {
+      const { onAuthReady } = useAuth()
+      const user = await onAuthReady()
+      if (!user) { items.value = []; status.value = 'success'; return }
       const list = await fetchTransactions({ ...filters.value, orderBy: orderBy.value })
       items.value = list
       status.value = 'success'
@@ -113,6 +120,9 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const availablePeriods = ref({ years: [], monthsByYear: {} })
   const loadAvailablePeriods = async () => {
     try {
+      const { onAuthReady } = useAuth()
+      const user = await onAuthReady()
+      if (!user) { availablePeriods.value = { years: [], monthsByYear: {} }; return availablePeriods.value }
       const all = await fetchTransactions({})
       const monthsMap = {}
       for (const it of all) {
