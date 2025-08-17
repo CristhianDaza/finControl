@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/services/firebase.js'
 import { useAuth } from '@/composables/useAuth.js'
+import { useSettingsStore } from '@/stores/settings.js'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -58,6 +59,8 @@ export const useAuthStore = defineStore('auth', {
       try {
         await logout()
       } finally {
+        // limpiar tema local y revertir a defaults
+        try { useSettingsStore().clearCacheOnLogout() } catch {}
         this.user = null
         this.status = 'unauthenticated'
         this.error = null
@@ -65,4 +68,3 @@ export const useAuthStore = defineStore('auth', {
     },
   },
 })
-

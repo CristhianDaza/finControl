@@ -29,7 +29,8 @@
     "categories": "Categories",
     "recurring": "Recurring Payments",
     "goals": "Savings Goals",
-    "budgets": "Budgets"
+    "budgets": "Budgets",
+    "settings": "Settings"
   },
   "auth": {
     "logout": "Log out",

@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { useSettingsStore, EDITABLE_VARS } from '@/stores/settings.js'
 import { t } from '@/i18n/index.js'
+import SettingsIcon from '@/assets/icons/settings.svg?raw'
 
 const settings = useSettingsStore()
 
@@ -19,7 +20,16 @@ const reset = () => settings.reset()
 
 <template>
   <section>
-    <h1 style="margin:0 0 1rem">{{ t('settings.title') }}</h1>
+    <div class="page-header">
+      <div class="title">
+        <svg class="icon" v-html="SettingsIcon"></svg>
+        <div>
+          <h1>{{ t('settings.title') }}</h1>
+          <p class="subtitle">{{ t('settings.theme.subtitle') }}</p>
+        </div>
+      </div>
+    </div>
+
     <div class="card" style="margin-bottom:1rem">
       <h2 style="margin:0 0 .75rem">{{ t('settings.theme.title') }}</h2>
       <p style="margin:0 0 1rem;color:var(--muted-text-color)">{{ t('settings.theme.subtitle') }}</p>
@@ -57,6 +67,12 @@ const reset = () => settings.reset()
 </template>
 
 <style scoped>
+.page-header { display:flex; align-items:center; justify-content: space-between; margin: 0 0 1rem; }
+.title { display:flex; align-items:center; gap:.75rem; }
+.title .icon { width:28px; height:28px; color: var(--accent-color) }
+.title h1 { margin:0; }
+.subtitle { margin:.25rem 0 0; color: var(--muted-text-color); }
+
 .grid { display:grid; grid-template-columns: 1fr auto 260px; gap:.75rem 1rem; align-items:center }
 .row label { font-weight:600 }
 .row input[type="color"] { width: 44px; height: 36px; padding:0; border: none; background: transparent }

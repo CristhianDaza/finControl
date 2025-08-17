@@ -34,7 +34,8 @@
     "categories": "Categorías",
     "recurring": "Pagos Recurrentes",
     "goals": "Metas de Ahorro",
-    "budgets": "Presupuestos"
+    "budgets": "Presupuestos",
+    "settings": "Configuración"
   },
   "auth": {
     "logout": "Cerrar sesión",

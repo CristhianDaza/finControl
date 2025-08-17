@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import { auth } from '@/services/firebase.js'
+import { useUserPrefs } from '@/composables/useUserPrefs.js'
 
 const STORAGE_KEY = 'fincontrol.themeVars'
 
@@ -33,7 +35,7 @@ export const useSettingsStore = defineStore('settings', {
     _applyAll(vars) {
       Object.entries(vars).forEach(([k, v]) => this._applyVar(k, v))
     },
-    initTheme() {
+    async initTheme() {
       if (this.loaded) return
 
       const defaults = {}
@@ -41,28 +43,62 @@ export const useSettingsStore = defineStore('settings', {
         defaults[key] = this._readCssVar(key)
       }
       this.initialDefaults = defaults
-      let saved = {}
+
+      // Cargar de caché local primero
+      let cached = {}
       try {
         const raw = localStorage.getItem(STORAGE_KEY)
-        if (raw) saved = JSON.parse(raw)
+        if (raw) cached = JSON.parse(raw)
       } catch {}
 
-      this.themeVars = { ...defaults, ...saved }
+      // Intentar cargar de Firestore si hay usuario
+      let remote = null
+      if (auth.currentUser) {
+        try {
+          const { getThemeVars } = useUserPrefs()
+          remote = await getThemeVars()
+        } catch {}
+      }
+
+      const merged = { ...defaults, ...cached, ...(remote || {}) }
+      this.themeVars = merged
       this._applyAll(this.themeVars)
       this.loaded = true
+
+      // Actualizar caché si hubo remoto
+      if (remote) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
+      }
     },
     setVar(key, value) {
       this.themeVars[key] = value
       this._applyVar(key, value)
     },
-    save() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars))
+    async save() {
+      // Guardar en caché local
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
+
+      // Guardar en Firestore si autenticado
+      if (auth.currentUser) {
+        try {
+          const { saveThemeVars } = useUserPrefs()
+          await saveThemeVars(this.themeVars)
+        } catch {}
+      }
     },
-    reset() {
+    async reset() {
       this.themeVars = { ...this.initialDefaults }
       this._applyAll(this.themeVars)
-      this.save()
+      await this.save()
+    },
+    clearCacheOnLogout() {
+      try { localStorage.removeItem(STORAGE_KEY) } catch {}
+      // Revertir a defaults visualmente
+      if (Object.keys(this.initialDefaults).length) {
+        this.themeVars = { ...this.initialDefaults }
+        this._applyAll(this.themeVars)
+      }
+      this.loaded = false
     },
   },
 })
-

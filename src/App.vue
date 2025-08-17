@@ -3,6 +3,7 @@ import { defineAsyncComponent, ref, watch, onMounted } from 'vue'
 import { useIsMobile} from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useRecurringStore } from '@/stores/recurring.js'
+import { useSettingsStore } from '@/stores/settings.js'
 
 const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
 const FCNotify = defineAsyncComponent(/* webpackChunkName: "FCNotify" */ () => import('@/components/global/FCNotify.vue'))
@@ -11,6 +12,7 @@ const { isMobile } = useIsMobile()
 const auth = useAuthStore()
 const sidebarRef = ref()
 const recurring = useRecurringStore()
+const settings = useSettingsStore()
 
 const clickMainContent = () => {
   if (isMobile.value) {
@@ -19,6 +21,9 @@ const clickMainContent = () => {
 }
 
 onMounted(async () => {
+  // Inicializar tema al inicio
+  try { await settings.initTheme() } catch {}
+
   if (auth.isAuthenticated) {
     try { await recurring.processDue() } catch {}
   }
@@ -26,7 +31,12 @@ onMounted(async () => {
 
 watch(() => auth.isAuthenticated, async (v) => {
   if (v) {
+    // cargar tema remoto al autenticar
+    try { settings.loaded = false; await settings.initTheme() } catch {}
     try { await recurring.processDue() } catch {}
+  } else {
+    // al cerrar sesión el store de settings ya limpia la caché; aseguramos aplicar defaults
+    try { settings.clearCacheOnLogout() } catch {}
   }
 })
 </script>
@@ -41,7 +51,6 @@ watch(() => auth.isAuthenticated, async (v) => {
         </transition>
       </router-view>
     </main>
-    <router-link v-if="auth.isAuthenticated" to="/settings" class="settings-fab" title="Configuración">⚙</router-link>
   </div>
   <FCNotify />
 </template>
@@ -78,23 +87,4 @@ watch(() => auth.isAuthenticated, async (v) => {
   filter: blur(4px);
   opacity: 0;
 }
-
-.settings-fab {
-  position: fixed;
-  right: clamp(12px, 2vw, 20px);
-  bottom: clamp(12px, 2vw, 20px);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  background: var(--secondary-color);
-  color: var(--accent-color);
-  border: 1px solid var(--primary-color);
-  box-shadow: 0 2px 8px var(--shadow-elev-2);
-  font-size: 20px;
-}
-.settings-fab:hover { background: var(--hover-secondary-color); }
 </style>
