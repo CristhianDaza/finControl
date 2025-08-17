@@ -360,7 +360,26 @@
     "sampleSecondary": "Secondary action",
     "theme": {
       "title": "Theme",
-      "subtitle": "Customize the app's main colors. Changes apply live."
+      "subtitle": "Customize the app's main colors. Changes apply live.",
+      "presets": {
+        "title": "Preset themes",
+        "subtitle": "Pick one of the accessible themes (light or dark). You can fine-tune colors afterwards.",
+        "hint": "Tip: press Save to keep your selection on this device and in your account.",
+        "light": "Light",
+        "dark": "Dark",
+        "names": {
+          "darkOcean": "Ocean (dark)",
+          "darkRose": "Rose (dark)",
+          "darkForest": "Forest (dark)",
+          "lightOcean": "Ocean (light)",
+          "lightRose": "Rose (light)",
+          "lightSlate": "Slate (light)",
+          "darkAmber": "Amber (dark)",
+          "darkTeal": "Teal (dark)",
+          "lightEmerald": "Emerald (light)",
+          "lightAmber": "Amber (light)"
+        }
+      }
     }
   }
 }
