@@ -81,7 +81,7 @@ body {
 }
 
 .button:hover {
-    background-color: var(--hover-accent-color);
+    background-color: color-mix(in srgb, var(--accent-color) 85%, var(--black));
 }
 
 input[type="text"],
@@ -190,7 +190,7 @@ input[type="date"]:focus {
 
 
 .button-delete:hover {
-    background-color: var(--hover-error-color);
+    background-color: color-mix(in srgb, var(--error-color) 85%, var(--black));
 }
 
 
@@ -200,7 +200,7 @@ input[type="date"]:focus {
 }
 
 .button-edit:hover {
-    background-color: var(--hover-info-color);
+    background-color: color-mix(in srgb, var(--info-color) 85%, var(--black));
 }
 
 .button-secondary {
@@ -210,7 +210,7 @@ input[type="date"]:focus {
 }
 
 .button-secondary:hover {
-    background-color: var(--hover-secondary-color);
+    background-color: color-mix(in srgb, var(--secondary-color) 85%, var(--text-color));
 }
 
 .icon-delete, .icon-edit {
@@ -230,4 +230,48 @@ button.button.button-delete {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
+}
+
+html, body { overflow-x: hidden; }
+
+img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
+
+@media (max-width: 720px) {
+  .table-container { overflow-x: visible; box-shadow: none; }
+  .table-container table,
+  .category-table { border: 0; box-shadow: none; }
+  .table-container thead,
+  .category-table thead { display: none; }
+  .table-container tbody tr,
+  .category-table tbody tr {
+    display: block;
+    border: 1px solid var(--secondary-color);
+    overflow: hidden;
+    box-shadow: 0 1px 3px var(--shadow-elev-1);
+  }
+  .table-container tbody td,
+  .category-table tbody td {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .5rem;
+    padding: .6rem .8rem;
+    border-bottom: 1px solid var(--secondary-color);
+  }
+  .table-container tbody td,
+  .category-table tbody td { border-bottom: 0; }
+
+  .table-container tbody td::before,
+  .category-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--muted-text-color);
+    text-transform: uppercase;
+    font-size: .75rem;
+    letter-spacing: 1px;
+  }
+
+  .actions { justify-content: flex-start !important; }
+
+
+  .button { padding: 0.6rem 1rem; }
 }

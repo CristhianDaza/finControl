@@ -4,6 +4,7 @@ import { useGoals } from '@/composables/useGoals.js'
 import { useTransactions } from '@/composables/useTransactions.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { t } from '@/i18n/index.js'
+import { useAuth } from '@/composables/useAuth.js'
 
 export const useGoalsStore = defineStore('goals', () => {
   const items = ref([])
@@ -20,7 +21,19 @@ export const useGoalsStore = defineStore('goals', () => {
     if (unsubscribe.value) unsubscribe.value()
     status.value = 'loading'
     try {
-      unsubscribe.value = subscribeGoals((list) => { items.value = list; status.value = 'success' }, opts)
+      const { onAuthReady } = useAuth()
+      const user = await onAuthReady()
+      if (!user) {
+        items.value = []
+        progressById.value = {}
+        status.value = 'success'
+        return
+      }
+      unsubscribe.value = subscribeGoals(async (list) => {
+        items.value = list
+        status.value = 'success'
+        try { await loadProgress() } catch { /* noop */ }
+      }, opts)
     } catch (e) {
       error.value = e?.message || 'Error'
       status.value = 'error'

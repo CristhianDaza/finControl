@@ -4,6 +4,7 @@ import { useBudgets } from '@/composables/useBudgets.js'
 import { useTransactions } from '@/composables/useTransactions.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { t } from '@/i18n/index.js'
+import { useAuth } from '@/composables/useAuth.js'
 
 const pad2 = (n) => String(n).padStart(2, '0')
 
@@ -22,6 +23,9 @@ export const useBudgetsStore = defineStore('budgets', () => {
     if (unsubscribe.value) unsubscribe.value()
     status.value = 'loading'
     try {
+      const { onAuthReady } = useAuth()
+      const user = await onAuthReady()
+      if (!user) { items.value = []; status.value = 'success'; return }
       unsubscribe.value = subscribeBudgets((list) => { items.value = list; status.value = 'success' }, opts)
     } catch (e) { error.value = e?.message || 'Error'; status.value = 'error' }
   }

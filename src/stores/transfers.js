@@ -5,6 +5,7 @@ import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestor
 import { useTransfers } from '@/composables/useTransfers.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { t } from '@/i18n/index.js'
+import { useAuth } from '@/composables/useAuth.js'
 
 export const useTransfersStore = defineStore('transfers', () => {
   const items = ref([])
@@ -33,8 +34,11 @@ export const useTransfersStore = defineStore('transfers', () => {
     if (unsubscribe.value) unsubscribe.value()
     status.value = 'loading'
     try {
+      const { onAuthReady } = useAuth()
+      const user = await onAuthReady()
+      if (!user) { items.value = []; status.value = 'success'; return }
       const uid = auth.currentUser && auth.currentUser.uid
-      if (!uid) { status.value = 'error'; error.value = 'Unauthorized'; return }
+      if (!uid) { items.value = []; status.value = 'success'; return }
       const col = collection(db, 'users', uid, 'transactions')
       const q = query(col, where('isTransfer', '==', true), orderBy('date', 'desc'), orderBy('createdAt', 'desc'))
       unsubscribe.value = onSnapshot(q, snap => {

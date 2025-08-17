@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, useAttrs } from 'vue'
+import { ref, computed, useAttrs, nextTick } from 'vue'
 import { useFormattedNumber } from '@/composables/useFormattedNumber.js'
 import { t } from '@/i18n/index.js'
 
@@ -44,6 +44,75 @@ const currentInputType = computed(() => {
 const togglePassword = () => {
   showPassword.value = !showPassword.value
 }
+
+const numberInputRef = ref(null)
+const desiredDigitsLeftAfter = ref(null)
+
+const countDigitsLeft = (str, pos) => {
+  let c = 0
+  for (let i = 0; i < Math.max(0, pos); i++) if (/[0-9]/.test(str[i])) c++
+  return c
+}
+const findPosByDigits = (str, digitsLeft) => {
+  if (digitsLeft == null) return null
+  if (digitsLeft <= 0) return 0
+  let c = 0
+  for (let i = 0; i < str.length; i++) {
+    if (/[0-9]/.test(str[i])) {
+      c++
+      if (c === digitsLeft) return i + 1
+    }
+  }
+  return str.length
+}
+
+const handleKeyDown = (e) => {
+  if (!isFormattedNumber.value) return
+  const el = e.target
+  const start = el.selectionStart ?? 0
+  const end = el.selectionEnd ?? start
+  const value = el.value || ''
+  const digitsLeft = countDigitsLeft(value, start)
+  const key = e.key
+  const isDigit = /^[0-9]$/.test(key)
+  const isBackspace = key === 'Backspace'
+  const isDelete = key === 'Delete'
+  const isDecimal = key === '.' || key === ','
+
+  let desired = digitsLeft
+
+  if (isDigit) {
+    desired = countDigitsLeft(value, start) + 1
+  } else if (isBackspace) {
+    if (start !== end) {
+      desired = countDigitsLeft(value, start)
+    } else {
+      const leftChar = value[start - 1]
+      desired = digitsLeft - (/[0-9]/.test(leftChar) ? 1 : 0)
+    }
+  } else if (isDelete) {
+    desired = digitsLeft
+  } else if (isDecimal) {
+    desired = digitsLeft
+  } else if (key && key.length > 1) {
+    desired = null
+  } else {
+    desired = null
+  }
+
+  desiredDigitsLeftAfter.value = desired != null ? Math.max(0, desired) : null
+}
+const handleInput = () => {
+  if (!isFormattedNumber.value) return
+  const desired = desiredDigitsLeftAfter.value
+  if (desired == null) return
+  nextTick(() => {
+    const el = numberInputRef.value
+    if (!el) return
+    const pos = findPosByDigits(el.value, desired)
+    if (pos != null) el.setSelectionRange(pos, pos)
+  })
+}
 </script>
 
 <template>
@@ -74,6 +143,7 @@ const togglePassword = () => {
 
     <input
       v-if="type === 'number'"
+      ref="numberInputRef"
       type="text"
       :id="id"
       :name="name"
@@ -82,6 +152,8 @@ const togglePassword = () => {
       v-bind="attrs"
       inputmode="decimal"
       autocomplete="off"
+      @keydown="handleKeyDown"
+      @input="handleInput"
       @blur="touched = true"
       :class="{ invalid: touched && !isValid }"
     />

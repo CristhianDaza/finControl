@@ -34,7 +34,8 @@
     "categories": "Categorías",
     "recurring": "Pagos Recurrentes",
     "goals": "Metas de Ahorro",
-    "budgets": "Presupuestos"
+    "budgets": "Presupuestos",
+    "settings": "Configuración"
   },
   "auth": {
     "logout": "Cerrar sesión",
@@ -381,7 +382,30 @@
     "sampleSecondary": "Acción secundaria",
     "theme": {
       "title": "Tema",
-      "subtitle": "Personaliza los colores principales de la app. Los cambios se aplican en vivo."
+      "subtitle": "Personaliza los colores principales de la app. Los cambios se aplican en vivo.",
+      "presets": {
+        "title": "Temas predefinidos",
+        "subtitle": "Elige uno de los temas accesibles (claros u oscuros). Luego puedes ajustar colores finamente si quieres.",
+        "hint": "Tip: recuerda presionar Guardar para mantener tu selección en este dispositivo y en tu cuenta.",
+        "light": "Claros",
+        "dark": "Oscuros",
+        "names": {
+          "darkOcean": "Océano (oscuro)",
+          "darkRose": "Rosa (oscuro)",
+          "darkForest": "Bosque (oscuro)",
+          "lightOcean": "Océano (claro)",
+          "lightRose": "Rosa (claro)",
+          "lightSlate": "Pizarra (claro)",
+          "darkAmber": "Ámbar (oscuro)",
+          "darkTeal": "Verde azulado (oscuro)",
+          "lightEmerald": "Esmeralda (claro)",
+          "lightAmber": "Ámbar (claro)"
+        }
+      }
+    },
+    "notifications": {
+      "saved": "Tema guardado",
+      "reset": "Tema reseteado"
     }
   }
 }
