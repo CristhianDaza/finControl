@@ -1,3 +1,5 @@
+body.no-scroll, html.no-scroll { overflow: hidden !important; }
+
 :root {
     --primary-color: #243447;
     --hover-prrimary-color: #2c3e50;

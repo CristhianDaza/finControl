@@ -19,8 +19,6 @@ const toFriendlyError = (err) => {
   }
 }
 
-let readyPromise /** @type {Promise<import('firebase/auth').User|null> | null} */ = null
-
 export const useAuth = () => {
   const loginWithEmail = async (email, password) => {
     await signInWithEmailAndPassword(auth, email, password)
@@ -31,15 +29,12 @@ export const useAuth = () => {
   }
 
   const onAuthReady = () => {
-    if (!readyPromise) {
-      readyPromise = new Promise((resolve) => {
-        const unsub = onAuthStateChanged(auth, (user) => {
-          resolve(user)
-          unsub()
-        })
+    return new Promise((resolve) => {
+      const unsub = onAuthStateChanged(auth, (user) => {
+        resolve(user)
+        try { unsub() } catch {}
       })
-    }
-    return readyPromise
+    })
   }
 
   return { loginWithEmail, logout, onAuthReady, toFriendlyError }

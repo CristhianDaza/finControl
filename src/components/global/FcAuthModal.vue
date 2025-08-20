@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineAsyncComponent, computed } from 'vue'
+import { ref, defineAsyncComponent, computed, watch, onUnmounted } from 'vue'
 import { t } from '@/i18n/index.js'
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
 
@@ -36,6 +36,15 @@ const handleCancel = () => {
   email.value = ''
   password.value = ''
 }
+
+const setBodyScroll = (lock) => {
+  const b = document?.body
+  if (!b) return
+  if (lock) b.classList.add('no-scroll')
+  else b.classList.remove('no-scroll')
+}
+watch(() => props.show, (v) => setBodyScroll(!!v), { immediate: true })
+onUnmounted(() => setBodyScroll(false))
 </script>
 
 <template>
@@ -149,5 +158,9 @@ const handleCancel = () => {
   background-color: transparent;
   border: 1px solid var(--accent-color);
   color: var(--accent-color);
+}
+
+.no-scroll {
+  overflow: hidden !important;
 }
 </style>
