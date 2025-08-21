@@ -1,5 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="12" cy="12" r="10"/>
-  <path d="M12 6v6l4 2"/>
+<svg viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <defs>
+      <style>.cls-1{fill:none;stroke:currentColor;stroke-miterlimit:10;stroke-width:1.91px;}</style>
+    </defs>
+    <rect class="cls-1" x="2.43" y="16.76" width="3.83" height="5.74"></rect>
+    <rect class="cls-1" x="17.74" y="9.11" width="3.83" height="13.39"></rect>
+    <rect class="cls-1" x="10.09" y="12.93" width="3.83" height="9.57"></rect>
+    <line class="cls-1" x1="0.52" y1="22.5" x2="23.48" y2="22.5"></line>
+    <path class="cls-1" d="M9.13,8.15h3.35a1.43,1.43,0,0,0,1.43-1.43h0a1.43,1.43,0,0,0-1.43-1.44h-1a1.43,1.43,0,0,1-1.43-1.43h0a1.44,1.44,0,0,1,1.43-1.44h3.35"></path>
+    <line class="cls-1" x1="12" y1="0.5" x2="12" y2="2.41"></line>
+    <line class="cls-1" x1="12" y1="8.15" x2="12" y2="10.07"></line>
+  </g>
 </svg>
-

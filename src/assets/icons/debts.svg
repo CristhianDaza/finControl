@@ -1,14 +1,8 @@
-<svg
-xmlns="http://www.w3.org/2000/svg"
-viewBox="0 0 24 24"
-fill="none"
-stroke="currentColor"
-stroke-width="2"
-stroke-linecap="round"
-stroke-linejoin="round"
->
-    <rect x="3" y="7" width="18" height="13" rx="2" ry="2" />
-    <path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z" />
-    <path d="M12 10v4" />
-    <path d="M9 11h6" />
+<svg viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <path d="M731.43 256V109.71H109.71v804.57h804.57V256H731.43z m-73.15 585.14H182.86V182.86h475.43v658.28z m182.86 0H731.43v-512h109.71v512z" fill="currentColor"></path>
+    <path d="M255.89 548.25h219.43v73.14H255.89zM255.77 694.76h329.14v73.14H255.77zM402.29 329.14h58L376.44 413l51.71 51.71 83.86-83.85v58h73.14V256H402.29z" fill="currentColor"></path>
+  </g>
 </svg>

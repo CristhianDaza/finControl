@@ -1,21 +1,9 @@
-<svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
->
-    <!-- Bordes de la tarjeta -->
-    <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
-
-    <!-- Línea horizontal (banda magnética o división) -->
-    <line x1="2" y1="10" x2="22" y2="10" />
-
-    <!-- Detalle inferior izquierdo (puede ser chip o nombre) -->
-    <line x1="6" y1="15" x2="10" y2="15" />
-
-    <!-- Detalle inferior derecho (simulación número) -->
-    <line x1="14" y1="15" x2="18" y2="15" />
+<svg viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <path d="M900.64 356.27c0.02-0.13 0.13-0.21 0.14-0.34-0.02 0.13-0.12 0.22-0.14 0.34z" fill="currentColor"></path>
+    <path d="M73.15 182.86v146.29h-0.01v73.14h0.01v438.86h402.29V768H146.29V402.29h731.43V544.5h73.14V182.86H73.15z m73.14 146.28V256h731.43v73.14H146.29z" fill="currentColor"></path>
+    <path d="M182.86 585.14h219.43v73.14H182.86zM822.87 585.14h-76.29l47.29-47.29-51.71-51.71-135.58 135.57 135.57 135.57 51.71-51.71-47.29-47.29h76.29c30.25 0 54.86 24.61 54.86 54.86S853.12 768 822.87 768H548.58v73.14h274.29c70.57 0 128-57.43 128-128s-57.43-128-128-128z" fill="currentColor"></path>
+  </g>
 </svg>
