@@ -167,6 +167,10 @@ a:hover .icon-menu {
   margin-top: 6px;
 }
 
+.hidden-menu.sidebar {
+  padding: 1.2rem 0.25rem;
+}
+
 .hidden-menu .sidebar-header h2 {
   display: none;
 }
