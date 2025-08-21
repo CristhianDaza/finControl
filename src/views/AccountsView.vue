@@ -94,7 +94,6 @@ onMounted(() => { acc.subscribeMyAccounts() })
       </div>
     </div>
 
-    <!-- Confirmación de eliminación -->
     <FcModal
       :show-modal="confirmOpen"
       @update:showModal="confirmOpen = $event"
@@ -105,7 +104,6 @@ onMounted(() => { acc.subscribeMyAccounts() })
       <p>{{ t('accounts.confirmDelete.title') }}: {{ t('common.delete') }}?</p>
     </FcModal>
 
-    <!-- Bloqueo por transacciones -->
     <FcModal
       :show-modal="blockOpen"
       @update:showModal="blockOpen = $event"
