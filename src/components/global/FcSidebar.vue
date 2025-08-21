@@ -24,12 +24,12 @@ const clickHandler = () => { isMenuHidden.value = !isMenuHidden.value }
 const handleLogout = async () => {
   if (!isAuthenticated.value) return
   await auth.logout()
-  router.push({ name: 'login' })
+  await router.push({name: 'login'})
 }
 
 const appVersion = import.meta.env.VITE_VERSION || '0.0.0'
 
-onMounted(() => { isMenuHidden.value = isMobile.value ? true : false })
+onMounted(() => { isMenuHidden.value = !!isMobile.value })
 
 defineExpose({ handleMainClick })
 </script>
@@ -165,6 +165,10 @@ a:hover .icon-menu {
 
 .hidden-menu nav {
   margin-top: 6px;
+}
+
+.hidden-menu.sidebar {
+  padding: 1.2rem 0.25rem;
 }
 
 .hidden-menu .sidebar-header h2 {

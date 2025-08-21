@@ -173,7 +173,12 @@ const exportCsv = () => {
 }
 
 onMounted(async () => {
-  acc.subscribeMyAccounts(); deb.subscribeMyDebts(); tx.init(); tr.init(); await tx.loadAvailablePeriods(); goals.init();
+  await acc.subscribeMyAccounts();
+  await deb.subscribeMyDebts();
+  await tx.init();
+  await tr.init();
+  await tx.loadAvailablePeriods();
+  await goals.init();
   if (!availableYears.value.includes(selectedYear.value)) {
     const lastY = availableYears.value[availableYears.value.length - 1]
     if (lastY != null) selectedYear.value = lastY
@@ -183,7 +188,7 @@ onMounted(async () => {
     if (months.length) selectedMonth.value = months[months.length - 1]
   }
   setMonth(selectedMonth.value)
-  loadSavedFilters()
+  await loadSavedFilters()
 })
 
 watch(selectedYear, () => {
@@ -196,12 +201,8 @@ watch(selectedYear, () => {
 
 <template>
   <section>
-    <!-- Barra de acciones separada -->
     <div class="card" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;justify-content:space-between">
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="button" :class="tab==='transactions'? '' : 'button-secondary'" @click="tab='transactions'">{{ t('navigation.transactions') }}</button>
-        <button class="button" :class="tab==='transfers'? '' : 'button-secondary'" @click="tab='transfers'">{{ t('transfers.title') }}</button>
-      </div>
+      <h2 class="page-title">{{ t('navigation.transactions') }}</h2>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         <button v-if="tab==='transactions'" class="button" @click="openAdd" :disabled="busy || isLoading">{{ t('transactions.addTitle') }}</button>
         <button v-else class="button" @click="openAddTransfer" :disabled="busy || isLoadingTransfers">{{ t('common.transfer') }}</button>
@@ -209,7 +210,6 @@ watch(selectedYear, () => {
       </div>
     </div>
 
-    <!-- Panel de filtros -->
     <div class="card" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap; margin-top: .75rem; justify-content:space-between">
       <div style="display:flex;gap:1rem;flex-wrap:wrap">
         <div>
@@ -272,6 +272,10 @@ watch(selectedYear, () => {
             <input class="input" type="date" v-model="to" @change="applyFilters" />
           </div>
         </template>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="button" :class="tab==='transactions'? '' : 'button-secondary'" @click="tab='transactions'">{{ t('navigation.transactions') }}</button>
+        <button class="button" :class="tab==='transfers'? '' : 'button-secondary'" @click="tab='transfers'">{{ t('transfers.title') }}</button>
       </div>
     </div>
 

@@ -13,7 +13,7 @@ const app = createApp(App)
 ;(async () => {
   app.use(pinia)
   
-  useSettingsStore(pinia).initTheme()
+  await useSettingsStore(pinia).initTheme()
   await initI18n()
   const auth = useAuthStore(pinia)
   await auth.initSessionListener()

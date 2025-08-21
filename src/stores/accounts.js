@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { useAccounts } from '@/composables/useAccounts.js'
-import { useNotify } from '@/components/global/fcNotify.js'
-import { t } from '@/i18n/index.js'
-import { useAuth } from '@/composables/useAuth.js'
+import {defineStore} from 'pinia'
+import {computed, ref} from 'vue'
+import {useAccounts} from '@/composables/useAccounts.js'
+import {useNotify} from '@/components/global/fcNotify.js'
+import {t} from '@/i18n/index.js'
+import {useAuth} from '@/composables/useAuth.js'
 
 export const useAccountsStore = defineStore('accounts', () => {
   const items = ref([])
@@ -60,18 +60,14 @@ export const useAccountsStore = defineStore('accounts', () => {
 
   const totalBalance = computed(() => items.value.reduce((acc, a) => acc + Number(a.balance || 0), 0))
   const hasItems = computed(() => items.value.length > 0)
-  
-  const createAccountAction = create
-  const updateAccountNameAction = updateName
-  const deleteAccountAction = remove
 
   return {
     items, status, error,
     subscribeMyAccounts, unsubscribe,
     getAccountById,
-    createAccount: createAccountAction,
-    updateAccountName: updateAccountNameAction,
-    deleteAccount: deleteAccountAction,
+    createAccount: create,
+    updateAccountName: updateName,
+    deleteAccount: remove,
     create, updateName, remove,
     totalBalance, hasItems,
   }

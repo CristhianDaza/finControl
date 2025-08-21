@@ -2,11 +2,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
 >
-    <path d="M20.59 13.41 11 3H4v7l9.59 9.59a2 2 0 0 0 2.82 0l4.18-4.18a2 2 0 0 0 0-2.82z"/>
-    <line x1="7" y1="7" x2="7.01" y2="7"/>
+    <path d="M20.59 13.41 13 21a2 2 0 0 1-2.83 0L2 12.83V7a2 2 0 0 1 2-2h5.83l7.76 7.76a2 2 0 0 1 0 2.83z" stroke="currentColor" stroke-width="2"/>
+    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
 </svg>

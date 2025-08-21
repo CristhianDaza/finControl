@@ -3,6 +3,9 @@ import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useGoalsStore } from '@/stores/goals.js'
 import { t, formatCurrency } from '@/i18n/index.js'
+import EditIcon from '@/assets/icons/edit.svg?raw'
+import PauseIcon from '@/assets/icons/pause.svg?raw'
+import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
 const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(() => import('@/components/global/FcFormField.vue'))
@@ -88,9 +91,15 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
             </td>
             <td :data-label="t('goals.table.actions')">
               <div class="actions">
-                <button class="button button-edit" @click="openEdit(g)">{{ t('common.edit') }}</button>
-                <button class="button button-secondary" @click="askPauseResume(g)">{{ g.paused ? t('goals.resume') : t('goals.pause') }}</button>
-                <button class="button button-delete" @click="remove(g.id)">{{ t('common.delete') }}</button>
+                <button class="button button-edit" @click="openEdit(g)">
+                  <svg class="icon-edit" v-html="EditIcon"></svg>
+                </button>
+                <button class="button button-pause" @click="askPauseResume(g)">
+                  <svg class="icon-pause" v-html="PauseIcon"></svg>
+                </button>
+                <button class="button button-delete" @click="remove(g.id)">
+                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                </button>
               </div>
             </td>
           </tr>
@@ -131,7 +140,7 @@ tr:hover { background-color: color-mix(in srgb, var(--primary-color) 88%, var(--
 .badge-green { background: var(--hover-success-color); color: var(--white) }
 .actions { display:flex; gap:.5rem; justify-content:flex-end }
 
-.progress-row { display:flex; align-items:center; gap:.5rem }
+.progress-row { display:flex; align-items:center; gap:.5rem; width: 120px }
 .progress-bar { width:140px; height:8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
 .progress-fill { height:100%; background: var(--accent-color) }
 .progress-text { font-size: .85rem; color: var(--muted-text-color) }

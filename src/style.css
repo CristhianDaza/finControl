@@ -1,3 +1,5 @@
+body.no-scroll, html.no-scroll { overflow: hidden !important; }
+
 :root {
     --primary-color: #243447;
     --hover-prrimary-color: #2c3e50;
@@ -193,6 +195,14 @@ input[type="date"]:focus {
     background-color: color-mix(in srgb, var(--error-color) 85%, var(--black));
 }
 
+.button-pause {
+    background-color: var(--hover-prrimary-color);
+    color: var(--text-color);
+}
+
+.button-pause:hover {
+    background-color: color-mix(in srgb, var(--hover-prrimary-color) 85%, var(--black));
+}
 
 .button-edit {
     background-color: var(--info-color);
@@ -213,13 +223,16 @@ input[type="date"]:focus {
     background-color: color-mix(in srgb, var(--secondary-color) 85%, var(--text-color));
 }
 
-.icon-delete, .icon-edit {
+.icon-delete,
+.icon-edit,
+.icon-pause {
     width: 20px;
     height: 20px;
 }
 
 button.button.button-edit,
-button.button.button-delete {
+button.button.button-delete,
+button.button.button-pause {
     padding: 0.5rem;
 }
 

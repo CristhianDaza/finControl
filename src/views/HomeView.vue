@@ -92,7 +92,7 @@ const applyMonthFilter = (y, m) => {
 
 onMounted(async () => {
   await accountsStore.subscribeMyAccounts()
-  transfersStore.init()
+  await transfersStore.init()
   await transactionsStore.loadAvailablePeriods()
   if (!availableYears.value.includes(selectedYear.value)) {
     const lastY = availableYears.value[availableYears.value.length - 1]

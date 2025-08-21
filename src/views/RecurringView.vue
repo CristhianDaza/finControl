@@ -4,6 +4,9 @@ import { useAccountsStore } from '@/stores/accounts.js'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useRecurringStore } from '@/stores/recurring.js'
 import { t, formatCurrency } from '@/i18n/index.js'
+import EditIcon from '@/assets/icons/edit.svg?raw'
+import PauseIcon from '@/assets/icons/pause.svg?raw'
+import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
 const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(() => import('@/components/global/FcFormField.vue'))
@@ -126,9 +129,15 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
             </td>
             <td :data-label="t('transactions.table.actions')">
               <div class="actions">
-                <button class="button button-edit" @click="openEdit(tpl)">{{ t('common.edit') }}</button>
-                <button class="button button-secondary" @click="askPauseResume(tpl)">{{ tpl.paused ? t('recurring.resume') : t('recurring.pause') }}</button>
-                <button class="button button-delete" @click="remove(tpl.id)">{{ t('common.delete') }}</button>
+                <button class="button button-edit" @click="openEdit(tpl)">
+                  <svg class="icon-edit" v-html="EditIcon"></svg>
+                </button>
+                <button class="button button-pause" @click="askPauseResume(tpl)">
+                  <svg class="icon-pause" v-html="PauseIcon"></svg>
+                </button>
+                <button class="button button-delete" @click="remove(tpl.id)">
+                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                </button>
               </div>
             </td>
           </tr>

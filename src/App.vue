@@ -1,9 +1,10 @@
 <script setup>
-import { defineAsyncComponent, ref, watch, onMounted } from 'vue'
+import { defineAsyncComponent, ref, watch, onMounted, computed } from 'vue'
 import { useIsMobile} from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useRecurringStore } from '@/stores/recurring.js'
 import { useSettingsStore } from '@/stores/settings.js'
+import { useRoute } from 'vue-router'
 
 const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
 const FCNotify = defineAsyncComponent(/* webpackChunkName: "FCNotify" */ () => import('@/components/global/FCNotify.vue'))
@@ -13,6 +14,8 @@ const auth = useAuthStore()
 const sidebarRef = ref()
 const recurring = useRecurringStore()
 const settings = useSettingsStore()
+const route = useRoute()
+const isLoginRoute = computed(() => route.name === 'login')
 
 const clickMainContent = () => {
   if (isMobile.value) {
@@ -39,9 +42,9 @@ watch(() => auth.isAuthenticated, async (v) => {
 </script>
 
 <template>
-  <div class="layout">
+  <div class="layout" :class="{ 'is-login': isLoginRoute }">
     <fc-sidebar v-if="auth.isAuthenticated" ref="sidebarRef" />
-    <main class="main-content" @click="clickMainContent">
+    <main class="main-content" :class="{ 'login-page': isLoginRoute }" @click="clickMainContent">
       <router-view v-slot="{ Component }">
         <transition name="route-fade" mode="out-in">
           <component :is="Component" />
@@ -63,6 +66,13 @@ watch(() => auth.isAuthenticated, async (v) => {
   flex-grow: 1;
   overflow-y: auto;
   padding: clamp(1rem, 4vw, 2rem);
+}
+
+.main-content.login-page {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  overflow: hidden;
 }
 
 .route-fade-enter-active,

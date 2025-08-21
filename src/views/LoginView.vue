@@ -28,9 +28,9 @@ const submit = async () => {
   if (ok) {
     const redirect = (route.query.redirect || '/')
     if (typeof redirect === 'string' && redirect.startsWith('/')) {
-      router.push(redirect)
+      await router.push(redirect)
     } else {
-      router.push({ name: 'home' })
+      await router.push({name: 'home'})
     }
   }
 }
@@ -39,6 +39,7 @@ const submit = async () => {
 <template>
   <section class="login-container">
     <div class="card login-card" role="dialog" aria-labelledby="login-title" aria-describedby="login-desc">
+      <img src="@/assets/images/logo-fin-control.png" alt="Logo" class="login-logo" />
       <h1 id="login-title">{{ t('auth.login.title') }}</h1>
       <p id="login-desc" class="muted">{{ t('auth.login.description') }}</p>
 
@@ -97,6 +98,11 @@ const submit = async () => {
 .login-card {
   width: 100%;
   max-width: 380px;
+}
+.login-logo {
+  display: block;
+  margin: 0 auto 1rem auto;
+  width: 128px;
 }
 .field {
   display: block;

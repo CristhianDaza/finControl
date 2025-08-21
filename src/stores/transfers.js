@@ -64,8 +64,7 @@ export const useTransfersStore = defineStore('transfers', () => {
     return items.value.filter(p => {
       if (f.accountId && !(p.out.fromAccountId === f.accountId || p.out.toAccountId === f.accountId || p.inn.fromAccountId === f.accountId || p.inn.toAccountId === f.accountId)) return false
       if (f.from && p.out.date < f.from) return false
-      if (f.to && p.out.date > f.to) return false
-      return true
+      return !(f.to && p.out.date > f.to);
     })
   })
 

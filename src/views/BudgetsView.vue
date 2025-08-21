@@ -5,6 +5,9 @@ import { useBudgetsStore } from '@/stores/budgets.js'
 import { useTransactionsStore } from '@/stores/transactions.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
 import { t, formatCurrency } from '@/i18n/index.js'
+import EditIcon from '@/assets/icons/edit.svg?raw'
+import PauseIcon from '@/assets/icons/pause.svg?raw'
+import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
 const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(() => import('@/components/global/FcFormField.vue'))
@@ -192,9 +195,15 @@ watch(() => transactions.items, () => recompute(), { deep: true })
             </td>
             <td :data-label="t('budgets.table.actions')">
               <div class="actions">
-                <button class="button button-edit" @click="openEdit(b)">{{ t('common.edit') }}</button>
-                <button class="button button-secondary" @click="closePeriod(b)" :disabled="!b.carryover">{{ t('budgets.closePeriod') }}</button>
-                <button class="button button-delete" @click="remove(b.id)">{{ t('common.delete') }}</button>
+                <button class="button button-edit" @click="openEdit(b)">
+                  <svg class="icon-edit" v-html="EditIcon"></svg>
+                </button>
+                <button class="button button-pause" @click="closePeriod(b)" :disabled="!b.carryover">
+                  <svg class="icon-pause" v-html="PauseIcon"></svg>
+                </button>
+                <button class="button button-delete" @click="remove(b.id)">
+                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                </button>
               </div>
             </td>
           </tr>
@@ -267,7 +276,7 @@ tr:hover { background-color: color-mix(in srgb, var(--primary-color) 88%, var(--
 .badge-red { background: var(--error-color); color: var(--white) }
 .actions { display:flex; gap:.5rem; justify-content:flex-end }
 
-.progress-row { display:flex; align-items:center; gap:.5rem }
+.progress-row { display:flex; align-items:center; gap:.5rem; width: 120px }
 .progress-bar { width:140px; height:8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
 .progress-fill { height:100%; background: var(--accent-color) }
 .progress-fill.warn { background: var(--warning-color) }
