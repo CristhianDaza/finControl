@@ -24,12 +24,12 @@ const clickHandler = () => { isMenuHidden.value = !isMenuHidden.value }
 const handleLogout = async () => {
   if (!isAuthenticated.value) return
   await auth.logout()
-  router.push({ name: 'login' })
+  await router.push({name: 'login'})
 }
 
 const appVersion = import.meta.env.VITE_VERSION || '0.0.0'
 
-onMounted(() => { isMenuHidden.value = isMobile.value ? true : false })
+onMounted(() => { isMenuHidden.value = !!isMobile.value })
 
 defineExpose({ handleMainClick })
 </script>

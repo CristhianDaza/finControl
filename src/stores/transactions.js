@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia'
-import { ref, computed, onUnmounted } from 'vue'
-import { useTransactions } from '@/composables/useTransactions.js'
-import { useNotify } from '@/components/global/fcNotify.js'
-import { t } from '@/i18n/index.js'
-import { useAuth } from '@/composables/useAuth.js'
+import {defineStore} from 'pinia'
+import {computed, onUnmounted, ref} from 'vue'
+import {useTransactions} from '@/composables/useTransactions.js'
+import {useNotify} from '@/components/global/fcNotify.js'
+import {t} from '@/i18n/index.js'
+import {useAuth} from '@/composables/useAuth.js'
 
 export const useTransactionsStore = defineStore('transactions', () => {
   const items = ref([])
@@ -39,8 +39,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
       const { onAuthReady } = useAuth()
       const user = await onAuthReady()
       if (!user) { items.value = []; status.value = 'success'; return }
-      const list = await fetchTransactions({ ...filters.value, orderBy: orderBy.value })
-      items.value = list
+      items.value = await fetchTransactions({...filters.value, orderBy: orderBy.value})
       status.value = 'success'
     } catch (e) {
       error.value = e && e.message ? e.message : 'Error'
@@ -107,11 +106,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
   }
 
   const setFilters = f => {
-    const clean = Object.fromEntries(Object.entries(f || {}).filter(([_, v]) => v !== '' && v != null))
-    filters.value = clean
-    init()
+    filters.value = Object.fromEntries(Object.entries(f || {}).filter(([_, v]) => v !== '' && v != null))
+    init().then(r => { return r }).catch(() => { /* noop */ })
   }
-  const setOrder = o => { orderBy.value = Array.isArray(o) ? o : orderBy.value; init() }
+  const setOrder = o => { orderBy.value = Array.isArray(o) ? o : orderBy.value; init().then(r => { return r }).catch(() => { /* noop */ }) }
 
   const hasItems = computed(() => items.value.length > 0)
   const byId = id => computed(() => items.value.find(ti => ti.id === id))

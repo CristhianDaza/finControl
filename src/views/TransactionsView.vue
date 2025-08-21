@@ -173,7 +173,12 @@ const exportCsv = () => {
 }
 
 onMounted(async () => {
-  acc.subscribeMyAccounts(); deb.subscribeMyDebts(); tx.init(); tr.init(); await tx.loadAvailablePeriods(); goals.init();
+  await acc.subscribeMyAccounts();
+  await deb.subscribeMyDebts();
+  await tx.init();
+  await tr.init();
+  await tx.loadAvailablePeriods();
+  await goals.init();
   if (!availableYears.value.includes(selectedYear.value)) {
     const lastY = availableYears.value[availableYears.value.length - 1]
     if (lastY != null) selectedYear.value = lastY
@@ -183,7 +188,7 @@ onMounted(async () => {
     if (months.length) selectedMonth.value = months[months.length - 1]
   }
   setMonth(selectedMonth.value)
-  loadSavedFilters()
+  await loadSavedFilters()
 })
 
 watch(selectedYear, () => {

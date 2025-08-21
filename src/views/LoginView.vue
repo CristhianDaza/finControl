@@ -28,9 +28,9 @@ const submit = async () => {
   if (ok) {
     const redirect = (route.query.redirect || '/')
     if (typeof redirect === 'string' && redirect.startsWith('/')) {
-      router.push(redirect)
+      await router.push(redirect)
     } else {
-      router.push({ name: 'home' })
+      await router.push({name: 'home'})
     }
   }
 }

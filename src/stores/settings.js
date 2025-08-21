@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia'
-import { auth } from '@/services/firebase.js'
-import { useUserPrefs } from '@/composables/useUserPrefs.js'
+import {defineStore} from 'pinia'
+import {auth} from '@/services/firebase.js'
+import {useUserPrefs} from '@/composables/useUserPrefs.js'
 
 const STORAGE_KEY = 'fincontrol.themeVars'
 
@@ -233,8 +233,7 @@ export const useSettingsStore = defineStore('settings', {
         } catch {}
       }
 
-      const merged = { ...defaults, ...cached, ...(remote || {}) }
-      this.themeVars = merged
+      this.themeVars = {...defaults, ...cached, ...(remote || {})}
       this._applyAll(this.themeVars)
       this.loaded = true
 
@@ -272,8 +271,7 @@ export const useSettingsStore = defineStore('settings', {
     applyPreset(id) {
       const preset = THEME_PRESETS.find(p => p.id === id)
       if (!preset) return
-      const next = { ...this.initialDefaults, ...preset.vars }
-      this.themeVars = next
+      this.themeVars = {...this.initialDefaults, ...preset.vars}
       this._applyAll(this.themeVars)
     },
   },

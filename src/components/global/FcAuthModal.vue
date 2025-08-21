@@ -15,11 +15,6 @@ const emit = defineEmits(['accept-button', 'cancel-button'])
 
 const email = ref('')
 const password = ref('')
-const showPassword = ref(false)
-
-const togglePassword = () => {
-  showPassword.value = !showPassword.value
-}
 
 const isLogin = computed(() => props.mode === 'login')
 
