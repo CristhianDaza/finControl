@@ -99,7 +99,7 @@ const removeCurrency = async (id) => { try { await currencies.remove(id); notify
         </form>
       </div>
     </article>
-    
+
     <article class="card">
       <h2 class="card-title">{{ t('settings.amountFormat.title') }}</h2>
       <p class="card-subtitle">{{ t('settings.amountFormat.subtitle') }}</p>
