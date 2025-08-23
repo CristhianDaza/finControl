@@ -84,6 +84,7 @@ const askPauseResume = async (tpl) => {
 }
 
 const remove = async (id) => { await rec.remove(id) }
+const runNow = async () => { await rec.processDue() }
 
 onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDebts(); await rec.init() })
 </script>
@@ -94,6 +95,16 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
       <h2 class="page-title">{{ t('recurring.title') }}</h2>
       <div class="page-actions">
         <button class="button" @click="openCreate">{{ t('recurring.add') }}</button>
+        <button class="button" :disabled="rec.processing" @click="runNow">{{ rec.processing ? t('recurring.statusPanel.processing') : t('recurring.runNow') }}</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem;display:flex;flex-direction:column;gap:.5rem">
+      <strong>{{ t('recurring.statusPanel.title') }}</strong>
+      <div style="display:flex;flex-wrap:wrap;gap:1.25rem;font-size:.85rem">
+        <div><span style="font-weight:600">{{ t('recurring.statusPanel.lastRun') }}:</span> {{ rec.lastRun ? new Date(rec.lastRun).toLocaleString() : t('recurring.statusPanel.never') }}</div>
+        <div><span style="font-weight:600">{{ t('recurring.statusPanel.processed') }}:</span> {{ rec.lastProcessedCount }}</div>
+        <div v-if="rec.lastErrorMsg"><span style="font-weight:600">{{ t('recurring.statusPanel.error') }}:</span> {{ rec.lastErrorMsg }}</div>
       </div>
     </div>
 

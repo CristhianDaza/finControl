@@ -243,6 +243,15 @@
     "pause": "Pause",
     "resume": "Resume",
     "badge": "Recurring",
+    "runNow": "Run now",
+    "statusPanel": {
+      "title": "Status",
+      "lastRun": "Last run",
+      "never": "Never",
+      "processing": "Processing…",
+      "processed": "Last processed",
+      "error": "Error"
+    },
     "table": {
       "name": "Name",
       "next": "Next run",

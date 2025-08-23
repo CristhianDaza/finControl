@@ -257,6 +257,15 @@
     "pause": "Pausar",
     "resume": "Reanudar",
     "badge": "Recurrente",
+    "runNow": "Ejecutar ahora",
+    "statusPanel": {
+      "title": "Estado de ejecución",
+      "lastRun": "Última ejecución",
+      "never": "Nunca",
+      "processing": "Procesando…",
+      "processed": "Plantillas procesadas",
+      "error": "Último error"
+    },
     "table": {
       "name": "Nombre",
       "next": "Próxima ejecución",

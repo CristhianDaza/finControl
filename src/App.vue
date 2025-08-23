@@ -23,18 +23,28 @@ const clickMainContent = () => {
   }
 }
 
+let visibilityHandlerAttached = false
+let debounceTimer = null
+const DEBOUNCE_MS = 400
+const triggerRecurring = () => {
+  if (!auth.isAuthenticated) return
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => { recurring.processDue() }, DEBOUNCE_MS)
+}
+
 onMounted(async () => {
   try { await settings.initTheme() } catch {}
-
-  if (auth.isAuthenticated) {
-    try { await recurring.processDue() } catch {}
+  if (auth.isAuthenticated) triggerRecurring()
+  if (!visibilityHandlerAttached) {
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') triggerRecurring() })
+    visibilityHandlerAttached = true
   }
 })
 
 watch(() => auth.isAuthenticated, async (v) => {
   if (v) {
     try { settings.loaded = false; await settings.initTheme() } catch {}
-    try { await recurring.processDue() } catch {}
+    triggerRecurring()
   } else {
     try { settings.clearCacheOnLogout() } catch {}
   }
