@@ -15,6 +15,8 @@ import {
   LineController, LineElement, PointElement
 } from 'chart.js'
 import { useBudgetsStore } from '@/stores/budgets.js'
+import { formatAmount } from '@/utils/formatters.js'
+import { useSettingsStore } from '@/stores/settings.js'
 
 Chart.register(
   BarController, BarElement,
@@ -59,6 +61,7 @@ const goalsStore = useGoalsStore()
 import { useRecurringStore } from '@/stores/recurring.js'
 const recurringStore = useRecurringStore()
 const budgetsStore = useBudgetsStore()
+const settingsStore = useSettingsStore()
 
 const goalsList = computed(() => goalsStore.items || [])
 const goalProgressPct = (id) => {
@@ -247,7 +250,7 @@ const updateCharts = async () => {
         responsive: true,
         plugins: {
           legend: { position: 'top', labels: { color: colorText } },
-          tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}` } },
+          tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}` } },
         },
         scales: {
           x: { ticks: { color: colorMuted } },
@@ -272,7 +275,7 @@ const updateCharts = async () => {
         responsive: true,
         plugins: {
           legend: { position: 'bottom', labels: { color: colorText } },
-          tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatCurrency(ctx.parsed)}` } },
+          tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatAmount(ctx.parsed)}` } },
         },
         cutout: '60%'
       }
@@ -294,7 +297,7 @@ const updateCharts = async () => {
         responsive: true,
         plugins: {
           legend: { position: 'top', labels: { color: colorText } },
-          tooltip: { callbacks: { label: ctx => `${formatCurrency(ctx.parsed.y)}` } },
+          tooltip: { callbacks: { label: ctx => `${formatAmount(ctx.parsed.y)}` } },
         },
         scales: {
           x: { ticks: { color: colorMuted } },
@@ -338,6 +341,7 @@ const updateCharts = async () => {
 watch(monthTx, () => updateCharts())
 watch(() => goalsStore.progressById, () => updateCharts(), { deep: true })
 watch(() => goalsStore.items, () => updateCharts(), { deep: true })
+watch(() => settingsStore.amountFormat, () => updateCharts())
 
 onBeforeUnmount(() => {
   if (barChart) { barChart.destroy(); barChart = null }
@@ -367,15 +371,16 @@ onBeforeUnmount(() => {
     <section class="dashboard-grid">
       <div class="dashboard-card">
         <h3>{{ t('dashboard.kpis.totalBalance') }}</h3>
-        <p class="amount">{{ formatCurrency(totalBalance) }}</p>
+        <div class="amount-format-toggle" v-if="false"></div>
+        <p class="amount" :title="formatCurrency(totalBalance)">{{ formatAmount(totalBalance) }}</p>
       </div>
       <div class="dashboard-card income">
         <h3>{{ t('dashboard.kpis.incomeMonth') }}</h3>
-        <p class="amount">{{ formatCurrency(incomeSum) }}</p>
+        <p class="amount" :title="formatCurrency(incomeSum)">{{ formatAmount(incomeSum) }}</p>
       </div>
       <div class="dashboard-card expense">
         <h3>{{ t('dashboard.kpis.expenseMonth') }}</h3>
-        <p class="amount">{{ formatCurrency(expenseSum) }}</p>
+        <p class="amount" :title="formatCurrency(expenseSum)">{{ formatAmount(expenseSum) }}</p>
       </div>
       <div class="dashboard-card">
         <h3>{{ t('dashboard.kpis.txCount') }}</h3>
@@ -383,7 +388,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="dashboard-card">
         <h3>{{ t('dashboard.kpis.netMonth') }}</h3>
-        <p class="amount">{{ formatCurrency(netSum) }}</p>
+        <p class="amount" :title="formatCurrency(netSum)">{{ formatAmount(netSum) }}</p>
       </div>
     </section>
 
@@ -430,7 +435,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
           <div class="b-right">
-            <div class="b-remaining">{{ formatCurrency(it.r?.remaining||0, it.b.currency) }}</div>
+            <div class="b-remaining">{{ formatAmount(it.r?.remaining||0, it.b.currency) }}</div>
             <div class="b-prev">{{ t('dashboard.budgets.prev', { pct: budgetsPrevPct[it.b.id] || 0 }) }}</div>
           </div>
         </li>
@@ -451,7 +456,7 @@ onBeforeUnmount(() => {
               <div class="bar"><div class="fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div>
               <div class="pct">{{ goalProgressPct(g.id) }}%</div>
             </div>
-            <div class="goal-target">{{ formatCurrency(g.targetAmount) }}</div>
+            <div class="goal-target">{{ formatAmount(g.targetAmount) }}</div>
             <span v-if="goalCompleted(g.id)" class="badge badge-green">{{ t('goals.completed') }}</span>
           </div>
         </li>
@@ -473,7 +478,7 @@ onBeforeUnmount(() => {
           <div class="tx-right">
             <div class="tx-account">{{ getAccountName(it.accountId) }}</div>
             <div class="tx-amount" :class="{ inc: it.type==='income', exp: it.type==='expense' || it.type==='debtPayment' }">
-              {{ formatCurrency(it.amount) }}
+              {{ formatAmount(it.amount) }}
             </div>
           </div>
         </li>
@@ -508,10 +513,15 @@ onBeforeUnmount(() => {
   box-shadow: 0 4px 12px var(--shadow-soft);
   border-left: 6px solid var(--accent-color);
   transition: transform 0.2s ease;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 .dashboard-card:hover { transform: translateY(-4px); }
 .dashboard-card h3 { margin: 0; font-size: 1rem; color: var(--muted-text-color); }
-.dashboard-card .amount { margin-top: .5rem; font-size: 1.5rem; font-weight: bold; color: var(--text-color); }
+.dashboard-card .amount { margin-top: .5rem; font-size: clamp(1.1rem, 1.2vw + .8rem, 1.6rem); font-weight: bold; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.amount-format-toggle { display:none }
+.dashboard-card { position: relative; }
 .dashboard-card.income { border-left-color: var(--success-color); }
 .dashboard-card.expense { border-left-color: var(--error-color); }
 

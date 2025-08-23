@@ -101,6 +101,28 @@ export const formatCurrency = (value, currency = 'COP', options = {}) => {
   return isNaN(n) ? '' : fmt.format(n)
 }
 
+export const formatCurrencyCompact = (value, currency = 'COP', options = {}) => {
+  const n = Number(value)
+  if (isNaN(n)) return ''
+  const loc = intlLocale.value
+  const abs = Math.abs(n)
+  let div = 1
+  let suffix = ''
+  if (abs >= 1_000_000_000) { div = 1_000_000_000; suffix = 'B' }
+  else if (abs >= 1_000_000) { div = 1_000_000; suffix = 'M' }
+  else if (abs >= 1_000) { div = 1_000; suffix = 'K' }
+  const reduced = abs / div
+  let symbol = ''
+  try {
+    const parts = new Intl.NumberFormat(loc, { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0, ...options }).formatToParts(0)
+    symbol = parts.find(p => p.type === 'currency')?.value || ''
+  } catch {}
+  const numStr = new Intl.NumberFormat(loc, { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(reduced)
+  if (!suffix) return formatCurrency(n, currency, options)
+  const sign = n < 0 ? '-' : ''
+  return sign + symbol + numStr + suffix
+}
+
 export const formatDate = (date, options = { dateStyle: 'medium', timeZone: 'America/Bogota' }) => {
   const loc = intlLocale.value
   const key = loc + '|' + nfKey(options)

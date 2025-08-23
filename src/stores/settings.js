@@ -198,6 +198,7 @@ export const useSettingsStore = defineStore('settings', {
     themeVars: /** @type {Record<string,string>} */ ({}),
     initialDefaults: /** @type {Record<string,string>} */ ({}),
     loaded: false,
+    amountFormat: 'full',
   }),
   actions: {
     _readCssVar(key) {
@@ -240,10 +241,16 @@ export const useSettingsStore = defineStore('settings', {
       if (remote) {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
       }
+      try { const af = localStorage.getItem('fincontrol.amountFormat'); if (af === 'compact' || af === 'full') this.amountFormat = af } catch {}
     },
     setVar(key, value) {
       this.themeVars[key] = value
       this._applyVar(key, value)
+    },
+    setAmountFormat(mode) {
+      if (mode !== 'full' && mode !== 'compact') return
+      this.amountFormat = mode
+      try { localStorage.setItem('fincontrol.amountFormat', mode) } catch {}
     },
     async save() {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}

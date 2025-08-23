@@ -208,6 +208,12 @@
       "title": "Budgets (month)",
       "empty": "No budgets",
       "prev": "Prev month: {pct}%"
+    },
+    "amountFormat": {
+      "showCompact": "Show compact",
+      "showFull": "Show full",
+      "compactLabel": "Compact",
+      "fullLabel": "Full"
     }
   },
   "categories": {
@@ -373,7 +379,7 @@
     "sampleSecondary": "Secondary action",
     "theme": {
       "title": "Theme",
-      "subtitle": "Customize the app's main colors. Changes apply live.",
+      "subtitle": "Customize the main colors of the app (Changes are applied live). Change the amount format.",
       "presets": {
         "title": "Preset themes",
         "subtitle": "Pick one of the accessible themes (light or dark). You can fine-tune colors afterwards.",
@@ -393,6 +399,12 @@
           "lightAmber": "Amber (light)"
         }
       }
+    },
+    "amountFormat": {
+      "title": "Amount format",
+      "subtitle": "Choose how monetary values are shown across the app.",
+      "full": "Full (with decimals)",
+      "compact": "Compact (K / M / B)"
     },
     "notifications": {
       "saved": "Theme saved",

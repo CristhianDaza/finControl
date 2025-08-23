@@ -37,6 +37,21 @@ const applyPreset = (id) => settings.applyPreset(id)
     </header>
 
     <article class="card">
+      <h2 class="card-title">{{ t('settings.amountFormat.title') }}</h2>
+      <p class="card-subtitle">{{ t('settings.amountFormat.subtitle') }}</p>
+      <div class="amount-format-options">
+        <label class="opt">
+          <input type="radio" name="amount-format" value="full" :checked="settings.amountFormat==='full'" @change="settings.setAmountFormat('full')" />
+          <span>{{ t('settings.amountFormat.full') }}</span>
+        </label>
+        <label class="opt">
+          <input type="radio" name="amount-format" value="compact" :checked="settings.amountFormat==='compact'" @change="settings.setAmountFormat('compact')" />
+          <span>{{ t('settings.amountFormat.compact') }}</span>
+        </label>
+      </div>
+    </article>
+
+    <article class="card">
       <h2 class="card-title">{{ t('settings.theme.presets.title') }}</h2>
       <p class="card-subtitle">{{ t('settings.theme.presets.subtitle') }}</p>
 
@@ -264,6 +279,10 @@ const applyPreset = (id) => settings.applyPreset(id)
   background: color-mix(in oklab, var(--primary-color) 80%, transparent);
   padding-top: .5rem;
 }
+
+.amount-format-options { display:flex; gap:1rem; flex-wrap:wrap; }
+.amount-format-options .opt { display:flex; gap:.5rem; align-items:center; background: var(--secondary-color); padding:.6rem .8rem; border-radius:8px; cursor:pointer; }
+.amount-format-options input[type=radio] { accent-color: var(--accent-color); }
 
 .preview .badges {
   display:flex; gap:.5rem; flex-wrap:wrap;

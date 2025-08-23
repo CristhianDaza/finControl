@@ -3,7 +3,8 @@ import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useTransactions } from '@/composables/useTransactions.js'
-import { t, formatCurrency, formatDate } from '@/i18n/index.js'
+import { t, formatDate } from '@/i18n/index.js'
+import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
@@ -110,8 +111,8 @@ onMounted(() => { deb.subscribeMyDebts() })
               <td :data-label="t('recurring.table.name')">
                 <button class="link-like" @click="toggleOpen(d.id)">{{ d.name }}</button>
               </td>
-              <td :data-label="t('debts.card.total')">{{ formatCurrency(d.originalAmount) }}</td>
-              <td :data-label="t('debts.card.remaining')">{{ formatCurrency(d.remainingAmount) }}</td>
+              <td :data-label="t('debts.card.total')">{{ formatAmount(d.originalAmount) }}</td>
+              <td :data-label="t('debts.card.remaining')">{{ formatAmount(d.remainingAmount) }}</td>
               <td :data-label="t('debts.form.dueDate')">{{ d.dueDate || '-' }}</td>
               <td :data-label="t('debts.card.status')">
                 <span class="badge" :class="d.status === 'paid' ? 'badge-green' : 'badge-blue'">{{ d.status === 'paid' ? t('debts.card.paid') : t('debts.card.active') }}</span>
@@ -135,7 +136,7 @@ onMounted(() => { deb.subscribeMyDebts() })
                   <ul v-else class="payments-list">
                     <li v-for="p in paymentsByDebt[d.id]" :key="p.id">
                       <span>📓 {{ formatDate(p.date) }}</span>
-                      <span>{{ formatCurrency(p.amount) }}</span>
+                      <span>{{ formatAmount(p.amount) }}</span>
                     </li>
                   </ul>
                 </div>

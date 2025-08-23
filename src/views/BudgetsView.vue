@@ -4,7 +4,8 @@ import { useAccountsStore } from '@/stores/accounts.js'
 import { useBudgetsStore } from '@/stores/budgets.js'
 import { useTransactionsStore } from '@/stores/transactions.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t } from '@/i18n/index.js'
+import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import PauseIcon from '@/assets/icons/pause.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
@@ -175,9 +176,9 @@ watch(() => transactions.items, () => recompute(), { deep: true })
           <tr v-for="b in budgets.items" :key="b.id">
             <td :data-label="t('budgets.table.name')">{{ b.name }}</td>
             <td :data-label="t('budgets.table.period')">{{ periodDisplay(b) }}</td>
-            <td :data-label="t('budgets.table.target')">{{ formatCurrency(b.targetAmount, b.currency) }}</td>
-            <td :data-label="t('budgets.table.spent')">{{ formatCurrency(results[b.id]?.spent||0, b.currency) }}</td>
-            <td :data-label="t('budgets.table.remaining')">{{ formatCurrency(results[b.id]?.remaining||0, b.currency) }}</td>
+            <td :data-label="t('budgets.table.target')">{{ formatAmount(b.targetAmount, b.currency) }}</td>
+            <td :data-label="t('budgets.table.spent')">{{ formatAmount(results[b.id]?.spent||0, b.currency) }}</td>
+            <td :data-label="t('budgets.table.remaining')">{{ formatAmount(results[b.id]?.remaining||0, b.currency) }}</td>
             <td :data-label="t('budgets.table.progress')">
               <div class="progress-row">
                 <div class="progress-bar">

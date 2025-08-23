@@ -213,6 +213,12 @@
       "title": "Presupuestos (mes)",
       "empty": "Sin presupuestos",
       "prev": "Mes anterior: {pct}%"
+    },
+    "amountFormat": {
+      "showCompact": "Ver compacto",
+      "showFull": "Ver completo",
+      "compactLabel": "Compacto",
+      "fullLabel": "Completo"
     }
   },
   "categories": {
@@ -395,7 +401,7 @@
     "sampleSecondary": "Acción secundaria",
     "theme": {
       "title": "Tema",
-      "subtitle": "Personaliza los colores principales de la app. Los cambios se aplican en vivo.",
+      "subtitle": "Personaliza los colores principales de la app (Los cambios se aplican en vivo). Cambia el formato de montos.",
       "presets": {
         "title": "Temas predefinidos",
         "subtitle": "Elige uno de los temas accesibles (claros u oscuros). Luego puedes ajustar colores finamente si quieres.",
@@ -415,6 +421,12 @@
           "lightAmber": "Ámbar (claro)"
         }
       }
+    },
+    "amountFormat": {
+      "title": "Formato de montos",
+      "subtitle": "Elige cómo mostrar los valores monetarios en toda la aplicación.",
+      "full": "Completo (con decimales)",
+      "compact": "Compacto (K / M / B)"
     },
     "notifications": {
       "saved": "Tema guardado",

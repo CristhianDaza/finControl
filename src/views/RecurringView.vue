@@ -3,7 +3,8 @@ import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useRecurringStore } from '@/stores/recurring.js'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t } from '@/i18n/index.js'
+import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import PauseIcon from '@/assets/icons/pause.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
@@ -131,7 +132,7 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDe
           <tr v-for="tpl in rec.items" :key="tpl.id">
             <td :data-label="t('recurring.table.name')">{{ tpl.name || tpl.note || '-' }}</td>
             <td :data-label="t('recurring.table.next')">{{ tpl.nextRunAt }}</td>
-            <td :data-label="t('recurring.table.amount')">{{ formatCurrency(Number(tpl.amount||0)) }}</td>
+            <td :data-label="t('recurring.table.amount')">{{ formatAmount(Number(tpl.amount||0)) }}</td>
             <td :data-label="t('recurring.table.account')">{{ accountNameById[tpl.accountId] || tpl.accountId }}</td>
             <td :data-label="t('recurring.table.type')">{{ tpl.type==='income' ? t('transactions.form.income') : tpl.type==='expense' ? t('transactions.form.expense') : tpl.type==='debtPayment' ? t('transactions.form.debtPayment') : tpl.type }}</td>
             <td :data-label="t('recurring.table.frequency')">{{ t(`recurring.frequency.${tpl.frequency||'monthly'}`) }}</td>

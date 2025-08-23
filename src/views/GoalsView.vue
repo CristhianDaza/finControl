@@ -2,7 +2,8 @@
 import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useGoalsStore } from '@/stores/goals.js'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t } from '@/i18n/index.js'
+import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import PauseIcon from '@/assets/icons/pause.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
@@ -77,7 +78,7 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
           <tr v-for="g in goals.items" :key="g.id">
             <td :data-label="t('goals.table.name')">{{ g.name }}</td>
             <td :data-label="t('goals.table.account')">{{ accountNameById[g.accountId] || g.accountId }}</td>
-            <td :data-label="t('goals.table.target')">{{ formatCurrency(g.targetAmount) }}</td>
+            <td :data-label="t('goals.table.target')">{{ formatAmount(g.targetAmount) }}</td>
             <td :data-label="t('goals.table.progress')">
               <div class="progress-row">
                 <div class="progress-bar"><div class="progress-fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div>

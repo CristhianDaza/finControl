@@ -9,7 +9,8 @@ import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
 import FCTransferModal from '@/components/FCTransferModal.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t } from '@/i18n/index.js'
+import { formatAmount } from '@/utils/formatters.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
 import { useUserPrefs } from '@/composables/useUserPrefs.js'
 
@@ -306,7 +307,7 @@ watch(selectedYear, () => {
                   <span v-if="item.isRecurring || item.recurringTemplateId" class="badge badge-rec">{{ t('recurring.badge') }}</span>
                 </div>
               </td>
-              <td :data-label="t('transactions.table.amount')">{{ formatCurrency(item.amount) }}</td>
+              <td :data-label="t('transactions.table.amount')">{{ formatAmount(item.amount) }}</td>
               <td :data-label="t('transactions.table.account')">{{ accountNameById[item.accountId] || item.accountId }}</td>
               <td :data-label="t('transactions.table.type')">
                 {{ item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : (item.type==='expense' && (item.goalId || item.goal)) ? t('transactions.form.goalSaving') : t('transactions.form.expense') }}
@@ -351,8 +352,8 @@ watch(selectedYear, () => {
               <td :data-label="t('transactions.table.account')">{{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }}</td>
               <td :data-label="t('transactions.table.amount')">
                 <div style="display:flex;flex-direction:column;gap:.25rem">
-                  <span>-{{ formatCurrency(pair.out.amountFrom, pair.out.currencyFrom) }}</span>
-                  <span>+{{ formatCurrency(pair.inn.amountTo, pair.inn.currencyTo) }}</span>
+                  <span>-{{ formatAmount(pair.out.amountFrom, pair.out.currencyFrom) }}</span>
+                  <span>+{{ formatAmount(pair.inn.amountTo, pair.inn.currencyTo) }}</span>
                 </div>
               </td>
               <td :data-label="t('transactions.table.actions')">

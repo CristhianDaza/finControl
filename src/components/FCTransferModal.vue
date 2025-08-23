@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t } from '@/i18n/index.js'
+import { formatAmount } from '@/utils/formatters.js'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useFormattedNumber } from '@/composables/useFormattedNumber.js'
 
@@ -15,7 +16,7 @@ const local = ref({ fromAccountId: '', toAccountId: '', amountFrom: '', currency
 const submitting = ref(false)
 const errors = ref({})
 
-const accountsOptions = computed(() => acc.items.map(a => ({ label: `${a.name} · ${formatCurrency(a.balance, a.currency || 'COP')} · ${a.currency || 'COP'}`, value: a.id, currency: a.currency || 'COP' })))
+const accountsOptions = computed(() => acc.items.map(a => ({ label: `${a.name} · ${formatAmount(a.balance, a.currency || 'COP')} · ${a.currency || 'COP'}`, value: a.id, currency: a.currency || 'COP' })))
 const fromAcc = computed(() => acc.items.find(a => a.id === local.value.fromAccountId))
 const toAcc = computed(() => acc.items.find(a => a.id === local.value.toAccountId))
 

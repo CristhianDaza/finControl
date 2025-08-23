@@ -2,7 +2,8 @@
 import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAccountsStore } from '@/stores/accounts.js'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t } from '@/i18n/index.js'
+import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
@@ -81,7 +82,7 @@ onMounted(() => { acc.subscribeMyAccounts() })
       <div class="account-card" v-for="item in rows" :key="item.id">
         <div class="account-header">
           <h3>{{ item.name }}</h3>
-          <p class="account-balance">{{ formatCurrency(item.balance) }}</p>
+          <p class="account-balance">{{ formatAmount(item.balance, item.currency || 'COP') }}</p>
         </div>
         <div class="account-actions">
           <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')" @click="openEdit(item)">
