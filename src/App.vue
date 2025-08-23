@@ -8,6 +8,7 @@ import { useRoute } from 'vue-router'
 
 const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
 const FCNotify = defineAsyncComponent(/* webpackChunkName: "FCNotify" */ () => import('@/components/global/FCNotify.vue'))
+const FCGlobalLoader = defineAsyncComponent(() => import('@/components/global/FCGlobalLoader.vue'))
 
 const { isMobile } = useIsMobile()
 const auth = useAuthStore()
@@ -63,6 +64,7 @@ watch(() => auth.isAuthenticated, async (v) => {
     </main>
   </div>
   <FCNotify />
+  <FCGlobalLoader />
 </template>
 
 <style scoped>

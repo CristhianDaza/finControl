@@ -6,8 +6,10 @@ import App from './App.vue'
 import { useAuthStore } from '@/stores/auth.js'
 import { initI18n } from '@/i18n/index.js'
 import { useSettingsStore } from '@/stores/settings.js'
+import { createLoadingPlugin } from '@/plugins/loadingPlugin.js'
 
 const pinia = createPinia()
+pinia.use(createLoadingPlugin())
 const app = createApp(App)
 
 ;(async () => {
