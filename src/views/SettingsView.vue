@@ -134,27 +134,26 @@ const applyPreset = (id) => settings.applyPreset(id)
         </div>
       </div>
 
+      <div class="preview">
+        <h2 class="card-title">{{ t('settings.preview') }}</h2>
+        <p class="card-subtitle">{{ t('settings.previewDesc') }}</p>
+
+        <div class="badges">
+          <span class="badge" :style="{background: 'var(--tx-expense-color)', color: 'var(--white)'}">{{ t('transactions.form.expense') }}</span>
+          <span class="badge" :style="{background: 'var(--tx-goal-color)', color: 'var(--black)'}">{{ t('transactions.form.goalSaving') }}</span>
+          <span class="badge" :style="{background: 'var(--tx-debtPayment-color)', color: 'var(--white)'}">{{ t('transactions.form.debtPayment') }}</span>
+          <span class="badge" :style="{background: 'var(--tx-income-color)', color: 'var(--white)'}">{{ t('transactions.form.income') }}</span>
+          <span class="badge" :style="{background: 'var(--tx-transfer-color)', color: 'var(--black)'}">{{ t('common.transfer') }}</span>
+        </div>
+        <div class="buttons">
+          <button class="button">{{ t('settings.samplePrimary') }}</button>
+          <button class="button button-secondary">{{ t('settings.sampleSecondary') }}</button>
+        </div>
+      </div>
+
       <div class="actions">
         <button class="button button-secondary" @click="reset">{{ t('settings.reset') }}</button>
         <button class="button" @click="save">{{ t('common.save') }}</button>
-      </div>
-    </article>
-
-    <article class="card preview">
-      <h2 class="card-title">{{ t('settings.preview') }}</h2>
-      <p class="card-subtitle">{{ t('settings.previewDesc') }}</p>
-
-      <div class="badges">
-        <span class="badge" :style="{background: 'var(--tx-expense-color)', color: 'var(--white)'}">{{ t('transactions.form.expense') }}</span>
-        <span class="badge" :style="{background: 'var(--tx-goal-color)', color: 'var(--black)'}">{{ t('transactions.form.goalSaving') }}</span>
-        <span class="badge" :style="{background: 'var(--tx-debtPayment-color)', color: 'var(--white)'}">{{ t('transactions.form.debtPayment') }}</span>
-        <span class="badge" :style="{background: 'var(--tx-income-color)', color: 'var(--white)'}">{{ t('transactions.form.income') }}</span>
-        <span class="badge" :style="{background: 'var(--tx-transfer-color)', color: 'var(--black)'}">{{ t('common.transfer') }}</span>
-      </div>
-
-      <div class="buttons">
-        <button class="button">{{ t('settings.samplePrimary') }}</button>
-        <button class="button button-secondary">{{ t('settings.sampleSecondary') }}</button>
       </div>
     </article>
   </section>
@@ -283,6 +282,15 @@ const applyPreset = (id) => settings.applyPreset(id)
 .amount-format-options { display:flex; gap:1rem; flex-wrap:wrap; }
 .amount-format-options .opt { display:flex; gap:.5rem; align-items:center; background: var(--secondary-color); padding:.6rem .8rem; border-radius:8px; cursor:pointer; }
 .amount-format-options input[type=radio] { accent-color: var(--accent-color); }
+
+.preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--background-color);
+  border: 1px solid var(--secondary-color);
+  box-shadow: 0 2px 8px var(--shadow-elev-1, rgba(0,0,0,.2));
+}
 
 .preview .badges {
   display:flex; gap:.5rem; flex-wrap:wrap;
