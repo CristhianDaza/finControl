@@ -1,5 +1,6 @@
 import { auth, db } from '@/services/firebase.js'
-import { addDoc, collection, deleteDoc, doc, onSnapshot, query, serverTimestamp, updateDoc, where, getDocs, setDoc } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, onSnapshot, query, where, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { useTransactions } from '@/composables/useTransactions.js'
 
 export const useAccounts = () => {
   const getUserCol = () => {
@@ -64,10 +65,20 @@ export const useAccounts = () => {
 
   const setBalance = async (id, balance) => {
     const { col } = getUserCol()
-    const ref = doc(col, id)
-    await setDoc(ref, { balance: Number(balance), updatedAt: serverTimestamp() }, { merge: true })
+    const accRef = doc(col, id)
+    const { getDoc } = await import('firebase/firestore')
+    const snap = await getDoc(accRef)
+    if (!snap.exists()) throw new Error('AccountNotFound')
+    const data = snap.data()
+    const current = Number(data.balance || 0)
+    const target = Number(balance)
+    if (isNaN(target)) throw new Error('InvalidAmount')
+    const diff = target - current
+    if (Math.abs(diff) < 0.000001) return
+    const type = diff > 0 ? 'income' : 'expense'
+    const { createTransaction } = useTransactions()
+    await createTransaction({ type, amount: Math.abs(diff), accountId: id, date: new Date().toISOString().slice(0,10), note: 'Reconciliación' })
   }
 
   return { subscribeAccounts, fetchAccounts, createAccount, updateAccountName, deleteAccount, setBalance }
 }
-

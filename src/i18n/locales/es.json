@@ -167,7 +167,11 @@
       "debtRemainingNegative": "El pago excede el saldo de la deuda",
       "debtRequired": "Debes seleccionar una deuda",
       "debtNotFound": "Deuda no encontrada",
-      "goalRequired": "Debes seleccionar una meta"
+      "goalRequired": "Debes seleccionar una meta",
+      "invalidAmount": "Monto inválido",
+      "invalidType": "Tipo de transacción inválido",
+      "accountRequired": "Cuenta requerida",
+      "invalidDate": "Fecha inválida"
     },
     "confirmDelete": {
       "title": "Eliminar transacción",

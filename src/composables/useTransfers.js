@@ -1,5 +1,6 @@
 import { auth, db } from '@/services/firebase.js'
-import { collection, doc, getDocs, onSnapshot, query, runTransaction, serverTimestamp, where } from 'firebase/firestore'
+import { collection, doc, getDocs, query, runTransaction, serverTimestamp, where } from 'firebase/firestore'
+import { validateTransactionPayload } from '@/utils/validateTransactionPayload.js'
 
 export const useTransfers = () => {
   const getUserPaths = () => {
@@ -16,6 +17,8 @@ export const useTransfers = () => {
     const { uid, txCol, accColPath } = getUserPaths()
     if (!fromAccountId || !toAccountId) throw new Error('AccountsRequired')
     if (fromAccountId === toAccountId) throw new Error('SameAccount')
+    const validation = validateTransactionPayload({ type: 'income', amount: amountFrom, accountId: fromAccountId, date })
+    if (!validation.valid) throw new Error(validation.errors[0])
     const amountFromC = cents(amountFrom)
     if (amountFromC <= 0) throw new Error('InvalidAmount')
     const transferId = doc(txCol).id
@@ -57,6 +60,11 @@ export const useTransfers = () => {
   }
 
   const updateTransfer = async (transferId, patch) => {
+   if (patch.amountFrom != null || patch.date) {
+      const validation = validateTransactionPayload({ type: 'income', amount: patch.amountFrom ?? 1, accountId: patch.fromAccountId || 'placeholder', date: patch.date || new Date().toISOString().slice(0,10) })
+      if (!validation.valid) throw new Error(validation.errors[0])
+    }
+
     const { uid, txCol, accColPath } = getUserPaths()
     const qs = await getDocs(query(txCol, where('isTransfer', '==', true), where('transferId', '==', transferId)))
     if (qs.empty) throw new Error('NotFound')
@@ -168,4 +176,3 @@ export const useTransfers = () => {
 
   return { createTransfer, updateTransfer, deleteTransfer, fetchTransferPair }
 }
-

@@ -162,7 +162,11 @@
       "debtRemainingNegative": "Payment exceeds remaining debt",
       "debtRequired": "You must select a debt",
       "debtNotFound": "Debt not found",
-      "goalRequired": "You must select a goal"
+      "goalRequired": "You must select a goal",
+      "invalidAmount": "Invalid amount",
+      "invalidType": "Invalid transaction type",
+      "accountRequired": "Account required",
+      "invalidDate": "Invalid date"
     },
     "confirmDelete": {
       "title": "Delete transaction",

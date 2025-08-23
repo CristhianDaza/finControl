@@ -1,6 +1,7 @@
 import { auth, db } from '@/services/firebase.js'
-import { collection, doc, onSnapshot, orderBy as fbOrderBy, query, where, serverTimestamp, runTransaction, getDocs, getDoc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy as fbOrderBy, query, where, serverTimestamp, runTransaction, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { useTransactions } from '@/composables/useTransactions.js'
+import { validateTransactionPayload } from '@/utils/validateTransactionPayload.js'
 
 const pad2 = (n) => String(n).padStart(2, '0')
 const toISO = (d) => {
@@ -76,7 +77,11 @@ export const useRecurring = () => {
     if (opts.paused != null) clauses.push(where('paused', '==', !!opts.paused))
     const q = query(tplCol, ...clauses, fbOrderBy('createdAt', 'desc'))
     return onSnapshot(q, snap => {
-      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      const items = snap.docs.map(d => {
+        const raw = { id: d.id, ...d.data() }
+        const categoryId = raw.categoryId || raw.category || ''
+        return { ...raw, categoryId, category: categoryId }
+      })
       cb(items)
     })
   }
@@ -101,7 +106,7 @@ export const useRecurring = () => {
       amount: Number(payload.amount || 0),
       accountId: payload.accountId || payload.account || '',
       debtId: payload.debtId || payload.debt || null,
-      category: payload.category || '',
+      categoryId: payload.categoryId || payload.category || '',
       note: payload.note || '',
       frequency: payload.frequency || 'monthly',
       nextRunAt: firstRun,
@@ -117,6 +122,7 @@ export const useRecurring = () => {
     const { tplCol } = getUserPaths()
     const ref = doc(tplCol, id)
     const data = { ...patch, updatedAt: serverTimestamp() }
+    if (data.category && !data.categoryId) { data.categoryId = data.category; delete data.category }
     if (data.firstRunAt && !data.nextRunAt) { data.nextRunAt = normalizeIsoDate(data.firstRunAt); delete data.firstRunAt }
     if (data.nextRunAt) data.nextRunAt = normalizeIsoDate(data.nextRunAt)
     await updateDoc(ref, data)
@@ -140,6 +146,16 @@ export const useRecurring = () => {
         if (!t.accountId) { console.warn('[recurring] Plantilla sin accountId, skip', t.id); continue }
         if (!(Number(t.amount) > 0)) { console.warn('[recurring] Monto inválido, skip', t.id); continue }
         if (t.type === 'debtPayment' && !t.debtId) { console.warn('[recurring] debtPayment sin debtId, skip', t.id); continue }
+        const validation = validateTransactionPayload({
+          type: t.type,
+          amount: t.amount,
+          accountId: t.accountId,
+          date: t.nextRunAt
+        })
+        if (!validation.valid) {
+          console.warn('[recurring] Validación falló', t.id, validation.errors)
+          continue
+        }
 
         const periodKey = String(t.nextRunAt)
         const lockId = `${t.id}__${periodKey}`
@@ -186,7 +202,7 @@ export const useRecurring = () => {
             type: t.type || 'expense',
             amount: t.amount,
             accountId: t.accountId,
-            categoryId: t.category || '',
+            categoryId: t.categoryId || t.category || '',
             debtId: t.debtId || undefined,
             date: t.nextRunAt,
             note: t.note || t.name || '',

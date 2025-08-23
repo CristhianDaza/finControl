@@ -60,6 +60,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
         DebtNotFound: t('transactions.notifications.debtNotFound'),
         AccountNotFound: t('transactions.notifications.accountNotFound'),
         Unauthorized: t('transactions.notifications.unauthorized'),
+        InvalidAmount: t('transactions.notifications.invalidAmount'),
+        InvalidType: t('transactions.notifications.invalidType'),
+        AccountRequired: t('transactions.notifications.accountRequired'),
+        InvalidDate: t('transactions.notifications.invalidDate')
       }
       const msg = map[e?.message] || t('transactions.notifications.unauthorized')
       notifyError(msg)
@@ -79,6 +83,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
         DebtNotFound: t('transactions.notifications.debtNotFound'),
         AccountNotFound: t('transactions.notifications.accountNotFound'),
         Unauthorized: t('transactions.notifications.unauthorized'),
+        InvalidAmount: t('transactions.notifications.invalidAmount'),
+        InvalidType: t('transactions.notifications.invalidType'),
+        AccountRequired: t('transactions.notifications.accountRequired'),
+        InvalidDate: t('transactions.notifications.invalidDate')
       }
       const msg = map[e?.message] || t('transactions.notifications.unauthorized')
       notifyError(msg)
@@ -98,6 +106,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
         DebtNotFound: t('transactions.notifications.debtNotFound'),
         AccountNotFound: t('transactions.notifications.accountNotFound'),
         Unauthorized: t('transactions.notifications.unauthorized'),
+        InvalidAmount: t('transactions.notifications.invalidAmount'),
+        InvalidType: t('transactions.notifications.invalidType'),
+        AccountRequired: t('transactions.notifications.accountRequired'),
+        InvalidDate: t('transactions.notifications.invalidDate')
       }
       const msg = map[e?.message] || t('transactions.notifications.unauthorized')
       notifyError(msg)
