@@ -1,6 +1,7 @@
 <script setup>
 import { defineAsyncComponent, ref, watch, computed } from 'vue'
 import { t } from '@/i18n/index.js'
+import { useCurrenciesStore } from '@/stores/currencies.js'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
@@ -16,9 +17,13 @@ const emit = defineEmits(['save','update:showModal','cancel'])
 const account = ref({ id: '', name: '', balance: 0, currency: 'COP' })
 const showModal = ref(false)
 const isEdit = computed(() => !!account.value.id)
+const currencies = useCurrenciesStore()
+if (currencies.status === 'idle') { currencies.subscribe() }
+const currencyOptions = computed(() => currencies.codeOptions)
+const hasMultiple = computed(() => currencyOptions.value.length > 1)
 
 const handleAccept = () => {
-  const payload = { id: account.value.id, name: String(account.value.name||'').trim(), balance: Number(account.value.balance||0), currency: account.value.currency || 'COP' }
+  const payload = { id: account.value.id, name: String(account.value.name||'').trim(), balance: Number(account.value.balance||0), currency: account.value.currency || currencies.defaultCurrency.code }
   emit('save', payload)
   emit('update:showModal', false)
   resetAccount()
@@ -71,6 +76,7 @@ watch(showModal, v => emit('update:showModal', v))
       id="account-balance"
       :disabled="isEdit"
     />
+    <FcFormField v-if="hasMultiple" v-model="account.currency" :label="t('accounts.form.currency')" type="select" :options="currencyOptions" />
   </FcModal>
 </template>
 

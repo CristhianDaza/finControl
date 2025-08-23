@@ -7,6 +7,7 @@ import { t, formatDate } from '@/i18n/index.js'
 import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
+import { useCurrenciesStore } from '@/stores/currencies.js'
 
 const DebtsModalComponent = defineAsyncComponent(() => import('@/components/debts/DebtsModalComponent.vue'))
 const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.vue'))
@@ -14,6 +15,7 @@ const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.v
 const router = useRouter()
 const deb = useDebtsStore()
 const { fetchTransactions } = useTransactions()
+const currencies = useCurrenciesStore(); if (currencies.status==='idle') currencies.subscribe()
 
 const showModal = ref(false)
 const modalTitle = ref(t('debts.addTitle'))
@@ -50,7 +52,7 @@ const onSave = async (payload) => {
     if (payload.id) {
       await deb.update(payload.id, { name: payload.name, dueDate: payload.dueDate })
     } else {
-      await deb.create({ name: payload.name, amount: payload.amount, dueDate: payload.dueDate })
+      await deb.create({ name: payload.name, amount: payload.amount, dueDate: payload.dueDate, currency: payload.currency })
     }
     showModal.value = false
     editing.value = null
@@ -111,8 +113,8 @@ onMounted(() => { deb.subscribeMyDebts() })
               <td :data-label="t('recurring.table.name')">
                 <button class="link-like" @click="toggleOpen(d.id)">{{ d.name }}</button>
               </td>
-              <td :data-label="t('debts.card.total')">{{ formatAmount(d.originalAmount) }}</td>
-              <td :data-label="t('debts.card.remaining')">{{ formatAmount(d.remainingAmount) }}</td>
+              <td :data-label="t('debts.card.total')">{{ formatAmount(d.originalAmount, d.currency || currencies.defaultCurrency.code) }}</td>
+              <td :data-label="t('debts.card.remaining')">{{ formatAmount(d.remainingAmount, d.currency || currencies.defaultCurrency.code) }}</td>
               <td :data-label="t('debts.form.dueDate')">{{ d.dueDate || '-' }}</td>
               <td :data-label="t('debts.card.status')">
                 <span class="badge" :class="d.status === 'paid' ? 'badge-green' : 'badge-blue'">{{ d.status === 'paid' ? t('debts.card.paid') : t('debts.card.active') }}</span>
@@ -136,7 +138,7 @@ onMounted(() => { deb.subscribeMyDebts() })
                   <ul v-else class="payments-list">
                     <li v-for="p in paymentsByDebt[d.id]" :key="p.id">
                       <span>📓 {{ formatDate(p.date) }}</span>
-                      <span>{{ formatAmount(p.amount) }}</span>
+                      <span>{{ formatAmount(p.amount, p.currency || d.currency || currencies.defaultCurrency.code) }}</span>
                     </li>
                   </ul>
                 </div>

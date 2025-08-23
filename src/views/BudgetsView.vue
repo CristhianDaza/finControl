@@ -9,6 +9,7 @@ import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import PauseIcon from '@/assets/icons/pause.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
+import { useCurrenciesStore } from '@/stores/currencies.js'
 
 const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(() => import('@/components/global/FcFormField.vue'))
@@ -16,6 +17,7 @@ const FcFormField = defineAsyncComponent(() => import('@/components/global/FcFor
 const accounts = useAccountsStore()
 const budgets = useBudgetsStore()
 const transactions = useTransactionsStore()
+const currencies = useCurrenciesStore(); if (currencies.status==='idle') currencies.subscribe()
 
 const { currentMonthIndex, currentYear, labels, daysInMonth } = useMonthlyRange()
 const monthLabels = labels
@@ -46,13 +48,13 @@ const form = ref({
 })
 
 const resetForm = () => {
-  form.value = { name: '', targetAmount: 0, currency: t('currency.default'), periodType: 'monthly', periodFrom: '', periodTo: '', categories: [], excludeAccounts: [], alertThresholdPct: 80, carryover: true, ratesRaw: '' }
+  form.value = { name: '', targetAmount: 0, currency: currencies.defaultCurrency.code, periodType: 'monthly', periodFrom: '', periodTo: '', categories: [], excludeAccounts: [], alertThresholdPct: 80, carryover: true, ratesRaw: '' }
   isEditing.value = false; editingId.value = null
 }
 const openCreate = () => { resetForm(); showModal.value = true }
 const openEdit = (b) => {
   form.value = {
-    name: b.name || '', targetAmount: Number(b.targetAmount)||0, currency: b.currency || t('currency.default'),
+    name: b.name || '', targetAmount: Number(b.targetAmount)||0, currency: b.currency || currencies.defaultCurrency.code,
     periodType: b.periodType || 'monthly', periodFrom: b.periodFrom || '', periodTo: b.periodTo || '',
     categories: Array.isArray(b.categories) ? [...b.categories] : [],
     excludeAccounts: Array.isArray(b.excludeAccounts) ? [...b.excludeAccounts] : [],
@@ -216,7 +218,8 @@ watch(() => transactions.items, () => recompute(), { deep: true })
       <div class="grid modal-grid">
         <FcFormField v-model="form.name" :label="t('budgets.form.name')" :maxlength="50" required />
         <FcFormField v-model="form.targetAmount" :label="t('budgets.form.targetAmount')" type="number" min="1" step="0.01" format-thousands required />
-        <FcFormField v-model="form.currency" :label="t('budgets.form.currency')" />
+        <FcFormField v-if="(currencies.codeOptions||[]).length>1" v-model="form.currency" :label="t('budgets.form.currency')" type="select" :options="currencies.codeOptions" />
+        <FcFormField v-else v-model="form.currency" :label="t('budgets.form.currency')" disabled />
 
         <FcFormField v-model="form.periodType" :label="t('budgets.form.periodType')" type="select" :options="[
           { label: t('budgets.form.monthly'), value: 'monthly' },

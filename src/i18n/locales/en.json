@@ -68,7 +68,12 @@
   },
   "currency": {
     "default": "COP",
-    "invalid": "Invalid currency"
+    "invalid": "Invalid currency",
+    "errors": {
+      "duplicate": "Duplicate currency code",
+      "invalid": "Invalid code (use 3-5 letters)",
+      "cannotDeleteDefault": "You can't delete the default currency"
+    }
   },
   "accounts": {
     "title": "Accounts",
@@ -405,6 +410,21 @@
       "subtitle": "Choose how monetary values are shown across the app.",
       "full": "Full (with decimals)",
       "compact": "Compact (K / M / B)"
+    },
+    "currencies": {
+      "title": "Currencies",
+      "subtitle": "Manage available currencies and set a default one.",
+      "code": "Code",
+      "symbol": "Symbol",
+      "name": "Name",
+      "isDefault": "Default",
+      "defaultBadge": "DEF",
+      "add": "Add",
+      "notifications": {
+        "created": "Currency added",
+        "deleted": "Currency deleted",
+        "defaultChanged": "Default currency updated"
+      }
     },
     "notifications": {
       "saved": "Theme saved",

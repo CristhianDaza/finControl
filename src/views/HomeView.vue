@@ -456,7 +456,7 @@ onBeforeUnmount(() => {
               <div class="bar"><div class="fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div>
               <div class="pct">{{ goalProgressPct(g.id) }}%</div>
             </div>
-            <div class="goal-target">{{ formatAmount(g.targetAmount) }}</div>
+            <div class="goal-target">{{ formatAmount(g.targetAmount, g.currency || 'COP') }}</div>
             <span v-if="goalCompleted(g.id)" class="badge badge-green">{{ t('goals.completed') }}</span>
           </div>
         </li>
@@ -478,7 +478,7 @@ onBeforeUnmount(() => {
           <div class="tx-right">
             <div class="tx-account">{{ getAccountName(it.accountId) }}</div>
             <div class="tx-amount" :class="{ inc: it.type==='income', exp: it.type==='expense' || it.type==='debtPayment' }">
-              {{ formatAmount(it.amount) }}
+              {{ formatAmount(it.amount, it.currency || 'COP') }}
             </div>
           </div>
         </li>

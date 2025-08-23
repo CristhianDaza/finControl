@@ -73,7 +73,12 @@
   },
   "currency": {
     "default": "COP",
-    "invalid": "Moneda inválida"
+    "invalid": "Moneda inválida",
+    "errors": {
+      "duplicate": "Código de moneda duplicado",
+      "invalid": "Código inválido (usa 3-5 letras)",
+      "cannotDeleteDefault": "No puedes eliminar la moneda por defecto"
+    }
   },
   "accounts": {
     "title": "Cuentas",
@@ -431,6 +436,21 @@
     "notifications": {
       "saved": "Tema guardado",
       "reset": "Tema reseteado"
+    },
+    "currencies": {
+      "title": "Monedas",
+      "subtitle": "Administra las monedas disponibles y define una por defecto.",
+      "code": "Código",
+      "symbol": "Símbolo",
+      "name": "Nombre",
+      "isDefault": "Por defecto",
+      "defaultBadge": "DEF",
+      "add": "Agregar",
+      "notifications": {
+        "created": "Moneda agregada",
+        "deleted": "Moneda eliminada",
+        "defaultChanged": "Moneda por defecto actualizada"
+      }
     }
   }
 }

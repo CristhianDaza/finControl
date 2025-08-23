@@ -25,6 +25,7 @@ export const useGoals = () => {
       ownerId: uid,
       name: payload.name,
       targetAmount: Number(payload.targetAmount || 0),
+      currency: payload.currency || payload.currencyCode || 'COP',
       dueDate: payload.dueDate || null,
       accountId: payload.accountId || payload.account || '',
       note: payload.note || '',

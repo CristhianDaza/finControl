@@ -28,9 +28,9 @@ export const useDebtsStore = defineStore('debts', () => {
 
   const getDebtById = (id) => computed(() => items.value.find(a => a.id === id))
 
-  const create = async ({ name, amount, dueDate }) => {
+  const create = async ({ name, amount, dueDate, currency }) => {
     if (Number(amount) < 0) { notifyError(t('debts.form.amountError')); throw new Error('invalid-amount') }
-    try { const id = await createDebt({ name, amount: Number(amount || 0), dueDate }); success(t('debts.notifications.created')); return id }
+    try { const id = await createDebt({ name, amount: Number(amount || 0), dueDate, currency }); success(t('debts.notifications.created')); return id }
     catch (e) { notifyError(e?.message || 'Error'); throw e }
   }
 
@@ -48,4 +48,3 @@ export const useDebtsStore = defineStore('debts', () => {
 
   return { items, status, error, subscribeMyDebts, unsubscribe, getDebtById, create, update, remove, hasItems }
 })
-

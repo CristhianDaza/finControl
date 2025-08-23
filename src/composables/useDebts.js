@@ -23,7 +23,7 @@ export const useDebts = () => {
     })
   }
 
-  const createDebt = async ({ name, amount, dueDate }) => {
+  const createDebt = async ({ name, amount, dueDate, currency }) => {
     const { col, uid } = getUserCol()
     const originalAmount = Math.max(0, Number(amount || 0))
     const data = {
@@ -32,6 +32,7 @@ export const useDebts = () => {
       originalAmount,
       remainingAmount: originalAmount,
       dueDate: dueDate || null,
+      currency: currency || 'COP',
       status: originalAmount === 0 ? 'paid' : 'active',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -68,4 +69,3 @@ export const useDebts = () => {
 
   return { subscribeDebts, fetchDebts, createDebt, updateDebt, deleteDebt }
 }
-

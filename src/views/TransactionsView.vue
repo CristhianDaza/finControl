@@ -307,7 +307,7 @@ watch(selectedYear, () => {
                   <span v-if="item.isRecurring || item.recurringTemplateId" class="badge badge-rec">{{ t('recurring.badge') }}</span>
                 </div>
               </td>
-              <td :data-label="t('transactions.table.amount')">{{ formatAmount(item.amount) }}</td>
+              <td :data-label="t('transactions.table.amount')">{{ formatAmount(item.amount, item.currency || 'COP') }}</td>
               <td :data-label="t('transactions.table.account')">{{ accountNameById[item.accountId] || item.accountId }}</td>
               <td :data-label="t('transactions.table.type')">
                 {{ item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : (item.type==='expense' && (item.goalId || item.goal)) ? t('transactions.form.goalSaving') : t('transactions.form.expense') }}

@@ -2,6 +2,7 @@
 import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useGoalsStore } from '@/stores/goals.js'
+import { useCurrenciesStore } from '@/stores/currencies.js'
 import { t } from '@/i18n/index.js'
 import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
@@ -13,25 +14,26 @@ const FcFormField = defineAsyncComponent(() => import('@/components/global/FcFor
 
 const acc = useAccountsStore()
 const goals = useGoalsStore()
+const currencies = useCurrenciesStore(); if (currencies.status==='idle') currencies.subscribe()
 
 const showModal = ref(false)
 const isEditing = ref(false)
 const editingId = ref(null)
 
-const form = ref({ name: '', targetAmount: 0, account: '', dueDate: '', note: '', paused: false })
+const form = ref({ name: '', targetAmount: 0, account: '', dueDate: '', note: '', paused: false, currency: 'COP' })
 
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
 const accountNameById = computed(() => acc.items.reduce((m,a)=>{ m[a.id]=a.name; return m }, {}))
 
-const resetForm = () => { form.value = { name: '', targetAmount: 0, account: '', dueDate: '', note: '', paused: false }; editingId.value = null; isEditing.value = false }
+const resetForm = () => { form.value = { name: '', targetAmount: 0, account: '', dueDate: '', note: '', paused: false, currency: currencies.defaultCurrency.code }; editingId.value = null; isEditing.value = false }
 const openCreate = () => { resetForm(); showModal.value = true }
 const openEdit = (g) => {
-  form.value = { name: g.name || '', targetAmount: Number(g.targetAmount)||0, account: g.accountId || g.account || '', dueDate: g.dueDate || '', note: g.note || '', paused: !!g.paused }
+  form.value = { name: g.name || '', targetAmount: Number(g.targetAmount)||0, account: g.accountId || g.account || '', dueDate: g.dueDate || '', note: g.note || '', paused: !!g.paused, currency: g.currency || currencies.defaultCurrency.code }
   editingId.value = g.id; isEditing.value = true; showModal.value = true
 }
 
 const save = async () => {
-  const payload = { name: form.value.name, targetAmount: Number(form.value.targetAmount), accountId: form.value.account, dueDate: form.value.dueDate || null, note: form.value.note, paused: !!form.value.paused }
+  const payload = { name: form.value.name, targetAmount: Number(form.value.targetAmount), accountId: form.value.account, dueDate: form.value.dueDate || null, note: form.value.note, paused: !!form.value.paused, currency: form.value.currency }
   if (isEditing.value && editingId.value) await goals.edit(editingId.value, payload)
   else await goals.add(payload)
   showModal.value = false; resetForm(); await goals.loadProgress()
@@ -78,7 +80,7 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
           <tr v-for="g in goals.items" :key="g.id">
             <td :data-label="t('goals.table.name')">{{ g.name }}</td>
             <td :data-label="t('goals.table.account')">{{ accountNameById[g.accountId] || g.accountId }}</td>
-            <td :data-label="t('goals.table.target')">{{ formatAmount(g.targetAmount) }}</td>
+            <td :data-label="t('goals.table.target')">{{ formatAmount(g.targetAmount, g.currency || currencies.defaultCurrency.code) }}</td>
             <td :data-label="t('goals.table.progress')">
               <div class="progress-row">
                 <div class="progress-bar"><div class="progress-fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div>
@@ -112,6 +114,7 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
       <div class="grid modal-grid">
         <FcFormField v-model="form.name" :label="t('goals.form.name')" :maxlength="50" required />
         <FcFormField v-model="form.targetAmount" :label="t('goals.form.targetAmount')" type="number" min="1" step="0.01" format-thousands required />
+        <FcFormField v-if="(currencies.codeOptions||[]).length>1" v-model="form.currency" :label="t('budgets.form.currency')" type="select" :options="currencies.codeOptions" />
         <FcFormField v-model="form.account" :label="t('goals.form.account')" type="select" :options="accountsOptions" required />
         <FcFormField v-model="form.dueDate" :label="t('goals.form.dueDate')" type="date" />
         <FcFormField v-model="form.note" :label="t('goals.form.note')" />
