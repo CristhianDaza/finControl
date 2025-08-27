@@ -2,6 +2,7 @@
 import { defineAsyncComponent, ref, watch, computed } from 'vue'
 import { t } from '@/i18n/index.js'
 import { useCurrenciesStore } from '@/stores/currencies.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
@@ -31,8 +32,11 @@ const hasMultiple = computed(()=>currencyOptions.value.length>1)
 const model = ref({ id: '', name: '', amount: 0, dueDate: '', currency: 'COP' })
 const showModal = ref(false)
 const isEdit = computed(() => !!model.value.id)
+const auth = useAuthStore()
+const canWrite = computed(()=>auth.canWrite)
 
 const handleAccept = () => {
+  if (!canWrite.value) return;
   const payload = { id: model.value.id, name: String(model.value.name||'').trim(), amount: Number(model.value.amount||0), dueDate: model.value.dueDate || '', currency: model.value.currency || currencies.defaultCurrency.code }
   emit('save', payload)
   emit('update:showModal', false)
@@ -61,6 +65,7 @@ watch(showModal, v => emit('update:showModal', v))
     @cancel-modal="handleCancel"
     @update:showModal="showModal = $event"
     :title-modal="title"
+    :accept-disabled="!canWrite"
   >
     <FcFormField
       v-model="model.name"
@@ -70,6 +75,7 @@ watch(showModal, v => emit('update:showModal', v))
       :maxlength="40"
       :error-message="t('debts.form.nameError')"
       id="debt-name"
+      :disabled="!canWrite"
     />
     <FcFormField
       v-model="model.amount"
@@ -81,7 +87,7 @@ watch(showModal, v => emit('update:showModal', v))
       format-thousands
       :error-message="t('debts.form.amountError')"
       id="debt-amount"
-      :disabled="isEdit"
+      :disabled="isEdit || !canWrite"
     />
     <FcFormField
       v-if="hasMultiple"
@@ -89,6 +95,7 @@ watch(showModal, v => emit('update:showModal', v))
       :label="t('accounts.form.currency')"
       type="select"
       :options="currencyOptions"
+      :disabled="!canWrite"
     />
     <FcFormField
       v-model="model.dueDate"
@@ -98,6 +105,7 @@ watch(showModal, v => emit('update:showModal', v))
       :max="'2035-12-31'"
       :error-message="t('debts.form.dueDateError')"
       id="debt-dueDate"
+      :disabled="!canWrite"
     />
   </FcModal>
 </template>

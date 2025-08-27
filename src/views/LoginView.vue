@@ -43,12 +43,12 @@ const toggle = () => { mode.value = isSignup.value ? 'login' : 'signup'; auth.er
 </script>
 
 <template>
-  <section class="login-container">
+  <section class="login-wrapper">
     <div class="card login-card" role="dialog" aria-labelledby="login-title" aria-describedby="login-desc">
       <img src="@/assets/images/logo-fin-control.png" alt="Logo" class="login-logo" />
       <h1 id="login-title">{{ isSignup ? t('auth.signup.title') : t('auth.login.title') }}</h1>
       <p id="login-desc" class="muted">{{ isSignup ? t('auth.signup.description') : t('auth.login.description') }}</p>
-      <form @submit.prevent="submit" novalidate>
+      <form @submit.prevent="submit" novalidate class="login-form">
         <label class="field">
           <span>{{ isSignup ? t('auth.signup.email') : t('auth.login.email') }}</span>
           <input class="input" type="email" v-model="email" autocomplete="email" required :aria-invalid="!!emailError" aria-describedby="email-help" :placeholder="t('auth.login.email-placeholder')" />
@@ -70,51 +70,26 @@ const toggle = () => { mode.value = isSignup.value ? 'login' : 'signup'; auth.er
           <small id="code-help" v-if="codeError" class="error">{{ codeError }}</small>
         </label>
         <p v-if="auth.error" class="error" role="alert">{{ auth.error }}</p>
-        <button class="button w-full" :disabled="auth.status === 'loading'">
+        <button class="button btn-primary full-width" :disabled="auth.status === 'loading'" :aria-disabled="auth.status==='loading'">
           {{ auth.status === 'loading' ? (isSignup ? t('auth.signup.submitting') : t('auth.login.submitting')) : (isSignup ? t('auth.signup.submit') : t('auth.login.submit')) }}
         </button>
       </form>
-      <button class="link-toggle" type="button" @click="toggle">{{ isSignup ? t('auth.signup.toggleLogin') : t('auth.signup.toggleSignup') }}</button>
+      <button class="button button-secondary toggle-btn" type="button" @click="toggle">{{ isSignup ? t('auth.signup.toggleLogin') : t('auth.signup.toggleSignup') }}</button>
     </div>
   </section>
 </template>
 
 <style scoped>
-.login-container {
-  min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-}
-.login-card {
-  width: 100%;
-  max-width: 380px;
-}
-.login-logo {
-  display: block;
-  margin: 0 auto 1rem auto;
-  width: 128px;
-}
-.field {
-  display: block;
-  margin-bottom: 1rem;
-}
-.field span {
-  display: block;
-  margin-bottom: 0.4rem;
-  color: var(--hover-text-color);
-}
-.input {
-  width: 100%;
-}
-.error {
-  color: var(--error-color);
-  margin-top: 0.25rem;
-}
-.muted {
-  color: var(--muted-text-color);
-  margin-top: -0.25rem;
-  margin-bottom: 1rem;
-}
-.w-full { width: 100%; }
+.login-wrapper { min-height: 100dvh; display:flex; align-items:center; justify-content:center; padding:1rem }
+.login-card { width:100%; max-width:420px; min-height:520px; display:flex; flex-direction:column; gap:0.75rem; box-sizing:border-box }
+.login-logo { display:block; margin:0 auto 1rem; width:128px }
+.field { display:block; margin-bottom:0.85rem }
+.field span { display:block; margin-bottom:0.4rem; color: var(--hover-text-color) }
+.input { width:100% }
+.error { color: var(--error-color); margin-top:0.25rem }
+.muted { color: var(--muted-text-color); margin-top:-0.25rem; margin-bottom:0.75rem; text-align:center }
+.full-width { width:100% }
+.login-form { flex:1 1 auto; display:flex; flex-direction:column; justify-content:flex-start }
+.toggle-btn { margin-top:0.25rem }
+.button[disabled], .button[aria-disabled='true'] { opacity:.55; cursor:not-allowed }
 </style>

@@ -2,6 +2,9 @@ import { auth, db } from '@/services/firebase.js'
 import { collection, doc, onSnapshot, orderBy as fbOrderBy, query, where, serverTimestamp, runTransaction, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { useTransactions } from '@/composables/useTransactions.js'
 import { validateTransactionPayload } from '@/utils/validateTransactionPayload.js'
+import { useAuthStore } from '@/stores/auth.js'
+import { useNotify } from '@/components/global/fcNotify.js'
+import { t } from '@/i18n/index.js'
 
 const pad2 = (n) => String(n).padStart(2, '0')
 const toISO = (d) => {
@@ -61,6 +64,15 @@ const normalizeIsoDate = (val) => {
 }
 
 export const useRecurring = () => {
+  const gate = () => {
+    const a = useAuthStore()
+    if (!a.canWrite) {
+      useNotify().info(t('access.readOnly'))
+      return true
+    }
+    return false
+  }
+
   const getUserPaths = () => {
     const uid = auth.currentUser && auth.currentUser.uid
     if (!uid) throw new Error('Unauthorized')
@@ -95,6 +107,7 @@ export const useRecurring = () => {
   }
 
   const createTemplate = async (payload) => {
+    if (gate()) return
     const { uid, tplCol } = getUserPaths()
     const ref = doc(tplCol)
     const firstRunRaw = payload.firstRunAt || payload.nextRunAt || new Date()
@@ -119,6 +132,7 @@ export const useRecurring = () => {
   }
 
   const updateTemplate = async (id, patch) => {
+    if (gate()) return
     const { tplCol } = getUserPaths()
     const ref = doc(tplCol, id)
     const data = { ...patch, updatedAt: serverTimestamp() }
@@ -129,11 +143,13 @@ export const useRecurring = () => {
   }
 
   const deleteTemplate = async (id) => {
+    if (gate()) return
     const { tplCol } = getUserPaths()
     await deleteDoc(doc(tplCol, id))
   }
 
   const processDueOnce = async () => {
+    if (gate()) return { processed:0 }
     const { uid, runsColPath, tplCol } = getUserPaths()
     const due = await fetchDueTemplates()
     if (!due.length) return { processed: 0 }
@@ -141,24 +157,21 @@ export const useRecurring = () => {
     let processed = 0
     const LOCK_TTL_MS = 10 * 60 * 1000
 
-    for (const t of due) {
+    for (const tpl of due) {
       try {
-        if (!t.accountId) { console.warn('[recurring] Plantilla sin accountId, skip', t.id); continue }
-        if (!(Number(t.amount) > 0)) { console.warn('[recurring] Monto inválido, skip', t.id); continue }
-        if (t.type === 'debtPayment' && !t.debtId) { console.warn('[recurring] debtPayment sin debtId, skip', t.id); continue }
+        if (!tpl.accountId) continue
+        if (!(Number(tpl.amount) > 0)) continue
+        if (tpl.type === 'debtPayment' && !tpl.debtId) continue
         const validation = validateTransactionPayload({
-          type: t.type,
-          amount: t.amount,
-          accountId: t.accountId,
-          date: t.nextRunAt
+          type: tpl.type,
+          amount: tpl.amount,
+          accountId: tpl.accountId,
+          date: tpl.nextRunAt
         })
-        if (!validation.valid) {
-          console.warn('[recurring] Validación falló', t.id, validation.errors)
-          continue
-        }
+        if (!validation.valid) continue
 
-        const periodKey = String(t.nextRunAt)
-        const lockId = `${t.id}__${periodKey}`
+        const periodKey = String(tpl.nextRunAt)
+        const lockId = `${tpl.id}__${periodKey}`
         const lockRef = doc(db, ...runsColPath, lockId)
         const nowIso = new Date().toISOString()
 
@@ -185,13 +198,13 @@ export const useRecurring = () => {
                 } catch {}
               }
               if (stale) {
-                trx.set(lockRef, { ownerId: uid, templateId: t.id, periodKey, status: 'recovering', clientTime: nowIso, updatedAt: serverTimestamp(), createdAt: data.createdAt || serverTimestamp(), retries: (data.retries||0)+1 })
+                trx.set(lockRef, { ownerId: uid, templateId: tpl.id, periodKey, status: 'recovering', clientTime: nowIso, updatedAt: serverTimestamp(), createdAt: data.createdAt || serverTimestamp(), retries: (data.retries||0)+1 })
                 return true
               }
             }
             return false
           }
-          trx.set(lockRef, { ownerId: uid, templateId: t.id, periodKey, status: 'pending', clientTime: nowIso, createdAt: serverTimestamp(), retries: 0 })
+          trx.set(lockRef, { ownerId: uid, templateId: tpl.id, periodKey, status: 'pending', clientTime: nowIso, createdAt: serverTimestamp(), retries: 0 })
           return true
         })
         if (!locked) continue
@@ -199,35 +212,33 @@ export const useRecurring = () => {
         let txId = null
         try {
           txId = await createTransaction({
-            type: t.type || 'expense',
-            amount: t.amount,
-            accountId: t.accountId,
-            categoryId: t.categoryId || t.category || '',
-            debtId: t.debtId || undefined,
-            date: t.nextRunAt,
-            note: t.note || t.name || '',
-            meta: { isRecurring: true, recurringTemplateId: t.id, periodKey }
+            type: tpl.type || 'expense',
+            amount: tpl.amount,
+            accountId: tpl.accountId,
+            categoryId: tpl.categoryId || tpl.category || '',
+            debtId: tpl.debtId || undefined,
+            date: tpl.nextRunAt,
+            note: tpl.note || tpl.name || '',
+            meta: { isRecurring: true, recurringTemplateId: tpl.id, periodKey }
           })
         } catch (e) {
-          console.error('[recurring] Error creando transacción', t.id, e)
           try { await updateDoc(lockRef, { status: 'error', errorMessage: String(e?.message||e), updatedAt: serverTimestamp() }) } catch {}
           continue
         }
 
-        const tplRef = doc(tplCol, t.id)
+        const tplRef = doc(tplCol, tpl.id)
         try {
           await runTransaction(db, async (trx) => {
-            const next = nextFrom(t.frequency, t.nextRunAt)
-            trx.update(tplRef, { lastRunAt: t.nextRunAt, nextRunAt: next, updatedAt: serverTimestamp() })
+            const next = nextFrom(tpl.frequency, tpl.nextRunAt)
+            trx.update(tplRef, { lastRunAt: tpl.nextRunAt, nextRunAt: next, updatedAt: serverTimestamp() })
             trx.update(lockRef, { status: 'done', txId, updatedAt: serverTimestamp() })
           })
           processed += 1
         } catch (e) {
-          console.error('[recurring] Error actualizando template/lock', t.id, e)
           try { await updateDoc(lockRef, { status: 'error', errorMessage: String(e?.message||e), updatedAt: serverTimestamp() }) } catch {}
         }
       } catch (outer) {
-        console.error('[recurring] Error inesperado procesando plantilla', t?.id, outer)
+        console.error('[recurring] Error inesperado procesando plantilla', tpl?.id, outer)
       }
     }
     return { processed }

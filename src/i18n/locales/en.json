@@ -35,6 +35,8 @@
   },
   "auth": {
     "logout": "Log out",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
     "login": {
       "title": "Sign in",
       "description": "Access with your email and password.",
@@ -62,6 +64,13 @@
       "toggleSignup": "New here? Create account",
       "success": "Account created"
     }
+  },
+  "access": {
+    "readOnly": "Your account is in read-only mode. Activate to continue.",
+    "inactiveNotice": "Your user is inactive or your plan has expired. Some actions are disabled.",
+    "activateNow": "Activate now",
+    "inactiveTitle": "Inactive account",
+    "expiredTitle": "Plan expired"
   },
   "validation": {
     "invalid-field": "Invalid field",

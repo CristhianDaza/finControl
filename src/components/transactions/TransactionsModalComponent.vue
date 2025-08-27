@@ -2,6 +2,7 @@
 import {defineAsyncComponent, ref, watch, computed} from 'vue'
 import { t } from '@/i18n/index.js'
 import { useNotify } from '@/components/global/fcNotify.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
@@ -17,6 +18,8 @@ const props = defineProps({
 
 const emit = defineEmits(['save','update:showModalTransaction','cancel'])
 const { error: notifyError } = useNotify()
+const auth = useAuthStore()
+const canWrite = computed(() => auth.canWrite)
 
 const transaction = ref({
   description: '',
@@ -33,6 +36,7 @@ const isDebtPayment = computed(() => transaction.value.type === 'debtPayment')
 const isGoalSaving = computed(() => transaction.value.type === 'expense:goal')
 
 const handleAccept = () => {
+  if (!canWrite.value) return
   if (isDebtPayment.value && !transaction.value.debt) { notifyError(t('transactions.notifications.debtRequired')); return }
   if (isGoalSaving.value && !transaction.value.goal) { notifyError(t('transactions.notifications.goalRequired')); return }
   const payload = { ...transaction.value }
@@ -108,6 +112,7 @@ watch(
     @cancel-modal="handleCancel"
     @update:showModal="showModal = $event"
     :title-modal="title"
+    :accept-disabled="!canWrite"
   >
     <FcFormField
       v-model="transaction.description"
@@ -116,6 +121,7 @@ watch(
       required
       :maxlength="40"
       :error-message="t('transactions.form.descriptionError')"
+      :disabled="!canWrite"
     />
     <FcFormField
       v-model="transaction.amount"
@@ -126,6 +132,7 @@ watch(
       step="0.01"
       format-thousands
       :error-message="t('transactions.form.amountError')"
+      :disabled="!canWrite"
     />
     <FcFormField
       v-model="transaction.type"
@@ -139,6 +146,7 @@ watch(
       ]"
       required
       :error-message="t('transactions.form.type')"
+      :disabled="!canWrite"
     />
     <FcFormField
       v-if="isDebtPayment"
@@ -148,6 +156,7 @@ watch(
       :options="debtsOptions"
       required
       :error-message="t('transactions.form.debtError')"
+      :disabled="!canWrite"
     />
     <FcFormField
       v-model="transaction.account"
@@ -156,6 +165,7 @@ watch(
       :options="accountsOptions"
       required
       :error-message="t('transactions.form.accountError')"
+      :disabled="!canWrite"
     />
     <FcFormField
       v-if="isGoalSaving"
@@ -164,6 +174,7 @@ watch(
       type="select"
       :options="goalsOptions"
       required
+      :disabled="!canWrite"
     />
     <FcFormField
       v-model="transaction.date"
@@ -173,6 +184,7 @@ watch(
       :min="'2023-01-01'"
       :max="'2030-12-31'"
       :error-message="t('transactions.form.dateError')"
+      :disabled="!canWrite"
     />
   </FcModal>
 </template>

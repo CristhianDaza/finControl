@@ -3,7 +3,7 @@ import { onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/aut
 import { auth, db } from '@/services/firebase.js'
 import { useAuth } from '@/composables/useAuth.js'
 import { useSettingsStore } from '@/stores/settings.js'
-import { doc, getDoc, updateDoc, serverTimestamp, runTransaction } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp, runTransaction, setDoc } from 'firebase/firestore'
 import { t } from '@/i18n/index.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 
@@ -16,6 +16,7 @@ export const useAuthStore = defineStore('auth', {
     _listenerAttached: false,
     _initPromise: null,
     _unsub: null,
+    isReadOnly: false,
   }),
   getters: {
     isAuthenticated: s => !!s.user,
@@ -23,8 +24,25 @@ export const useAuthStore = defineStore('auth', {
       const envAdmins = (import.meta.env.VITE_ADMIN_UIDS || '').split(',').map(v=>v.trim()).filter(Boolean)
       return !!s.profile && (s.profile.role === 'admin' || envAdmins.includes(s.user?.uid || ''))
     },
+    canWrite: s => !s.isReadOnly,
   },
   actions: {
+    computeReadOnly() {
+      if (!this.profile) { this.isReadOnly = false; return }
+      const isActive = this.profile.isActive !== false
+      const exp = this.profile.planExpiresAt?.toMillis ? this.profile.planExpiresAt.toMillis() : this.profile.planExpiresAt
+      const now = Date.now()
+      const expired = exp ? now >= exp : false
+      this.isReadOnly = !isActive || expired
+    },
+    async ensureUserDoc() {
+      if (!this.user) return
+      const ref = doc(db, 'users', this.user.uid)
+      const snap = await getDoc(ref)
+      if (!snap.exists()) {
+        await setDoc(ref, { email: this.user.email?.toLowerCase() || '', createdAt: serverTimestamp(), lastActiveAt: serverTimestamp(), isActive: true, role: 'user' })
+      }
+    },
     async initSessionListener() {
       if (this._initPromise) return this._initPromise
       const { onAuthReady } = useAuth()
@@ -34,24 +52,31 @@ export const useAuthStore = defineStore('auth', {
           this._unsub = onAuthStateChanged(auth, async (user) => {
             this.user = user
             this.status = user ? 'authenticated' : 'unauthenticated'
-            if (user) await this.fetchUserProfile()
+            if (user) {
+              await this.ensureUserDoc();
+              await this.fetchUserProfile();
+            }
           })
         }
         onAuthReady().then(async (user) => {
           this.user = user
           this.status = user ? 'authenticated' : 'unauthenticated'
-            if (user) await this.fetchUserProfile()
+          if (user) {
+            await this.ensureUserDoc();
+            await this.fetchUserProfile();
+          }
           resolve()
         })
       })
       return this._initPromise
     },
     async fetchUserProfile() {
-      if (!this.user) { this.profile = null; return }
+      if (!this.user) { this.profile = null; this.isReadOnly = false; return }
       const ref = doc(db, 'users', this.user.uid)
       const snap = await getDoc(ref)
       if (snap.exists()) this.profile = { id: snap.id, ...snap.data() }
       else this.profile = null
+      this.computeReadOnly()
     },
     async login(email, password) {
       const { loginWithEmail, toFriendlyError } = useAuth()
@@ -60,7 +85,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         await loginWithEmail(email, password)
         await this.fetchUserProfile()
-        if (this.user) {
+        if (this.user && !this.isReadOnly) {
           try { await updateDoc(doc(db, 'users', this.user.uid), { lastActiveAt: serverTimestamp() }) } catch {}
         }
         this.status = 'authenticated'
@@ -92,7 +117,7 @@ export const useAuthStore = defineStore('auth', {
           const fresh = await trx.get(codeRef)
           if (!fresh.exists()) throw new Error('missing')
           const fd = fresh.data()
-          if (fd.status !== 'unused') throw new Error('used')
+            if (fd.status !== 'unused') throw new Error('used')
           const expA = fd.expiresAt?.toMillis ? fd.expiresAt.toMillis() : fd.expiresAt
           const expB = fd.graceExpiresAt?.toMillis ? fd.graceExpiresAt.toMillis() : fd.graceExpiresAt
           if (Date.now() >= Math.min(expA || 0, expB || 0)) throw new Error('expired')
@@ -112,6 +137,10 @@ export const useAuthStore = defineStore('auth', {
         return false
       }
     },
+    async touchLastActive() {
+      if (!this.user || this.isReadOnly) return
+      try { await updateDoc(doc(db, 'users', this.user.uid), { lastActiveAt: serverTimestamp() }) } catch {}
+    },
     async logout() {
       const { logout } = useAuth()
       try { await logout() } finally {
@@ -120,6 +149,7 @@ export const useAuthStore = defineStore('auth', {
         this.profile = null
         this.status = 'unauthenticated'
         this.error = null
+        this.isReadOnly = false
       }
     },
   },

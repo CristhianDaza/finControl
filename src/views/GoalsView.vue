@@ -3,6 +3,7 @@ import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useGoalsStore } from '@/stores/goals.js'
 import { useCurrenciesStore } from '@/stores/currencies.js'
+import { useAuthStore } from '@/stores/auth.js'
 import { t } from '@/i18n/index.js'
 import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
@@ -15,36 +16,22 @@ const FcFormField = defineAsyncComponent(() => import('@/components/global/FcFor
 const acc = useAccountsStore()
 const goals = useGoalsStore()
 const currencies = useCurrenciesStore(); if (currencies.status==='idle') currencies.subscribe()
+const auth = useAuthStore()
 
 const showModal = ref(false)
 const isEditing = ref(false)
 const editingId = ref(null)
-
 const form = ref({ name: '', targetAmount: 0, account: '', dueDate: '', note: '', paused: false, currency: 'COP' })
-
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
 const accountNameById = computed(() => acc.items.reduce((m,a)=>{ m[a.id]=a.name; return m }, {}))
-
 const resetForm = () => { form.value = { name: '', targetAmount: 0, account: '', dueDate: '', note: '', paused: false, currency: currencies.defaultCurrency.code }; editingId.value = null; isEditing.value = false }
-const openCreate = () => { resetForm(); showModal.value = true }
-const openEdit = (g) => {
-  form.value = { name: g.name || '', targetAmount: Number(g.targetAmount)||0, account: g.accountId || g.account || '', dueDate: g.dueDate || '', note: g.note || '', paused: !!g.paused, currency: g.currency || currencies.defaultCurrency.code }
-  editingId.value = g.id; isEditing.value = true; showModal.value = true
-}
-
-const save = async () => {
-  const payload = { name: form.value.name, targetAmount: Number(form.value.targetAmount), accountId: form.value.account, dueDate: form.value.dueDate || null, note: form.value.note, paused: !!form.value.paused, currency: form.value.currency }
-  if (isEditing.value && editingId.value) await goals.edit(editingId.value, payload)
-  else await goals.add(payload)
-  showModal.value = false; resetForm(); await goals.loadProgress()
-}
-
-const askPauseResume = async (g) => { if (g.paused) await goals.resume(g.id); else await goals.pause(g.id) }
-const remove = async (id) => { await goals.remove(id); await goals.loadProgress() }
-
+const openCreate = () => { if (!auth.canWrite) return; resetForm(); showModal.value = true }
+const openEdit = (g) => { if (!auth.canWrite) return; form.value = { name: g.name || '', targetAmount: Number(g.targetAmount)||0, account: g.accountId || g.account || '', dueDate: g.dueDate || '', note: g.note || '', paused: !!g.paused, currency: g.currency || currencies.defaultCurrency.code }; editingId.value = g.id; isEditing.value = true; showModal.value = true }
+const save = async () => { if (!auth.canWrite) return; const payload = { name: form.value.name, targetAmount: Number(form.value.targetAmount), accountId: form.value.account, dueDate: form.value.dueDate || null, note: form.value.note, paused: !!form.value.paused, currency: form.value.currency }; if (isEditing.value && editingId.value) await goals.edit(editingId.value, payload); else await goals.add(payload); showModal.value = false; resetForm(); await goals.loadProgress() }
+const askPauseResume = async (g) => { if (!auth.canWrite) return; if (g.paused) await goals.resume(g.id); else await goals.pause(g.id) }
+const remove = async (id) => { if (!auth.canWrite) return; await goals.remove(id); await goals.loadProgress() }
 const goalProgressPct = (id) => Math.round(goals.progressPct(id))
 const isCompleted = (id) => goals.isCompleted(id)
-
 onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); await goals.loadProgress() })
 </script>
 
@@ -53,39 +40,24 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
     <div class="card page-header">
       <h2 class="page-title">{{ t('goals.title') }}</h2>
       <div class="page-actions">
-        <button class="button" @click="openCreate">{{ t('goals.add') }}</button>
+        <button class="button" @click="openCreate" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('goals.add') }}</button>
       </div>
     </div>
-
     <div v-if="goals.status==='loading'" class="card" style="margin-top:1rem">{{ t('common.loading') }}</div>
     <div v-else-if="!goals.items.length" class="card" style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
       <span>{{ t('goals.empty') }}</span>
-      <button class="button" @click="openCreate">{{ t('common.add') }}</button>
+      <button class="button" @click="openCreate" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('common.add') }}</button>
     </div>
-
     <div v-else class="table-container">
       <table>
-        <thead>
-          <tr>
-            <th>{{ t('goals.table.name') }}</th>
-            <th>{{ t('goals.table.account') }}</th>
-            <th>{{ t('goals.table.target') }}</th>
-            <th>{{ t('goals.table.progress') }}</th>
-            <th>{{ t('goals.table.dueDate') }}</th>
-            <th>{{ t('goals.table.status') }}</th>
-            <th>{{ t('goals.table.actions') }}</th>
-          </tr>
-        </thead>
+        <thead><tr><th>{{ t('goals.table.name') }}</th><th>{{ t('goals.table.account') }}</th><th>{{ t('goals.table.target') }}</th><th>{{ t('goals.table.progress') }}</th><th>{{ t('goals.table.dueDate') }}</th><th>{{ t('goals.table.status') }}</th><th>{{ t('goals.table.actions') }}</th></tr></thead>
         <tbody>
           <tr v-for="g in goals.items" :key="g.id">
             <td :data-label="t('goals.table.name')">{{ g.name }}</td>
             <td :data-label="t('goals.table.account')">{{ accountNameById[g.accountId] || g.accountId }}</td>
             <td :data-label="t('goals.table.target')">{{ formatAmount(g.targetAmount, g.currency || currencies.defaultCurrency.code) }}</td>
             <td :data-label="t('goals.table.progress')">
-              <div class="progress-row">
-                <div class="progress-bar"><div class="progress-fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div>
-                <span class="progress-text">{{ goalProgressPct(g.id) }}%</span>
-              </div>
+              <div class="progress-row"><div class="progress-bar"><div class="progress-fill" :style="{ width: goalProgressPct(g.id)+'%' }"></div></div><span class="progress-text">{{ goalProgressPct(g.id) }}%</span></div>
             </td>
             <td :data-label="t('goals.table.dueDate')">{{ g.dueDate || '-' }}</td>
             <td :data-label="t('goals.table.status')">
@@ -94,34 +66,24 @@ onMounted(async () => { await acc.subscribeMyAccounts(); await goals.init(); awa
             </td>
             <td :data-label="t('goals.table.actions')">
               <div class="actions">
-                <button class="button button-edit" @click="openEdit(g)">
-                  <svg class="icon-edit" v-html="EditIcon"></svg>
-                </button>
-                <button class="button button-pause" @click="askPauseResume(g)">
-                  <svg class="icon-pause" v-html="PauseIcon"></svg>
-                </button>
-                <button class="button button-delete" @click="remove(g.id)">
-                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
-                </button>
+                <button class="button button-edit" @click="openEdit(g)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-edit" v-html="EditIcon"></svg></button>
+                <button class="button button-pause" @click="askPauseResume(g)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-pause" v-html="PauseIcon"></svg></button>
+                <button class="button button-delete" @click="remove(g.id)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-delete" v-html="DeleteIcon"></svg></button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
-    <FcModal :show-modal="showModal" :title-modal="isEditing? t('goals.edit') : t('goals.add')" @accept="save" @cancel-modal="showModal=false">
+    <FcModal :show-modal="showModal" :title-modal="isEditing? t('goals.edit') : t('goals.add')" @accept="save" @cancel-modal="showModal=false" :accept-disabled="!auth.canWrite">
       <div class="grid modal-grid">
-        <FcFormField v-model="form.name" :label="t('goals.form.name')" :maxlength="50" required />
-        <FcFormField v-model="form.targetAmount" :label="t('goals.form.targetAmount')" type="number" min="1" step="0.01" format-thousands required />
-        <FcFormField v-if="(currencies.codeOptions||[]).length>1" v-model="form.currency" :label="t('budgets.form.currency')" type="select" :options="currencies.codeOptions" />
-        <FcFormField v-model="form.account" :label="t('goals.form.account')" type="select" :options="accountsOptions" required />
-        <FcFormField v-model="form.dueDate" :label="t('goals.form.dueDate')" type="date" />
-        <FcFormField v-model="form.note" :label="t('goals.form.note')" />
-        <div>
-          <label style="display:block;margin-bottom:.25rem">{{ t('recurring.form.paused') }}</label>
-          <input type="checkbox" v-model="form.paused" />
-        </div>
+        <FcFormField v-model="form.name" :label="t('goals.form.name')" :maxlength="50" required :disabled="!auth.canWrite" />
+        <FcFormField v-model="form.targetAmount" :label="t('goals.form.targetAmount')" type="number" min="1" step="0.01" format-thousands required :disabled="!auth.canWrite" />
+        <FcFormField v-if="(currencies.codeOptions||[]).length>1" v-model="form.currency" :label="t('budgets.form.currency')" type="select" :options="currencies.codeOptions" :disabled="!auth.canWrite" />
+        <FcFormField v-model="form.account" :label="t('goals.form.account')" type="select" :options="accountsOptions" required :disabled="!auth.canWrite" />
+        <FcFormField v-model="form.dueDate" :label="t('goals.form.dueDate')" type="date" :disabled="!auth.canWrite" />
+        <FcFormField v-model="form.note" :label="t('goals.form.note')" :disabled="!auth.canWrite" />
+        <div><label style="display:block;margin-bottom:.25rem">{{ t('recurring.form.paused') }}</label><input type="checkbox" v-model="form.paused" :disabled="!auth.canWrite" /></div>
       </div>
     </FcModal>
   </section>
@@ -153,4 +115,5 @@ tr:hover { background-color: color-mix(in srgb, var(--primary-color) 88%, var(--
 .page-title { margin:0 }
 .page-actions { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap }
 .modal-grid { grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1rem; }
+.actions button[disabled] { opacity:.55; cursor:not-allowed }
 </style>

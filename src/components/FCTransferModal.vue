@@ -4,14 +4,14 @@ import { t } from '@/i18n/index.js'
 import { formatAmount } from '@/utils/formatters.js'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useFormattedNumber } from '@/composables/useFormattedNumber.js'
+import { useAuthStore } from '@/stores/auth.js'
+import { useNotify } from '@/components/global/fcNotify.js'
 
-const props = defineProps({
-  open: { type: Boolean, default: false },
-  mode: { type: String, default: 'create' },
-  value: { type: Object, default: null }
-})
+const props = defineProps({ open: { type: Boolean, default: false }, mode: { type: String, default: 'create' }, value: { type: Object, default: null } })
 const emit = defineEmits(['update:open', 'submit'])
 const acc = useAccountsStore()
+const auth = useAuthStore()
+const { info } = useNotify()
 const local = ref({ fromAccountId: '', toAccountId: '', amountFrom: '', currencyFrom: '', amountTo: '', currencyTo: '', rate: '', date: '', note: '' })
 const submitting = ref(false)
 const errors = ref({})
@@ -19,6 +19,7 @@ const errors = ref({})
 const accountsOptions = computed(() => acc.items.map(a => ({ label: `${a.name} · ${formatAmount(a.balance, a.currency || 'COP')} · ${a.currency || 'COP'}`, value: a.id, currency: a.currency || 'COP' })))
 const fromAcc = computed(() => acc.items.find(a => a.id === local.value.fromAccountId))
 const toAcc = computed(() => acc.items.find(a => a.id === local.value.toAccountId))
+const canWrite = computed(() => auth.canWrite)
 
 const reset = () => { local.value = { fromAccountId: '', toAccountId: '', amountFrom: '', currencyFrom: '', amountTo: '', currencyTo: '', rate: '', date: '', note: '' }; errors.value = {} }
 
@@ -52,6 +53,7 @@ const validate = () => {
 
 const onClose = () => emit('update:open', false)
 const onSubmit = async () => {
+  if (!canWrite.value) { info(t('access.readOnly')); return }
   if (!validate()) return
   submitting.value = true
   try {
@@ -83,7 +85,7 @@ const formattedAmountTo = useFormattedNumber(amountToModel)
           <div class="modal-body">
             <div>
               <label>{{ t('transfers.from') }}</label>
-              <select class="input" v-model="local.fromAccountId">
+              <select class="input" v-model="local.fromAccountId" :disabled="!canWrite">
                 <option value="">{{ t('common.select-option') }}</option>
                 <option v-for="o in accountsOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
               </select>
@@ -91,7 +93,7 @@ const formattedAmountTo = useFormattedNumber(amountToModel)
             </div>
             <div>
               <label>{{ t('transfers.to') }}</label>
-              <select class="input" v-model="local.toAccountId">
+              <select class="input" v-model="local.toAccountId" :disabled="!canWrite">
                 <option value="">{{ t('common.select-option') }}</option>
                 <option v-for="o in accountsOptions" :key="o.value+':to'" :value="o.value">{{ o.label }}</option>
               </select>
@@ -100,31 +102,31 @@ const formattedAmountTo = useFormattedNumber(amountToModel)
             <div v-if="errors.same" class="error">{{ errors.same }}</div>
             <div>
               <label>{{ t('transfers.amount') }} ({{ local.currencyFrom || (fromAcc&&fromAcc.currency) || 'COP' }})</label>
-              <input class="input" type="text" inputmode="decimal" v-model="formattedAmountFrom" />
+              <input class="input" type="text" inputmode="decimal" v-model="formattedAmountFrom" :disabled="!canWrite" />
               <div v-if="errors.amountFrom" class="error">{{ errors.amountFrom }}</div>
             </div>
             <div>
               <label>{{ t('transfers.date') }}</label>
-              <input class="input" type="date" v-model="local.date" />
+              <input class="input" type="date" v-model="local.date" :disabled="!canWrite" />
               <div v-if="errors.date" class="error">{{ errors.date }}</div>
             </div>
             <div v-if="!sameCurrency">
               <label>{{ t('transfers.rate') }}</label>
-              <input class="input" type="number" step="0.0001" min="0" v-model="local.rate" />
+              <input class="input" type="number" step="0.0001" min="0" v-model="local.rate" :disabled="!canWrite" />
               <div v-if="errors.rate" class="error">{{ errors.rate }}</div>
             </div>
             <div>
               <label>{{ t('transfers.amount') }} ({{ local.currencyTo || (toAcc&&toAcc.currency) || local.currencyFrom || 'COP' }})</label>
-              <input class="input" type="text" inputmode="decimal" v-model="formattedAmountTo" :disabled="sameCurrency" />
+              <input class="input" type="text" inputmode="decimal" v-model="formattedAmountTo" :disabled="sameCurrency || !canWrite" />
             </div>
             <div>
               <label>{{ t('transfers.note') }}</label>
-              <input class="input" type="text" v-model="local.note" />
+              <input class="input" type="text" v-model="local.note" :disabled="!canWrite" />
             </div>
           </div>
           <footer class="modal-footer">
             <button class="button button-secondary" @click="onClose" :disabled="submitting">{{ t('common.cancel') }}</button>
-            <button class="button" @click="onSubmit" :disabled="submitting">{{ t('common.save') }}</button>
+            <button class="button" @click="onSubmit" :disabled="submitting || !canWrite" :aria-disabled="!canWrite">{{ t('common.save') }}</button>
           </footer>
         </div>
       </div>
@@ -140,4 +142,5 @@ const formattedAmountTo = useFormattedNumber(amountToModel)
 .modal-body{display:flex;flex-direction:column;gap:.75rem}
 .modal-footer{display:flex;justify-content:flex-end;gap:.5rem}
 .error{color:var(--error-color);font-size:.85rem}
+.button[disabled]{opacity:.55;cursor:not-allowed}
 </style>

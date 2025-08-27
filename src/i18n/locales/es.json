@@ -40,6 +40,8 @@
   },
   "auth": {
     "logout": "Cerrar sesión",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
     "login": {
       "title": "Iniciar sesión",
       "description": "Accede con tu correo y contraseña.",
@@ -67,6 +69,13 @@
       "toggleSignup": "¿Nuevo? Crear cuenta",
       "success": "Cuenta creada"
     }
+  },
+  "access": {
+    "readOnly": "Tu cuenta está en modo solo lectura. Activa para continuar.",
+    "inactiveNotice": "Tu usuario no está activo o tu plan ha vencido. Algunas acciones están deshabilitadas.",
+    "activateNow": "Activar ahora",
+    "inactiveTitle": "Cuenta inactiva",
+    "expiredTitle": "Plan vencido"
   },
   "validation": {
     "invalid-field": "Campo inválido",
