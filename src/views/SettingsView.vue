@@ -30,9 +30,20 @@ const addCurrency = async () => { if (!auth.canWrite) return; errorMsg.value = '
 const setDefault = async (id) => { if (!auth.canWrite) return; try { await currencies.setDefault(id); notifySuccess(t('settings.currencies.notifications.defaultChanged')) } catch (e) { notifyError(t('errors.generic')) } }
 const removeCurrency = async (id) => { if (!auth.canWrite) return; try { await currencies.remove(id); notifySuccess(t('settings.currencies.notifications.deleted')) } catch (e) { errorMsg.value = t('currency.errors.cannotDeleteDefault'); notifyError(errorMsg.value) } }
 
-const planExpiresAtDisplay = computed(() => { const exp = auth.profile?.planExpiresAt; if (!exp) return '-'; const ms = exp.toMillis ? exp.toMillis() : exp; if (!ms) return '-'; try { return new Date(ms).toISOString().slice(0,10) } catch { return '-' } })
+const attemptsLeft = ref(undefined)
+const blockedUntil = ref(undefined)
+const codeBlocked = computed(() => !!blockedUntil.value && Date.now() < blockedUntil.value)
+const friendlyDate = (ms) => { try { return new Date(ms).toLocaleString() } catch { return '' } }
+const planExpiresAtDisplay = computed(() => { const exp = auth.profile?.planExpiresAt; if (!exp) return '-'; const ms = exp.toMillis ? exp.toMillis() : exp; if (!ms) return '-'; try { return new Date(ms).toLocaleDateString() } catch { return '-' } })
+const validateCode = async () => { if (!codeValue.value || validating.value) return; validating.value = true; codeMsg.value=''; codeError.value=false; attemptsLeft.value=undefined; blockedUntil.value=undefined; const { ok, error, newExp, attemptsLeft: al, blockedUntil: bu } = await auth.redeemCode(codeValue.value); validating.value=false; if (ok) { codeMsg.value = t('settings.code.success', { date: (newExp?.toMillis ? new Date(newExp.toMillis()) : new Date()).toLocaleDateString() }); codeError.value=false; codeValue.value=''; attemptsLeft.value=undefined; blockedUntil.value=undefined } else { codeMsg.value = error || t('errors.invite.invalid'); codeError.value=true; attemptsLeft.value = al; blockedUntil.value = bu } }
+const codeExtraMsg = computed(() => { if (codeBlocked.value && blockedUntil.value) return t('settings.code.blocked', { date: friendlyDate(blockedUntil.value) }); if (attemptsLeft.value != null && attemptsLeft.value >= 0) return t('settings.code.attempts', { n: attemptsLeft.value }); return '' })
+const codeInputClass = computed(() => codeBlocked.value ? 'code-input-blocked' : codeError.value ? 'code-input-error' : (!codeError.value && codeMsg.value && !codeValue.value) ? 'code-input-success' : '')
+
 const showCodeInput = ref(false)
 const codeValue = ref('')
+const validating = ref(false)
+const codeMsg = ref('')
+const codeError = ref(false)
 </script>
 
 <template>
@@ -57,9 +68,14 @@ const codeValue = ref('')
           <button class="button" type="button" @click="showCodeInput = !showCodeInput">{{ t('settings.enterCode') }}</button>
           <button class="button button-secondary" type="button">{{ t('settings.generateCode') }}</button>
         </div>
-        <div v-if="showCodeInput" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-          <input class="input" v-model="codeValue" placeholder="CODE123" style="text-transform:uppercase" />
-          <button class="button" type="button" disabled>{{ t('common.save') }}</button>
+        <div v-if="showCodeInput" class="code-redeem-wrap">
+          <div class="form-field code-field">
+            <label>{{ t('auth.signup.code') }}</label>
+            <input class="input" :class="codeInputClass" v-model="codeValue" :placeholder="t('auth.signup.code-placeholder')" style="text-transform:uppercase" :disabled="validating || codeBlocked" maxlength="24" />
+            <button class="button code-validate-btn" type="button" @click="validateCode" :disabled="!codeValue || validating || codeBlocked" :aria-busy="validating">{{ validating ? t('common.loading') : t('settings.validateCode') }}</button>
+            <small v-if="codeMsg" :style="{color: codeError ? 'var(--error-color)' : 'var(--hover-success-color)'}">{{ codeMsg }}</small>
+            <small v-if="codeExtraMsg" :style="{color: codeBlocked ? 'var(--warning-color)' : 'var(--muted-text-color)'}">{{ codeExtraMsg }}</small>
+          </div>
         </div>
       </div>
     </article>
@@ -357,4 +373,16 @@ const codeValue = ref('')
   .color-wrap { width: 44px; height: 36px; }
   .preset { padding: .6rem; }
 }
+
+.code-redeem-wrap { display:flex; flex-direction:column; gap:.75rem; margin-top:.5rem; }
+.code-field { display:flex; flex-direction:column; gap:.5rem; min-width:260px; max-width:340px }
+.code-field label { font-size:.75rem; font-weight:600; letter-spacing:.5px; color: var(--muted-text-color); }
+.code-field .input { background: var(--secondary-color); border:1px solid var(--primary-color); padding:.65rem .75rem; border-radius:8px; font-size:.95rem; letter-spacing:.5px; font-weight:600; color: var(--text-color); }
+.code-field .input::placeholder { color: var(--muted-text-color); }
+.code-field .input:focus { outline:none; border-color: var(--accent-color); box-shadow:0 0 0 3px var(--focus-accent-glow) }
+.code-field .code-validate-btn { width:100%; margin-top:.15rem }
+.code-field small { font-size:.65rem; line-height:1.2 }
+.code-input-success { border-color: var(--hover-success-color) !important; box-shadow: 0 0 0 2px color-mix(in srgb,var(--hover-success-color) 55%, transparent) }
+.code-input-error { border-color: var(--error-color) !important; box-shadow: 0 0 0 2px color-mix(in srgb,var(--error-color) 55%, transparent) }
+.code-input-blocked { border-color: var(--warning-color) !important; box-shadow: 0 0 0 2px color-mix(in srgb,var(--warning-color) 55%, transparent); opacity:.85 }
 </style>

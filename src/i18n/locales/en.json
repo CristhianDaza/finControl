@@ -96,7 +96,8 @@
       "not_found": "Code not found",
       "used": "Code already used",
       "expired": "Code expired",
-      "invalid": "Invalid code"
+      "invalid": "Invalid code",
+      "blocked": "Too many attempts. Try again after {date}"
     }
   },
   "currency": {
@@ -466,7 +467,9 @@
     "accountStatus": "Account status",
     "expiresAt": "Expires",
     "enterCode": "Enter new code",
-    "generateCode": "Generate new code"
+    "generateCode": "Generate new code",
+    "validateCode": "Validate",
+    "code": { "success": "Code valid. New expiration: {date}", "attempts": "Attempts left: {n}", "blocked": "Blocked until: {date}" }
   },
   "admin": {
     "title": "Admin Dashboard",

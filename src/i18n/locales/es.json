@@ -101,7 +101,8 @@
       "not_found": "Código no encontrado",
       "used": "Código ya usado",
       "expired": "Código expirado",
-      "invalid": "Código inválido"
+      "invalid": "Código inválido",
+      "blocked": "Demasiados intentos. Intenta nuevamente después de {date}"
     }
   },
   "currency": {
@@ -338,7 +339,9 @@
     "accountStatus": "Estado de la cuenta",
     "expiresAt": "Vence",
     "enterCode": "Ingresar nuevo código",
-    "generateCode": "Generar nuevo código"
+    "generateCode": "Generar nuevo código",
+    "validateCode": "Validar",
+    "code": { "success": "Código válido. Nuevo vencimiento: {date}", "attempts": "Intentos restantes: {n}", "blocked": "Bloqueado hasta: {date}" }
   },
   "admin": {
     "title": "Panel Admin",

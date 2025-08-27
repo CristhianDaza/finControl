@@ -3,7 +3,7 @@ import { onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/aut
 import { auth, db } from '@/services/firebase.js'
 import { useAuth } from '@/composables/useAuth.js'
 import { useSettingsStore } from '@/stores/settings.js'
-import { doc, getDoc, updateDoc, serverTimestamp, runTransaction, setDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp, runTransaction, setDoc, Timestamp } from 'firebase/firestore'
 import { t } from '@/i18n/index.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 
@@ -150,6 +150,60 @@ export const useAuthStore = defineStore('auth', {
         this.status = 'unauthenticated'
         this.error = null
         this.isReadOnly = false
+      }
+    },
+    async redeemCode(raw) {
+      if (!this.user) return { ok:false, error: t('errors.generic') }
+      const codeId = String(raw||'').trim().toUpperCase()
+      if (!codeId) return { ok:false, error: t('validation.required') }
+      const codeRef = doc(db,'inviteCodes', codeId)
+      const userRef = doc(db,'users', this.user.uid)
+      try {
+        const result = await runTransaction(db, async (trx) => {
+          const userSnap = await trx.get(userRef)
+          if (!userSnap.exists()) throw new Error('user-missing')
+          const userData = userSnap.data()
+          const now = Date.now()
+          const blockedUntilMs = userData.codeRedeemBlockedUntil?.toMillis ? userData.codeRedeemBlockedUntil.toMillis() : userData.codeRedeemBlockedUntil
+          if (blockedUntilMs && now < blockedUntilMs) throw new Error('blocked|0|'+blockedUntilMs)
+          const codeSnap = await trx.get(codeRef)
+          const fail = async (reasonKey) => {
+            const attemptsPrev = Number(userData.codeRedeemAttempts||0)
+            const attemptsNew = attemptsPrev + 1
+            const updates = { codeRedeemAttempts: attemptsNew }
+            let blocked = ''
+            if (attemptsNew >= 5) { const until = now + 24*60*60*1000; updates.codeRedeemBlockedUntil = Timestamp.fromMillis(until); blocked = String(until) }
+            trx.update(userRef, updates)
+            const attemptsLeft = Math.max(0, 5 - attemptsNew)
+            throw new Error(reasonKey + '|' + attemptsLeft + '|' + blocked)
+          }
+          if (!codeSnap.exists()) await fail('not_found')
+          const cd = codeSnap.data()
+          if (cd.status !== 'unused') await fail(cd.status === 'used' ? 'used' : 'invalid')
+          const exp1 = cd.expiresAt?.toMillis ? cd.expiresAt.toMillis() : cd.expiresAt
+          const exp2 = cd.graceExpiresAt?.toMillis ? cd.graceExpiresAt.toMillis() : cd.graceExpiresAt
+          if (now >= Math.min(exp1 || 0, exp2 || 0)) await fail('expired')
+          const plan = cd.plan || 'monthly'
+          const addDays = plan === 'annual' ? 365 : plan === 'semiannual' ? 182 : 30
+          const base = (() => { const cur = userData.planExpiresAt?.toMillis ? userData.planExpiresAt.toMillis() : userData.planExpiresAt; return (cur && cur > now) ? cur : now })()
+          const newExp = Timestamp.fromMillis(base + addDays*24*60*60*1000)
+          trx.update(codeRef, { status: 'used', usedBy: this.user.uid, usedAt: serverTimestamp() })
+          trx.update(userRef, { isActive: true, planExpiresAt: newExp, lastActiveAt: serverTimestamp(), codeRedeemAttempts: 0, codeRedeemBlockedUntil: null })
+          return { ok:true, plan, newExp }
+        })
+        await this.fetchUserProfile()
+        return { ok:true, plan: result.plan, newExp: result.newExp }
+      } catch (e) {
+        const msg = (e && e.message) || ''
+        const [code, attemptsLeftStr='', blockedUntilStr=''] = msg.split('|')
+        if (code === 'blocked') {
+          const until = Number(blockedUntilStr)||0
+            return { ok:false, error: t('errors.invite.blocked', { date: until ? new Date(until).toLocaleString() : '' }), attemptsLeft: 0, blockedUntil: until }
+        }
+        const map = { not_found: t('errors.invite.not_found'), used: t('errors.invite.used'), expired: t('errors.invite.expired'), invalid: t('errors.invite.invalid') }
+        const attemptsLeft = attemptsLeftStr ? Number(attemptsLeftStr) : undefined
+        const blockedUntil = blockedUntilStr ? Number(blockedUntilStr) : undefined
+        return { ok:false, error: map[code] || t('errors.invite.invalid'), attemptsLeft, blockedUntil }
       }
     },
   },
