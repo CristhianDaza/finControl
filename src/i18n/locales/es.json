@@ -271,7 +271,62 @@
   "recurring": { "title": "Pagos Recurrentes", "add": "Agregar Pago recurrente", "edit": "Editar plantilla", "empty": "No hay plantillas de pagos recurrentes", "paused": "Pausada", "active": "Activa", "pause": "Pausar", "resume": "Reanudar", "badge": "Recurrente", "runNow": "Ejecutar ahora", "statusPanel": { "title": "Estado de ejecución", "lastRun": "Última ejecución", "never": "Nunca", "processing": "Procesando…", "processed": "Plantillas procesadas", "error": "Último error" }, "table": { "name": "Nombre", "next": "Próxima ejecución", "amount": "Monto", "account": "Cuenta", "type": "Tipo", "frequency": "Frecuencia", "status": "Estado" }, "form": { "name": "Nombre", "category": "Categoría", "frequency": "Frecuencia", "nextRunAt": "Fecha de pago", "paused": "Pausada" }, "frequency": { "monthly": "Mensual", "biweekly": "Quincenal", "weekly": "Semanal", "yearly": "Anual" }, "notifications": { "created": "Plantilla creada", "updated": "Plantilla actualizada", "deleted": "Plantilla eliminada", "processed": "Se generaron {count} pago(s) recurrente(s)" } },
   "goals": { "title": "Metas de Ahorro", "add": "Agregar meta", "edit": "Editar meta", "empty": "No hay metas de ahorro", "completed": "Completada", "paused": "Pausada", "active": "Activa", "resume": "Reanudar", "pause": "Pausar", "table": { "name": "Nombre", "account": "Cuenta", "target": "Monto objetivo", "progress": "Progreso", "dueDate": "Fecha límite", "status": "Estado", "actions": "Acciones" }, "form": { "name": "Nombre", "targetAmount": "Monto objetivo", "dueDate": "Fecha límite (opcional)", "account": "Cuenta asociada", "note": "Notas", "goal": "Meta (opcional)" }, "notifications": { "created": "Meta creada", "updated": "Meta actualizada", "deleted": "Meta eliminada" } },
   "budgets": { "title": "Presupuestos", "add": "Agregar presupuesto", "edit": "Editar presupuesto", "empty": "No hay presupuestos", "table": { "name": "Nombre", "period": "Periodo", "target": "Objetivo", "spent": "Gastado", "remaining": "Restante", "progress": "Progreso", "alerts": "Alertas", "actions": "Acciones" }, "form": { "name": "Nombre", "targetAmount": "Monto objetivo", "currency": "Moneda", "periodType": "Periodo", "monthly": "Mensual", "custom": "Rango personalizado", "from": "Desde", "to": "Hasta", "categories": "Ámbito (categorías)", "excludeAccounts": "Excluir cuentas", "threshold": "Umbral de alerta (%)", "carryover": "Carryover (trasladar sobrante/déficit)", "rates": "Tasas de conversión (ej: USD=4000, EUR=4500)", "noteRates": "Se usa para convertir transacciones a la moneda del presupuesto" }, "alerts": { "ok": "Dentro del objetivo", "warn": "> 80% consumido", "over": "≥ 100% consumido" }, "notifications": { "created": "Presupuesto creado", "updated": "Presupuesto actualizado", "deleted": "Presupuesto eliminado", "closed": "Periodo cerrado" }, "closePeriod": "Cerrar periodo", "periodMonthly": "{year} {month}", "periodCustom": "{from} a {to}", "sections": { "general": "General", "period": "Periodo", "scope": "Ámbito", "exclude": "Cuentas excluidas", "alerts": "Alertas y carryover", "conversion": "Conversión" } },
-  "settings": { "title": "Configuración" },
+  "settings": {
+    "title": "Configuración",
+    "reset": "Resetear",
+    "preview": "Vista previa",
+    "previewDesc": "Esta tarjeta y los elementos de la UI reflejan los colores seleccionados.",
+    "samplePrimary": "Acción primaria",
+    "sampleSecondary": "Acción secundaria",
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Personaliza los colores principales de la app. Los cambios se aplican en vivo.",
+      "presets": {
+        "title": "Temas predefinidos",
+        "subtitle": "Elige uno de los temas accesibles (claros u oscuros). Luego puedes ajustar colores finamente si quieres.",
+        "hint": "Tip: recuerda presionar Guardar para mantener tu selección en este dispositivo y en tu cuenta.",
+        "light": "Claros",
+        "dark": "Oscuros",
+        "names": {
+          "darkOcean": "Océano (oscuro)",
+          "darkRose": "Rosa (oscuro)",
+          "darkForest": "Bosque (oscuro)",
+          "lightOcean": "Océano (claro)",
+          "lightRose": "Rosa (claro)",
+          "lightSlate": "Pizarra (claro)",
+          "darkAmber": "Ámbar (oscuro)",
+          "darkTeal": "Verde azulado (oscuro)",
+          "lightEmerald": "Esmeralda (claro)",
+          "lightAmber": "Ámbar (claro)"
+        }
+      }
+    },
+    "amountFormat": {
+      "title": "Formato de monto",
+      "subtitle": "Elige cómo se muestran los valores monetarios en la aplicación.",
+      "full": "Completo (con decimales)",
+      "compact": "Compacto (K / M / B)"
+    },
+    "currencies": {
+      "title": "Monedas",
+      "subtitle": "Gestiona las monedas disponibles y establece una por defecto.",
+      "code": "Código",
+      "symbol": "Símbolo",
+      "name": "Nombre",
+      "isDefault": "Por defecto",
+      "defaultBadge": "DEF",
+      "add": "Agregar",
+      "notifications": {
+        "created": "Moneda agregada",
+        "deleted": "Moneda eliminada",
+        "defaultChanged": "Moneda por defecto actualizada"
+      }
+    },
+    "notifications": {
+      "saved": "Tema guardado",
+      "reset": "Tema reseteado"
+    }
+  },
   "admin": {
     "title": "Panel Admin",
     "kpis": { "total": "Usuarios totales", "active": "Usuarios activos", "inactive": "Usuarios inactivos" },
