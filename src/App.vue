@@ -57,7 +57,7 @@ const statusMessage = computed(() => auth.isReadOnly ? t('access.inactiveNotice'
 </script>
 
 <template>
-  <FCStatusBar :open="auth.isReadOnly" type="warning" :message="statusMessage" :action-text="t('access.activateNow')" action-href="#" />
+  <FCStatusBar :open="auth.isReadOnly" type="warning" :message="statusMessage" :action-text="t('access.activateNow')" action-href="/settings" />
   <div class="layout" :class="{ 'is-login': isLoginRoute }">
     <fc-sidebar v-if="auth.isAuthenticated" ref="sidebarRef" />
     <main class="main-content" :class="{ 'login-page': isLoginRoute, 'has-bar': auth.isReadOnly }" @click="clickMainContent">

@@ -334,7 +334,11 @@
     "notifications": {
       "saved": "Tema guardado",
       "reset": "Tema reseteado"
-    }
+    },
+    "accountStatus": "Estado de la cuenta",
+    "expiresAt": "Vence",
+    "enterCode": "Ingresar nuevo código",
+    "generateCode": "Generar nuevo código"
   },
   "admin": {
     "title": "Panel Admin",

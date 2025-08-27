@@ -462,7 +462,11 @@
     "notifications": {
       "saved": "Theme saved",
       "reset": "Theme reset"
-    }
+    },
+    "accountStatus": "Account status",
+    "expiresAt": "Expires",
+    "enterCode": "Enter new code",
+    "generateCode": "Generate new code"
   },
   "admin": {
     "title": "Admin Dashboard",

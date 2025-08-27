@@ -5,46 +5,34 @@ import { t } from '@/i18n/index.js'
 import SettingsIcon from '@/assets/icons/settings.svg?raw'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { useCurrenciesStore } from '@/stores/currencies.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 const settings = useSettingsStore()
 const { success: notifySuccess, error: notifyError } = useNotify()
+const auth = useAuthStore()
 
-onMounted(() => {
-  settings.initTheme()
-})
+onMounted(() => { settings.initTheme() })
 
-const onInput = (key, e) => {
-  settings.setVar(key, e.target.value)
-}
+const onInput = (key, e) => { settings.setVar(key, e.target.value) }
 
 const save = async () => { await settings.save(); notifySuccess(t('settings.notifications.saved')) }
 const reset = async () => { await settings.reset(); notifySuccess(t('settings.notifications.reset')) }
 
 const lightPresets = computed(() => THEME_PRESETS.filter(p => p.mode === 'light'))
 const darkPresets = computed(() => THEME_PRESETS.filter(p => p.mode === 'dark'))
-const applyPreset = (id) => settings.applyPreset(id)
+const applyPreset = (id) => { if (!auth.canWrite) return; settings.applyPreset(id) }
 
 const currencies = useCurrenciesStore(); if (currencies.status==='idle') currencies.subscribe()
 const newCur = ref({ code:'', symbol:'', name:'', isDefault:false })
 const busy = ref(false)
 const errorMsg = ref('')
-const addCurrency = async () => {
-  errorMsg.value = ''
-  if (!newCur.value.code) return
-  busy.value = true
-  try {
-    await currencies.create({ ...newCur.value })
-    notifySuccess(t('settings.currencies.notifications.created'))
-    newCur.value = { code:'', symbol:'', name:'', isDefault:false }
-  } catch (e) {
-    if (/duplicate/i.test(e.message)) errorMsg.value = t('currency.errors.duplicate')
-    else if (/invalid-code/i.test(e.message)) errorMsg.value = t('currency.errors.invalid')
-    else errorMsg.value = t('errors.generic')
-    notifyError(errorMsg.value)
-  } finally { busy.value = false }
-}
-const setDefault = async (id) => { try { await currencies.setDefault(id); notifySuccess(t('settings.currencies.notifications.defaultChanged')) } catch (e) { notifyError(t('errors.generic')) } }
-const removeCurrency = async (id) => { try { await currencies.remove(id); notifySuccess(t('settings.currencies.notifications.deleted')) } catch (e) { errorMsg.value = t('currency.errors.cannotDeleteDefault'); notifyError(errorMsg.value) } }
+const addCurrency = async () => { if (!auth.canWrite) return; errorMsg.value = ''; if (!newCur.value.code) return; busy.value = true; try { await currencies.create({ ...newCur.value }); notifySuccess(t('settings.currencies.notifications.created')); newCur.value = { code:'', symbol:'', name:'', isDefault:false } } catch (e) { if (/duplicate/i.test(e.message)) errorMsg.value = t('currency.errors.duplicate'); else if (/invalid-code/i.test(e.message)) errorMsg.value = t('currency.errors.invalid'); else errorMsg.value = t('errors.generic'); notifyError(errorMsg.value) } finally { busy.value = false } }
+const setDefault = async (id) => { if (!auth.canWrite) return; try { await currencies.setDefault(id); notifySuccess(t('settings.currencies.notifications.defaultChanged')) } catch (e) { notifyError(t('errors.generic')) } }
+const removeCurrency = async (id) => { if (!auth.canWrite) return; try { await currencies.remove(id); notifySuccess(t('settings.currencies.notifications.deleted')) } catch (e) { errorMsg.value = t('currency.errors.cannotDeleteDefault'); notifyError(errorMsg.value) } }
+
+const planExpiresAtDisplay = computed(() => { const exp = auth.profile?.planExpiresAt; if (!exp) return '-'; const ms = exp.toMillis ? exp.toMillis() : exp; if (!ms) return '-'; try { return new Date(ms).toISOString().slice(0,10) } catch { return '-' } })
+const showCodeInput = ref(false)
+const codeValue = ref('')
 </script>
 
 <template>
@@ -58,6 +46,23 @@ const removeCurrency = async (id) => { try { await currencies.remove(id); notify
         </div>
       </div>
     </header>
+
+    <article class="card">
+      <h2 class="card-title">{{ t('settings.accountStatus') }}</h2>
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        <div><strong>{{ t('settings.accountStatus') }}:</strong> {{ auth.isReadOnly ? 'Inactiva' : 'Activa' }}</div>
+        <div><strong>{{ t('settings.expiresAt') }}:</strong> {{ planExpiresAtDisplay }}</div>
+        <p style="font-size:.75rem;color:var(--muted-text-color)">{{ auth.isReadOnly ? 'Ingresa un nuevo código para activar o extender tu plan.' : 'Puedes ingresar un código adicional para extender tu plan actual.' }}</p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="button" type="button" @click="showCodeInput = !showCodeInput">{{ t('settings.enterCode') }}</button>
+          <button class="button button-secondary" type="button">{{ t('settings.generateCode') }}</button>
+        </div>
+        <div v-if="showCodeInput" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <input class="input" v-model="codeValue" placeholder="CODE123" style="text-transform:uppercase" />
+          <button class="button" type="button" disabled>{{ t('common.save') }}</button>
+        </div>
+      </div>
+    </article>
 
     <article class="card">
       <h2 class="card-title">{{ t('settings.currencies.title') }}</h2>
@@ -80,20 +85,20 @@ const removeCurrency = async (id) => { try { await currencies.remove(id); notify
             <td>{{ c.symbol }}</td>
             <td>{{ c.name }}</td>
             <td>
-              <input type="radio" name="defCur" :checked="c.isDefault" @change="setDefault(c.id)" :aria-label="t('settings.currencies.isDefault')" />
+              <input type="radio" name="defCur" :checked="c.isDefault" @change="setDefault(c.id)" :aria-label="t('settings.currencies.isDefault')" :disabled="!auth.canWrite" />
               <span v-if="c.isDefault" class="badge badge-green" style="margin-left:.5rem">{{ t('settings.currencies.defaultBadge') }}</span>
             </td>
-            <td><button class="button button-delete" @click="removeCurrency(c.id)" :disabled="c.isDefault">✕</button></td>
+            <td><button class="button button-delete" @click="removeCurrency(c.id)" :disabled="c.isDefault || !auth.canWrite">✕</button></td>
           </tr>
           </tbody>
         </table>
         <form class="add-form" @submit.prevent="addCurrency">
           <div class="row-inline">
-            <input class="input" v-model="newCur.code" :placeholder="t('settings.currencies.code')" maxlength="5" style="text-transform:uppercase" />
-            <input class="input" v-model="newCur.symbol" :placeholder="t('settings.currencies.symbol')" maxlength="4" />
-            <input class="input" v-model="newCur.name" :placeholder="t('settings.currencies.name')" maxlength="30" />
-            <label class="chk"><input type="checkbox" v-model="newCur.isDefault" /> {{ t('settings.currencies.isDefault') }}</label>
-            <button class="button" type="submit" :disabled="busy || !newCur.code">{{ t('settings.currencies.add') }}</button>
+            <input class="input" v-model="newCur.code" :placeholder="t('settings.currencies.code')" maxlength="5" style="text-transform:uppercase" :disabled="!auth.canWrite" />
+            <input class="input" v-model="newCur.symbol" :placeholder="t('settings.currencies.symbol')" maxlength="4" :disabled="!auth.canWrite" />
+            <input class="input" v-model="newCur.name" :placeholder="t('settings.currencies.name')" maxlength="30" :disabled="!auth.canWrite" />
+            <label class="chk"><input type="checkbox" v-model="newCur.isDefault" :disabled="!auth.canWrite" /> {{ t('settings.currencies.isDefault') }}</label>
+            <button class="button" type="submit" :disabled="busy || !newCur.code || !auth.canWrite">{{ t('settings.currencies.add') }}</button>
           </div>
           <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
         </form>
@@ -105,11 +110,11 @@ const removeCurrency = async (id) => { try { await currencies.remove(id); notify
       <p class="card-subtitle">{{ t('settings.amountFormat.subtitle') }}</p>
       <div class="amount-format-options">
         <label class="opt">
-          <input type="radio" name="amount-format" value="full" :checked="settings.amountFormat==='full'" @change="settings.setAmountFormat('full')" />
+          <input type="radio" name="amount-format" value="full" :checked="settings.amountFormat==='full'" @change="settings.setAmountFormat('full')" :disabled="!auth.canWrite" />
           <span>{{ t('settings.amountFormat.full') }}</span>
         </label>
         <label class="opt">
-          <input type="radio" name="amount-format" value="compact" :checked="settings.amountFormat==='compact'" @change="settings.setAmountFormat('compact')" />
+          <input type="radio" name="amount-format" value="compact" :checked="settings.amountFormat==='compact'" @change="settings.setAmountFormat('compact')" :disabled="!auth.canWrite" />
           <span>{{ t('settings.amountFormat.compact') }}</span>
         </label>
       </div>
@@ -118,18 +123,10 @@ const removeCurrency = async (id) => { try { await currencies.remove(id); notify
     <article class="card">
       <h2 class="card-title">{{ t('settings.theme.presets.title') }}</h2>
       <p class="card-subtitle">{{ t('settings.theme.presets.subtitle') }}</p>
-
       <section class="preset-group">
         <h3 class="group-title">{{ t('settings.theme.presets.light') }}</h3>
         <div class="presets-grid">
-          <button
-              v-for="p in lightPresets"
-              :key="p.id"
-              class="preset"
-              type="button"
-              @click="applyPreset(p.id)"
-              :aria-label="t(p.nameKey)"
-          >
+          <button v-for="p in lightPresets" :key="p.id" class="preset" type="button" @click="applyPreset(p.id)" :aria-label="t(p.nameKey)" :disabled="!auth.canWrite">
             <span class="swatches" aria-hidden="true">
               <span class="sw" :style="{ background: p.vars['--background-color'] }" title="bg"></span>
               <span class="sw" :style="{ background: p.vars['--primary-color'] }" title="primary"></span>
@@ -141,18 +138,10 @@ const removeCurrency = async (id) => { try { await currencies.remove(id); notify
           </button>
         </div>
       </section>
-
       <section class="preset-group">
         <h3 class="group-title">{{ t('settings.theme.presets.dark') }}</h3>
         <div class="presets-grid">
-          <button
-            v-for="p in darkPresets"
-            :key="p.id"
-            class="preset"
-            type="button"
-            @click="applyPreset(p.id)"
-            :aria-label="t(p.nameKey)"
-          >
+          <button v-for="p in darkPresets" :key="p.id" class="preset" type="button" @click="applyPreset(p.id)" :aria-label="t(p.nameKey)" :disabled="!auth.canWrite">
             <span class="swatches" aria-hidden="true">
               <span class="sw" :style="{ background: p.vars['--background-color'] }" title="bg"></span>
               <span class="sw" :style="{ background: p.vars['--primary-color'] }" title="primary"></span>
@@ -164,44 +153,26 @@ const removeCurrency = async (id) => { try { await currencies.remove(id); notify
           </button>
         </div>
       </section>
-
       <p class="hint">{{ t('settings.theme.presets.hint') }}</p>
     </article>
 
     <article class="card">
       <h2 class="card-title">{{ t('settings.theme.title') }}</h2>
       <p class="card-subtitle">{{ t('settings.theme.subtitle') }}</p>
-
       <div class="vars-grid">
         <div v-for="v in EDITABLE_VARS" :key="v.key" class="row">
           <label class="row-label" :for="v.key">{{ v.label }}</label>
           <div class="controls">
             <div class="color-wrap">
-              <input
-                class="color"
-                :id="v.key"
-                type="color"
-                :value="settings.themeVars[v.key]"
-                @input="onInput(v.key, $event)"
-                :aria-label="v.label"
-              />
+              <input class="color" :id="v.key" type="color" :value="settings.themeVars[v.key]" @input="onInput(v.key, $event)" :aria-label="v.label" :disabled="!auth.canWrite" />
             </div>
-            <input
-              class="text"
-              type="text"
-              :value="settings.themeVars[v.key]"
-              @input="onInput(v.key, $event)"
-              inputmode="text"
-              spellcheck="false"
-            />
+            <input class="text" type="text" :value="settings.themeVars[v.key]" @input="onInput(v.key, $event)" inputmode="text" spellcheck="false" :disabled="!auth.canWrite" />
           </div>
         </div>
       </div>
-
       <div class="preview">
         <h2 class="card-title">{{ t('settings.preview') }}</h2>
         <p class="card-subtitle">{{ t('settings.previewDesc') }}</p>
-
         <div class="badges">
           <span class="badge" :style="{background: 'var(--tx-expense-color)', color: 'var(--white)'}">{{ t('transactions.form.expense') }}</span>
           <span class="badge" :style="{background: 'var(--tx-goal-color)', color: 'var(--black)'}">{{ t('transactions.form.goalSaving') }}</span>
@@ -210,14 +181,13 @@ const removeCurrency = async (id) => { try { await currencies.remove(id); notify
           <span class="badge" :style="{background: 'var(--tx-transfer-color)', color: 'var(--black)'}">{{ t('common.transfer') }}</span>
         </div>
         <div class="buttons">
-          <button class="button">{{ t('settings.samplePrimary') }}</button>
-          <button class="button button-secondary">{{ t('settings.sampleSecondary') }}</button>
+          <button class="button" :disabled="!auth.canWrite">{{ t('settings.samplePrimary') }}</button>
+          <button class="button button-secondary" :disabled="!auth.canWrite">{{ t('settings.sampleSecondary') }}</button>
         </div>
       </div>
-
       <div class="actions">
-        <button class="button button-secondary" @click="reset">{{ t('settings.reset') }}</button>
-        <button class="button" @click="save">{{ t('common.save') }}</button>
+        <button class="button button-secondary" @click="reset" :disabled="!auth.canWrite">{{ t('settings.reset') }}</button>
+        <button class="button" @click="save" :disabled="!auth.canWrite">{{ t('common.save') }}</button>
       </div>
     </article>
   </section>
