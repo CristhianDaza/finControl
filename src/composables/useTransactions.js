@@ -168,6 +168,60 @@ export const useTransactions = () => {
     })
   }
 
+  const editTransaction = async (id, payload) => {
+    const { uid, txCol, accColPath } = getUserPaths()
+    const txRef = doc(txCol, id)
+    await runTransaction(db, async trx => {
+      const snap = await trx.get(txRef)
+      if (!snap.exists()) throw new Error('TxNotFound')
+      const prev = snap.data()
+      if (prev.isTransfer) throw new Error('Unsupported')
+      if (prev.ownerId && prev.ownerId !== uid) throw new Error('Unauthorized')
+      const newType = normalizeType(payload.type || prev.type)
+      if (!['income','expense'].includes(newType)) throw new Error('InvalidType')
+      const newAccountId = payload.accountId || payload.account || prev.accountId
+      const prevAmountC = cents(prev.amount)
+      const newAmountC = payload.amount != null ? cents(payload.amount) : prevAmountC
+      if (newAmountC <= 0) throw new Error('InvalidAmount')
+      const oldSigned = prev.type === 'expense' ? -prevAmountC : prevAmountC
+      const newSigned = newType === 'expense' ? -newAmountC : newAmountC
+      if (prev.accountId === newAccountId) {
+        const accRef = doc(db, ...accColPath, prev.accountId)
+        const accSnap = await trx.get(accRef)
+        if (!accSnap.exists()) throw new Error('AccountNotFound')
+        const acc = accSnap.data()
+        const balC = cents(acc.balance)
+        const delta = newSigned - oldSigned
+        const nextBalC = balC + delta
+        if (nextBalC < 0) throw new Error('BalanceNegative')
+        if (delta !== 0) trx.update(accRef, { balance: fromCents(nextBalC), updatedAt: serverTimestamp() })
+      } else {
+        const oldAccRef = doc(db, ...accColPath, prev.accountId)
+        const newAccRef = doc(db, ...accColPath, newAccountId)
+        const [oldAccSnap, newAccSnap] = await Promise.all([trx.get(oldAccRef), trx.get(newAccRef)])
+        if (!oldAccSnap.exists() || !newAccSnap.exists()) throw new Error('AccountNotFound')
+        const oldAcc = oldAccSnap.data()
+        const newAcc = newAccSnap.data()
+        const oldBalC = cents(oldAcc.balance)
+        const newBalC = cents(newAcc.balance)
+        const revertedBalC = oldBalC - oldSigned
+        if (revertedBalC < 0) throw new Error('BalanceNegative')
+        const appliedBalC = newBalC + newSigned
+        if (appliedBalC < 0) throw new Error('BalanceNegative')
+        trx.update(oldAccRef, { balance: fromCents(revertedBalC), updatedAt: serverTimestamp() })
+        trx.update(newAccRef, { balance: fromCents(appliedBalC), updatedAt: serverTimestamp() })
+      }
+      const patch = { ...payload }
+      if (patch.amount != null) patch.amount = fromCents(newAmountC)
+      if (patch.account) { patch.accountId = patch.account; delete patch.account }
+      if (patch.description) { patch.note = patch.description; delete patch.description }
+      patch.type = newType
+      patch.ownerId = prev.ownerId || uid
+      patch.updatedAt = serverTimestamp()
+      trx.update(txRef, patch)
+    })
+  }
+
   const deleteTransaction = async (id) => {
     const { uid, txCol, accColPath, debtColPath } = getUserPaths()
     const txRef = doc(txCol, id)
@@ -211,5 +265,5 @@ export const useTransactions = () => {
     })
   }
 
-  return { fetchTransactions, createTransaction, updateTransaction, deleteTransaction, subscribeTransactions }
+  return { fetchTransactions, createTransaction, updateTransaction, editTransaction, deleteTransaction, subscribeTransactions }
 }

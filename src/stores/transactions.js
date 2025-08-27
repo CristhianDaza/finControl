@@ -14,7 +14,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const orderBy = ref([{ field: 'date', dir: 'desc' }, { field: 'createdAt', 'dir': 'desc' }])
   const unsubscribe = ref(null)
 
-  const { subscribeTransactions, fetchTransactions, createTransaction, updateTransaction, deleteTransaction } = useTransactions()
+  const { subscribeTransactions, fetchTransactions, createTransaction, updateTransaction, editTransaction, deleteTransaction } = useTransactions()
   const { success, error: notifyError } = useNotify()
 
   const init = async () => {
@@ -73,7 +73,14 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   const edit = async (id, patch) => {
     try {
-      await updateTransaction(id, patch)
+      const prev = items.value.find(i => i.id === id)
+      const wantsType = patch?.type
+      const isIncomeOrExpense = (tpe) => ['income','expense'].includes(tpe)
+      if (prev && prev.isTransfer !== true && (isIncomeOrExpense(prev.type) || (wantsType && isIncomeOrExpense(wantsType)))) {
+        await editTransaction(id, patch)
+      } else {
+        await updateTransaction(id, patch)
+      }
       success(t('transactions.notifications.updated'))
     } catch (e) {
       const map = {

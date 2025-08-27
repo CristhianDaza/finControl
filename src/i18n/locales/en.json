@@ -64,7 +64,8 @@
       "too-many-requests": "Too many attempts. Try again later.",
       "generic": "We couldn't sign you in. Please try again."
     },
-    "generic": "An error occurred"
+    "generic": "An error occurred",
+    "insufficient_funds": "Insufficient funds in account"
   },
   "currency": {
     "default": "COP",
