@@ -64,7 +64,7 @@ onMounted(loadAll)
             <td>{{ c.status }}</td>
             <td>{{ c.createdAt?.toDate ? c.createdAt.toDate().toLocaleDateString() : '' }}</td>
             <td>{{ c.expiresAt?.toDate ? c.expiresAt.toDate().toLocaleDateString() : '' }}</td>
-            <td>{{ c.usedBy || '' }}</td>
+            <td>{{ c.usedByEmail || '—' }}</td>
             <td class="actions">
               <button class="button button-small" @click="copy(c)">{{ t('admin.invites.copy') }}</button>
               <button class="button button-delete button-small" v-if="c.status==='unused'" @click="askInvalidate(c.id)">{{ t('admin.invites.invalidate') }}</button>

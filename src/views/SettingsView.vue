@@ -30,20 +30,15 @@ const addCurrency = async () => { if (!auth.canWrite) return; errorMsg.value = '
 const setDefault = async (id) => { if (!auth.canWrite) return; try { await currencies.setDefault(id); notifySuccess(t('settings.currencies.notifications.defaultChanged')) } catch (e) { notifyError(t('errors.generic')) } }
 const removeCurrency = async (id) => { if (!auth.canWrite) return; try { await currencies.remove(id); notifySuccess(t('settings.currencies.notifications.deleted')) } catch (e) { errorMsg.value = t('currency.errors.cannotDeleteDefault'); notifyError(errorMsg.value) } }
 
-const attemptsLeft = ref(undefined)
-const blockedUntil = ref(undefined)
-const codeBlocked = computed(() => !!blockedUntil.value && Date.now() < blockedUntil.value)
-const friendlyDate = (ms) => { try { return new Date(ms).toLocaleString() } catch { return '' } }
-const planExpiresAtDisplay = computed(() => { const exp = auth.profile?.planExpiresAt; if (!exp) return '-'; const ms = exp.toMillis ? exp.toMillis() : exp; if (!ms) return '-'; try { return new Date(ms).toLocaleDateString() } catch { return '-' } })
-const validateCode = async () => { if (!codeValue.value || validating.value) return; validating.value = true; codeMsg.value=''; codeError.value=false; attemptsLeft.value=undefined; blockedUntil.value=undefined; const { ok, error, newExp, attemptsLeft: al, blockedUntil: bu } = await auth.redeemCode(codeValue.value); validating.value=false; if (ok) { codeMsg.value = t('settings.code.success', { date: (newExp?.toMillis ? new Date(newExp.toMillis()) : new Date()).toLocaleDateString() }); codeError.value=false; codeValue.value=''; attemptsLeft.value=undefined; blockedUntil.value=undefined } else { codeMsg.value = error || t('errors.invite.invalid'); codeError.value=true; attemptsLeft.value = al; blockedUntil.value = bu } }
-const codeExtraMsg = computed(() => { if (codeBlocked.value && blockedUntil.value) return t('settings.code.blocked', { date: friendlyDate(blockedUntil.value) }); if (attemptsLeft.value != null && attemptsLeft.value >= 0) return t('settings.code.attempts', { n: attemptsLeft.value }); return '' })
-const codeInputClass = computed(() => codeBlocked.value ? 'code-input-blocked' : codeError.value ? 'code-input-error' : (!codeError.value && codeMsg.value && !codeValue.value) ? 'code-input-success' : '')
+const planExpiresAtDisplay = computed(() => { const exp = auth.profile?.planExpiresAt; if (!exp) return '—'; const ms = exp.toMillis ? exp.toMillis() : exp; if (!ms) return '—'; try { return new Date(ms).toLocaleDateString() } catch { return '—' } })
 
 const showCodeInput = ref(false)
 const codeValue = ref('')
 const validating = ref(false)
 const codeMsg = ref('')
 const codeError = ref(false)
+const applyCode = async () => { if (!codeValue.value || validating.value) return; validating.value=true; codeMsg.value=''; codeError.value=false; const res = await auth.applyCodeAndRefresh(codeValue.value); validating.value=false; if (res.ok) { codeMsg.value = t('settings.code.success', { date: planExpiresAtDisplay.value }); codeValue.value=''; codeError.value=false } else { codeMsg.value = res.error || t('errors.codeInvalid'); codeError.value=true } }
+const codeInputClass = computed(() => codeError.value ? 'code-input-error' : (!codeError.value && codeMsg.value && !codeValue.value) ? 'code-input-success' : '')
 </script>
 
 <template>
@@ -71,10 +66,9 @@ const codeError = ref(false)
         <div v-if="showCodeInput" class="code-redeem-wrap">
           <div class="form-field code-field">
             <label>{{ t('auth.signup.code') }}</label>
-            <input class="input" :class="codeInputClass" v-model="codeValue" :placeholder="t('auth.signup.code-placeholder')" style="text-transform:uppercase" :disabled="validating || codeBlocked" maxlength="24" />
-            <button class="button code-validate-btn" type="button" @click="validateCode" :disabled="!codeValue || validating || codeBlocked" :aria-busy="validating">{{ validating ? t('common.loading') : t('settings.validateCode') }}</button>
+            <input class="input" :class="codeInputClass" v-model="codeValue" :placeholder="t('auth.signup.code-placeholder')" style="text-transform:uppercase" :disabled="validating" maxlength="24" />
+            <button class="button code-validate-btn" type="button" @click="applyCode" :disabled="!codeValue || validating" :aria-busy="validating">{{ validating ? t('common.loading') : t('settings.validateCode') }}</button>
             <small v-if="codeMsg" :style="{color: codeError ? 'var(--error-color)' : 'var(--hover-success-color)'}">{{ codeMsg }}</small>
-            <small v-if="codeExtraMsg" :style="{color: codeBlocked ? 'var(--warning-color)' : 'var(--muted-text-color)'}">{{ codeExtraMsg }}</small>
           </div>
         </div>
       </div>

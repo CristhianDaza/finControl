@@ -103,7 +103,8 @@
       "expired": "Código expirado",
       "invalid": "Código inválido",
       "blocked": "Demasiados intentos. Intenta nuevamente después de {date}"
-    }
+    },
+    "codeInvalid": "Código inválido"
   },
   "currency": {
     "default": "COP",
@@ -341,7 +342,8 @@
     "enterCode": "Ingresar nuevo código",
     "generateCode": "Generar nuevo código",
     "validateCode": "Validar",
-    "code": { "success": "Código válido. Nuevo vencimiento: {date}", "attempts": "Intentos restantes: {n}", "blocked": "Bloqueado hasta: {date}" }
+    "code": { "success": "Código válido. Nuevo vencimiento: {date}", "attempts": "Intentos restantes: {n}", "blocked": "Bloqueado hasta: {date}" },
+    "extendSuccess": "Plan extendido"
   },
   "admin": {
     "title": "Panel Admin",

@@ -6,6 +6,7 @@ import { useSettingsStore } from '@/stores/settings.js'
 import { doc, getDoc, updateDoc, serverTimestamp, runTransaction, setDoc, Timestamp } from 'firebase/firestore'
 import { t } from '@/i18n/index.js'
 import { useNotify } from '@/components/global/fcNotify.js'
+import { useInviteCodes } from '@/composables/useInviteCodes.js'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -16,7 +17,6 @@ export const useAuthStore = defineStore('auth', {
     _listenerAttached: false,
     _initPromise: null,
     _unsub: null,
-    isReadOnly: false,
   }),
   getters: {
     isAuthenticated: s => !!s.user,
@@ -24,17 +24,10 @@ export const useAuthStore = defineStore('auth', {
       const envAdmins = (import.meta.env.VITE_ADMIN_UIDS || '').split(',').map(v=>v.trim()).filter(Boolean)
       return !!s.profile && (s.profile.role === 'admin' || envAdmins.includes(s.user?.uid || ''))
     },
-    canWrite: s => !s.isReadOnly,
+    isReadOnly: s => { const p = s.profile; if (!p) return false; const isActive = p.isActive !== false; const expMs = p.planExpiresAt?.toMillis ? p.planExpiresAt.toMillis() : p.planExpiresAt; return !isActive || (expMs && Date.now() >= expMs) },
+    canWrite() { return !this.isReadOnly },
   },
   actions: {
-    computeReadOnly() {
-      if (!this.profile) { this.isReadOnly = false; return }
-      const isActive = this.profile.isActive !== false
-      const exp = this.profile.planExpiresAt?.toMillis ? this.profile.planExpiresAt.toMillis() : this.profile.planExpiresAt
-      const now = Date.now()
-      const expired = exp ? now >= exp : false
-      this.isReadOnly = !isActive || expired
-    },
     async ensureUserDoc() {
       if (!this.user) return
       const ref = doc(db, 'users', this.user.uid)
@@ -71,12 +64,11 @@ export const useAuthStore = defineStore('auth', {
       return this._initPromise
     },
     async fetchUserProfile() {
-      if (!this.user) { this.profile = null; this.isReadOnly = false; return }
+      if (!this.user) { this.profile = null; return }
       const ref = doc(db, 'users', this.user.uid)
       const snap = await getDoc(ref)
       if (snap.exists()) this.profile = { id: snap.id, ...snap.data() }
       else this.profile = null
-      this.computeReadOnly()
     },
     async login(email, password) {
       const { loginWithEmail, toFriendlyError } = useAuth()
@@ -117,14 +109,14 @@ export const useAuthStore = defineStore('auth', {
           const fresh = await trx.get(codeRef)
           if (!fresh.exists()) throw new Error('missing')
           const fd = fresh.data()
-            if (fd.status !== 'unused') throw new Error('used')
+          if (fd.status !== 'unused') throw new Error('used')
           const expA = fd.expiresAt?.toMillis ? fd.expiresAt.toMillis() : fd.expiresAt
           const expB = fd.graceExpiresAt?.toMillis ? fd.graceExpiresAt.toMillis() : fd.graceExpiresAt
           if (Date.now() >= Math.min(expA || 0, expB || 0)) throw new Error('expired')
           const plan = fd.plan || 'monthly'
-          const addDays = plan === 'annual' ? 365 : plan === 'semiannual' ? 182 : 30
+          const months = plan === 'annual' ? 12 : plan === 'semiannual' ? 6 : 1
           const nowMs = Date.now()
-          const planExpiresAt = Timestamp.fromMillis(nowMs + addDays*24*60*60*1000)
+          const planExpiresAt = Timestamp.fromMillis((() => { const d = new Date(nowMs); const day = d.getDate(); d.setMonth(d.getMonth()+months); if (d.getDate() !== day) d.setDate(0); return d.getTime() })())
           trx.update(codeRef, { status: 'used', usedBy: cred.user.uid, usedAt: serverTimestamp() })
           trx.set(doc(db, 'users', cred.user.uid), { email: email.toLowerCase(), createdAt: serverTimestamp(), lastActiveAt: serverTimestamp(), isActive: true, role: 'user', planExpiresAt })
         })
@@ -153,62 +145,24 @@ export const useAuthStore = defineStore('auth', {
         this.profile = null
         this.status = 'unauthenticated'
         this.error = null
-        this.isReadOnly = false
       }
     },
-    async redeemCode(raw) {
+    async applyCodeAndRefresh(raw) {
       if (!this.user) return { ok:false, error: t('errors.generic') }
-      const codeId = String(raw||'').trim().toUpperCase()
-      if (!codeId) return { ok:false, error: t('validation.required') }
-      const codeRef = doc(db,'inviteCodes', codeId)
-      const userRef = doc(db,'users', this.user.uid)
+      const code = String(raw||'').trim().toUpperCase()
+      if (!code) return { ok:false, error: t('validation.required') }
       try {
-        const result = await runTransaction(db, async (trx) => {
-          const userSnap = await trx.get(userRef)
-          if (!userSnap.exists()) throw new Error('user-missing')
-          const userData = userSnap.data()
-          const now = Date.now()
-          const blockedUntilMs = userData.codeRedeemBlockedUntil?.toMillis ? userData.codeRedeemBlockedUntil.toMillis() : userData.codeRedeemBlockedUntil
-          if (blockedUntilMs && now < blockedUntilMs) throw new Error('blocked|0|'+blockedUntilMs)
-          const codeSnap = await trx.get(codeRef)
-          const fail = async (reasonKey) => {
-            const attemptsPrev = Number(userData.codeRedeemAttempts||0)
-            const attemptsNew = attemptsPrev + 1
-            const updates = { codeRedeemAttempts: attemptsNew }
-            let blocked = ''
-            if (attemptsNew >= 5) { const until = now + 24*60*60*1000; updates.codeRedeemBlockedUntil = Timestamp.fromMillis(until); blocked = String(until) }
-            trx.update(userRef, updates)
-            const attemptsLeft = Math.max(0, 5 - attemptsNew)
-            throw new Error(reasonKey + '|' + attemptsLeft + '|' + blocked)
-          }
-          if (!codeSnap.exists()) await fail('not_found')
-          const cd = codeSnap.data()
-          if (cd.status !== 'unused') await fail(cd.status === 'used' ? 'used' : 'invalid')
-          const exp1 = cd.expiresAt?.toMillis ? cd.expiresAt.toMillis() : cd.expiresAt
-          const exp2 = cd.graceExpiresAt?.toMillis ? cd.graceExpiresAt.toMillis() : cd.graceExpiresAt
-          if (now >= Math.min(exp1 || 0, exp2 || 0)) await fail('expired')
-          const plan = cd.plan || 'monthly'
-          const addDays = plan === 'annual' ? 365 : plan === 'semiannual' ? 182 : 30
-          const base = (() => { const cur = userData.planExpiresAt?.toMillis ? userData.planExpiresAt.toMillis() : userData.planExpiresAt; return (cur && cur > now) ? cur : now })()
-          const newExp = Timestamp.fromMillis(base + addDays*24*60*60*1000)
-          trx.update(codeRef, { status: 'used', usedBy: this.user.uid, usedAt: serverTimestamp() })
-          trx.update(userRef, { isActive: true, planExpiresAt: newExp, lastActiveAt: serverTimestamp(), codeRedeemAttempts: 0, codeRedeemBlockedUntil: null })
-          return { ok:true, plan, newExp }
-        })
+        const { applyCode } = useInviteCodes()
+        const newExp = await applyCode(code, this.user.uid)
         await this.fetchUserProfile()
-        return { ok:true, plan: result.plan, newExp: result.newExp }
+        useNotify().success(t('settings.extendSuccess'))
+        return { ok:true, newExp }
       } catch (e) {
-        const msg = (e && e.message) || ''
-        const [code, attemptsLeftStr='', blockedUntilStr=''] = msg.split('|')
-        if (code === 'blocked') {
-          const until = Number(blockedUntilStr)||0
-            return { ok:false, error: t('errors.invite.blocked', { date: until ? new Date(until).toLocaleString() : '' }), attemptsLeft: 0, blockedUntil: until }
-        }
-        const map = { not_found: t('errors.invite.not_found'), used: t('errors.invite.used'), expired: t('errors.invite.expired'), invalid: t('errors.invite.invalid') }
-        const attemptsLeft = attemptsLeftStr ? Number(attemptsLeftStr) : undefined
-        const blockedUntil = blockedUntilStr ? Number(blockedUntilStr) : undefined
-        return { ok:false, error: map[code] || t('errors.invite.invalid'), attemptsLeft, blockedUntil }
+        const m = (e && e.message) || ''
+        const map = { not_found: t('errors.invite.not_found'), used: t('errors.invite.used'), expired: t('errors.invite.expired'), invalid: t('errors.codeInvalid') }
+        return { ok:false, error: map[m] || t('errors.codeInvalid') }
       }
     },
+    async redeemCode() { return { ok:false, error: t('errors.codeInvalid') } },
   },
 })
