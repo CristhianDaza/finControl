@@ -181,7 +181,8 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
         <span>{{ t('transactions.empty') }}</span>
         <button class="button" @click="openAdd" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.addTitle') }}</button>
       </div>
-      <div v-else class="table-container">
+      <div v-else class="table-container tx-table-wrap">
+        <h3 class="table-mobile-title">{{ t('navigation.transactions') }}</h3>
         <table>
           <thead>
             <tr>
@@ -200,12 +201,12 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
               'row-debt': it.type==='debtPayment',
               'row-goal': it.type==='expense' && (it.goalId || it.goal)
             }">
-              <td>{{ it.date }}</td>
-              <td>{{ it.note || it.description }}</td>
-              <td>{{ formatAmount(it.amount, it.currency || 'COP') }}</td>
-              <td>{{ accountNameById[it.accountId] || it.accountId }}</td>
-              <td>{{ typeLabel(it) }}</td>
-              <td>
+              <td :data-label="t('transactions.table.date')">{{ it.date }}</td>
+              <td :data-label="t('transactions.table.description')">{{ it.note || it.description }}</td>
+              <td :data-label="t('transactions.table.amount')">{{ formatAmount(it.amount, it.currency || 'COP') }}</td>
+              <td :data-label="t('transactions.table.account')">{{ accountNameById[it.accountId] || it.accountId }}</td>
+              <td :data-label="t('transactions.table.type')">{{ typeLabel(it) }}</td>
+              <td :data-label="t('transactions.table.actions')">
                 <div style="display:flex;gap:.25rem;justify-content:flex-end">
                   <button class="button button-edit" @click="openEdit(it)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-edit" v-html="EditIcon"></svg></button>
                   <button class="button button-delete" @click="askRemove(it.id)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-delete" v-html="DeleteIcon"></svg></button>
@@ -369,7 +370,11 @@ tr.row-transfer { box-shadow: inset 6px 0 0 var(--tx-transfer-color); }
 tr.row-goal { box-shadow: inset 6px 0 0 var(--tx-goal-color); }
 
 .table-container table { width:100%; border-collapse:collapse }
-.table-container th, .table-container td { padding:.6rem .75rem; border-bottom:1px solid var(--secondary-color); text-align:left }
+.table-container th, .table-container td { padding:.6rem .75rem; text-align:left }
 .table-container th { background: var(--secondary-color); color: var(--accent-color); font-weight:600; font-size:.75rem; letter-spacing:1px; text-transform:uppercase }
 .button[disabled], .button[aria-disabled="true"] { opacity:.55; cursor:not-allowed }
+.tx-table-wrap { position:relative }
+.table-mobile-title { display:none; margin:0; padding:.75rem .85rem .25rem; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px; color: var(--muted-text-color) }
+@media (max-width: 720px) { .table-mobile-title { display:block } }
+@media (min-width: 721px) { .tx-table-wrap thead th { position:sticky; top:0; background: var(--secondary-color); z-index:5 } }
 </style>

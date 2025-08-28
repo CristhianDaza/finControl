@@ -79,29 +79,33 @@ const codeInputClass = computed(() => codeError.value ? 'code-input-error' : (!c
       <p class="card-subtitle">{{ t('settings.currencies.subtitle') }}</p>
       <div v-if="currencies.status==='loading'">{{ t('common.loading') }}</div>
       <div v-else class="curr-grid">
-        <table class="curr-table" v-if="currencies.items.length">
-          <thead>
-          <tr>
-            <th>{{ t('settings.currencies.code') }}</th>
-            <th>{{ t('settings.currencies.symbol') }}</th>
-            <th>{{ t('settings.currencies.name') }}</th>
-            <th>{{ t('settings.currencies.isDefault') }}</th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="c in currencies.items" :key="c.id">
-            <td>{{ c.code }}</td>
-            <td>{{ c.symbol }}</td>
-            <td>{{ c.name }}</td>
-            <td>
-              <input type="radio" name="defCur" :checked="c.isDefault" @change="setDefault(c.id)" :aria-label="t('settings.currencies.isDefault')" :disabled="!auth.canWrite" />
-              <span v-if="c.isDefault" class="badge badge-green" style="margin-left:.5rem">{{ t('settings.currencies.defaultBadge') }}</span>
-            </td>
-            <td><button class="button button-delete" @click="removeCurrency(c.id)" :disabled="c.isDefault || !auth.canWrite">✕</button></td>
-          </tr>
-          </tbody>
-        </table>
+        <div v-if="currencies.items.length" class="table-container curr-table-wrap">
+          <table class="curr-table">
+            <thead>
+            <tr>
+              <th>{{ t('settings.currencies.code') }}</th>
+              <th>{{ t('settings.currencies.symbol') }}</th>
+              <th>{{ t('settings.currencies.name') }}</th>
+              <th>{{ t('settings.currencies.isDefault') }}</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="c in currencies.items" :key="c.id">
+              <td :data-label="t('settings.currencies.code')">{{ c.code }}</td>
+              <td :data-label="t('settings.currencies.symbol')">{{ c.symbol }}</td>
+              <td :data-label="t('settings.currencies.name')">{{ c.name }}</td>
+              <td :data-label="t('settings.currencies.isDefault')">
+                <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+                  <input type="radio" name="defCur" :checked="c.isDefault" @change="setDefault(c.id)" :aria-label="t('settings.currencies.isDefault')" :disabled="!auth.canWrite" />
+                  <span v-if="c.isDefault" class="badge badge-green">{{ t('settings.currencies.defaultBadge') }}</span>
+                </div>
+              </td>
+              <td :data-label="''"><button class="button button-delete" @click="removeCurrency(c.id)" :disabled="c.isDefault || !auth.canWrite">✕</button></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
         <form class="add-form" @submit.prevent="addCurrency">
           <div class="row-inline">
             <input class="input" v-model="newCur.code" :placeholder="t('settings.currencies.code')" maxlength="5" style="text-transform:uppercase" :disabled="!auth.canWrite" />
@@ -346,9 +350,10 @@ const codeInputClass = computed(() => codeError.value ? 'code-input-error' : (!c
 }
 
 .curr-grid { display:grid; gap:1rem }
-.curr-table { width:100%; border-collapse:collapse; font-size:.85rem }
-.curr-table th, .curr-table td { padding:.5rem .6rem; border-bottom:1px solid var(--secondary-color) }
-.curr-table th { text-align:left; background: var(--secondary-color); }
+.curr-table-wrap { width:100%; overflow-x:auto; }
+.curr-table { table-layout:fixed; word-break:break-word; }
+.curr-table th, .curr-table td { white-space:normal; }
+@media (max-width:720px){ .curr-table td { padding:.55rem .65rem; } }
 .add-form .row-inline { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center }
 .add-form .input { background: var(--secondary-color); border:1px solid var(--primary-color); color: var(--text-color); padding:.5rem .6rem; border-radius:6px; width:140px }
 .add-form .chk { font-size:.75rem; display:flex; align-items:center; gap:.25rem }

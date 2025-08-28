@@ -74,14 +74,17 @@ const toggle = () => { mode.value = isSignup.value ? 'login' : 'signup'; auth.er
           <button class="button btn-primary full-width" :disabled="auth.status === 'loading'" :aria-disabled="auth.status==='loading'">
             {{ auth.status === 'loading' ? (isSignup ? t('auth.signup.submitting') : t('auth.login.submitting')) : (isSignup ? t('auth.signup.submit') : t('auth.login.submit')) }}
           </button>
+          <button class="button button-secondary toggle-btn" type="button" @click="toggle">{{ isSignup ? t('auth.signup.toggleLogin') : t('auth.signup.toggleSignup') }}</button>
         </form>
-        <button class="button button-secondary toggle-btn" type="button" @click="toggle">{{ isSignup ? t('auth.signup.toggleLogin') : t('auth.signup.toggleSignup') }}</button>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
+.login-card { display:flex; flex:1 1 auto; }
+.login-inner { margin:0 auto; min-height:100%; max-height:100%; overflow-y:auto; overscroll-behavior:contain; }
+@media (max-width:600px) { .login-inner { padding:1.25rem 1.1rem 2rem; border-radius:0; margin:0 auto; } }
 .login-wrapper {
   min-height:100vh;
   min-height:100dvh;
@@ -99,14 +102,12 @@ const toggle = () => { mode.value = isSignup.value ? 'login' : 'signup'; auth.er
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
-@supports (-webkit-touch-callout: none) {
-  .login-wrapper { background-attachment: scroll; }
-}
+@media (max-width:600px){ .login-wrapper { display:flex; align-items:stretch; } }
+@supports (-webkit-touch-callout: none) { .login-wrapper { background-attachment: scroll; } }
 
 .login-card {
   max-width:none;
   width:100%;
-  min-height:100dvh;
   border-radius:0;
   box-shadow:none;
   backdrop-filter:none;
@@ -114,6 +115,7 @@ const toggle = () => { mode.value = isSignup.value ? 'login' : 'signup'; auth.er
   background:transparent;
   border:0;
 }
+@media (max-width:600px){ .login-card { min-height:auto; width:100%; flex:1; } }
 .login-card::before, .login-card::after {
   display:none;
 }
@@ -211,14 +213,16 @@ const toggle = () => { mode.value = isSignup.value ? 'login' : 'signup'; auth.er
 @media (max-width: 600px) {
   .login-inner {
     width:100%;
-    max-width:none;
-    padding-block:1.5rem 2rem;
-    padding-inline:calc(1.1rem + env(safe-area-inset-left)) calc(1.1rem + env(safe-area-inset-right));
-    border-radius:18px;
+    max-width:100%;
+    padding-block:1.1rem 1.5rem;
+    padding-inline:calc(1rem + env(safe-area-inset-left)) calc(1rem + env(safe-area-inset-right));
+    border-radius:0;
+    margin:0 auto;
+    gap:.7rem;
   }
-  .login-logo { width:96px; margin-bottom:.65rem; }
-  .login-card h1 { font-size:1.4rem; }
-  .field { margin-bottom:.8rem; }
+  .login-logo { width:92px; margin-bottom:.5rem; }
+  .login-card h1 { font-size:1.32rem; }
+  .field { margin-bottom:.65rem; }
 }
 @media (max-width: 380px) {
   .login-inner {
