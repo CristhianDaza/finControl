@@ -371,10 +371,12 @@ const codeInputClass = computed(() => codeError.value ? 'code-input-error' : (!c
   .card { padding: .85rem; }
   .color-wrap { width: 44px; height: 36px; }
   .preset { padding: .6rem; }
+  .code-field { width:100%; max-width:100%; min-width:0; box-sizing:border-box; }
+  .code-field .input, .code-field .code-validate-btn { width:100%; max-width:100%; box-sizing:border-box; }
 }
 
 .code-redeem-wrap { display:flex; flex-direction:column; gap:.75rem; margin-top:.5rem; }
-.code-field { display:flex; flex-direction:column; gap:.5rem; min-width:260px; max-width:340px }
+.code-field { display:flex; flex-direction:column; gap:.5rem; }
 .code-field label { font-size:.75rem; font-weight:600; letter-spacing:.5px; color: var(--muted-text-color); }
 .code-field .input { background: var(--secondary-color); border:1px solid var(--primary-color); padding:.65rem .75rem; border-radius:8px; font-size:.95rem; letter-spacing:.5px; font-weight:600; color: var(--text-color); }
 .code-field .input::placeholder { color: var(--muted-text-color); }
