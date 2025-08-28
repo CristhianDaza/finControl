@@ -121,8 +121,12 @@ export const useAuthStore = defineStore('auth', {
           const expA = fd.expiresAt?.toMillis ? fd.expiresAt.toMillis() : fd.expiresAt
           const expB = fd.graceExpiresAt?.toMillis ? fd.graceExpiresAt.toMillis() : fd.graceExpiresAt
           if (Date.now() >= Math.min(expA || 0, expB || 0)) throw new Error('expired')
+          const plan = fd.plan || 'monthly'
+          const addDays = plan === 'annual' ? 365 : plan === 'semiannual' ? 182 : 30
+          const nowMs = Date.now()
+          const planExpiresAt = Timestamp.fromMillis(nowMs + addDays*24*60*60*1000)
           trx.update(codeRef, { status: 'used', usedBy: cred.user.uid, usedAt: serverTimestamp() })
-          trx.set(doc(db, 'users', cred.user.uid), { email: email.toLowerCase(), createdAt: serverTimestamp(), lastActiveAt: serverTimestamp(), isActive: true, role: 'user' })
+          trx.set(doc(db, 'users', cred.user.uid), { email: email.toLowerCase(), createdAt: serverTimestamp(), lastActiveAt: serverTimestamp(), isActive: true, role: 'user', planExpiresAt })
         })
         await this.fetchUserProfile()
         this.status = 'authenticated'
