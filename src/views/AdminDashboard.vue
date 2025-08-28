@@ -31,12 +31,13 @@ onMounted(loadAll)
     <div class="panel">
       <h2>{{ t('admin.users.title') }}</h2>
       <table v-if="admin.users.length" class="simple">
-        <thead><tr><th>{{ t('admin.users.email') }}</th><th>{{ t('admin.users.createdAt') }}</th><th>{{ t('admin.users.lastActiveAt') }}</th><th>{{ t('admin.users.isActive') }}</th><th>{{ t('admin.users.role') }}</th></tr></thead>
+        <thead><tr><th>{{ t('admin.users.email') }}</th><th>{{ t('admin.users.createdAt') }}</th><th>{{ t('admin.users.lastActiveAt') }}</th><th>{{ t('admin.users.planExpiresAt') }}</th><th>{{ t('admin.users.isActive') }}</th><th>{{ t('admin.users.role') }}</th></tr></thead>
         <tbody>
           <tr v-for="u in admin.users" :key="u.id">
             <td>{{ u.email }}</td>
             <td>{{ u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString() : '' }}</td>
             <td>{{ u.lastActiveAt?.toDate ? u.lastActiveAt.toDate().toLocaleDateString() : '' }}</td>
+            <td>{{ (u.planExpiresAt?.toDate ? u.planExpiresAt.toDate() : (u.planExpiresAt?.toMillis ? new Date(u.planExpiresAt.toMillis()) : (u.planExpiresAt ? new Date(u.planExpiresAt) : null)))?.toLocaleDateString?.() || '—' }}</td>
             <td>{{ (u.lastActiveAt?.toMillis && (Date.now()-u.lastActiveAt.toMillis()) < 30*24*60*60*1000) ? '✓' : '' }}</td>
             <td>{{ u.role }}</td>
           </tr>
