@@ -136,10 +136,14 @@ export const useRecurring = () => {
     const { tplCol } = getUserPaths()
     const ref = doc(tplCol, id)
     const data = { ...patch, updatedAt: serverTimestamp() }
+    if (data.debt && !data.debtId) { data.debtId = data.debt; delete data.debt }
     if (data.category && !data.categoryId) { data.categoryId = data.category; delete data.category }
     if (data.firstRunAt && !data.nextRunAt) { data.nextRunAt = normalizeIsoDate(data.firstRunAt); delete data.firstRunAt }
     if (data.nextRunAt) data.nextRunAt = normalizeIsoDate(data.nextRunAt)
-    await updateDoc(ref, data)
+    if (data.type && data.type !== 'debtPayment') data.debtId = null
+    if ('debtId' in data && (data.debtId === '' || data.debtId === undefined)) data.debtId = null
+    Object.keys(data).forEach(k => { if (data[k] === undefined) delete data[k] })
+    try { await updateDoc(ref, data) } catch (e) { console.error('[recurring] updateTemplate error', id, data, e); throw e }
   }
 
   const deleteTemplate = async (id) => {
