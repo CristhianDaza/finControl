@@ -87,6 +87,9 @@ const loadSavedFilters = async () => { try { const saved = await getTxFilters();
 
 const exportCsv = () => { const headers = [t('transactions.table.date'), t('transactions.table.description'), t('transactions.table.amount'), t('transactions.table.account'), t('transactions.table.type')]; const csvRows = [headers.join(',')]; for (const item of filteredRows.value) { const desc = (item.note || item.description || '').replace(/"/g, '""'); const accName = accountNameById.value[item.accountId] || item.accountId; const isGoal = item.type === 'expense' && (item.goalId || item.goal); const typ = item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : isGoal ? t('transactions.form.goalSaving') : t('transactions.form.expense'); csvRows.push([item.date, `"${desc}"`, item.amount, `"${accName}"`, `"${typ}"`].join(',')) } const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'transactions.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url) }
 
+// Helper para etiqueta traducida del tipo
+const typeLabel = (it) => { const isGoal = it.type === 'expense' && (it.goalId || it.goal); return it.type==='income' ? t('transactions.form.income') : it.type==='debtPayment' ? t('transactions.form.debtPayment') : isGoal ? t('transactions.form.goalSaving') : t('transactions.form.expense') }
+
 onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDebts(); await tx.init(); await tr.init(); await tx.loadAvailablePeriods(); await goals.init(); if (!availableYears.value.includes(selectedYear.value)) { const lastY = availableYears.value[availableYears.value.length - 1]; if (lastY != null) selectedYear.value = lastY } if (!availableMonths.value.includes(selectedMonth.value)) { const months = availableMonths.value; if (months.length) selectedMonth.value = months[months.length - 1] } setMonth(selectedMonth.value); await loadSavedFilters() })
 
 watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.value) && availableMonths.value.length) { selectedMonth.value = availableMonths.value[availableMonths.value.length - 1] } setMonth(selectedMonth.value) })
@@ -178,7 +181,8 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
         <span>{{ t('transactions.empty') }}</span>
         <button class="button" @click="openAdd" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.addTitle') }}</button>
       </div>
-      <div v-else class="table-container">
+      <div v-else class="table-container tx-table-wrap">
+        <h3 class="table-mobile-title">{{ t('navigation.transactions') }}</h3>
         <table>
           <thead>
             <tr>
@@ -191,13 +195,18 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
             </tr>
           </thead>
           <tbody>
-            <tr v-for="it in filteredRows" :key="it.id">
-              <td>{{ it.date }}</td>
-              <td>{{ it.note || it.description }}</td>
-              <td>{{ formatAmount(it.amount, it.currency || 'COP') }}</td>
-              <td>{{ accountNameById[it.accountId] || it.accountId }}</td>
-              <td>{{ it.type }}</td>
-              <td>
+            <tr v-for="it in filteredRows" :key="it.id" :class="{
+              'row-income': it.type==='income',
+              'row-expense': it.type==='expense' && !(it.goalId || it.goal),
+              'row-debt': it.type==='debtPayment',
+              'row-goal': it.type==='expense' && (it.goalId || it.goal)
+            }">
+              <td :data-label="t('transactions.table.date')">{{ it.date }}</td>
+              <td :data-label="t('transactions.table.description')">{{ it.note || it.description }}</td>
+              <td :data-label="t('transactions.table.amount')">{{ formatAmount(it.amount, it.currency || 'COP') }}</td>
+              <td :data-label="t('transactions.table.account')">{{ accountNameById[it.accountId] || it.accountId }}</td>
+              <td :data-label="t('transactions.table.type')">{{ typeLabel(it) }}</td>
+              <td :data-label="t('transactions.table.actions')">
                 <div style="display:flex;gap:.25rem;justify-content:flex-end">
                   <button class="button button-edit" @click="openEdit(it)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-edit" v-html="EditIcon"></svg></button>
                   <button class="button button-delete" @click="askRemove(it.id)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-delete" v-html="DeleteIcon"></svg></button>
@@ -361,7 +370,11 @@ tr.row-transfer { box-shadow: inset 6px 0 0 var(--tx-transfer-color); }
 tr.row-goal { box-shadow: inset 6px 0 0 var(--tx-goal-color); }
 
 .table-container table { width:100%; border-collapse:collapse }
-.table-container th, .table-container td { padding:.6rem .75rem; border-bottom:1px solid var(--secondary-color); text-align:left }
+.table-container th, .table-container td { padding:.6rem .75rem; text-align:left }
 .table-container th { background: var(--secondary-color); color: var(--accent-color); font-weight:600; font-size:.75rem; letter-spacing:1px; text-transform:uppercase }
 .button[disabled], .button[aria-disabled="true"] { opacity:.55; cursor:not-allowed }
+.tx-table-wrap { position:relative }
+.table-mobile-title { display:none; margin:0; padding:.75rem .85rem .25rem; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px; color: var(--muted-text-color) }
+@media (max-width: 720px) { .table-mobile-title { display:block } }
+@media (min-width: 721px) { .tx-table-wrap thead th { position:sticky; top:0; background: var(--secondary-color); z-index:5 } }
 </style>
