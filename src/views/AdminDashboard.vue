@@ -60,8 +60,8 @@ onMounted(loadAll)
         <tbody>
           <tr v-for="c in admin.invites" :key="c.id">
             <td>{{ c.code }}</td>
-            <td>{{ c.plan }}</td>
-            <td>{{ c.status }}</td>
+            <td>{{ t('admin.invites.plan_' + c.plan) }}</td>
+            <td>{{ t('admin.invites.status_' + c.status) }}</td>
             <td>{{ c.createdAt?.toDate ? c.createdAt.toDate().toLocaleDateString() : '' }}</td>
             <td>{{ c.expiresAt?.toDate ? c.expiresAt.toDate().toLocaleDateString() : '' }}</td>
             <td>{{ c.usedByEmail || '—' }}</td>

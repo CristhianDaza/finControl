@@ -8,7 +8,7 @@ export const useAdmin = () => {
   const usersCol = collection(db, 'users')
   const invitesCol = collection(db, 'inviteCodes')
   const activeThresholdMs = 30 * 24 * 60 * 60 * 1000
-  const genCode = () => Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[b % 36]).join('')
+  const genCode = () => { const charset = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; while (true) { const bytes = crypto.getRandomValues(new Uint8Array(20)); let out='', hasU=false, hasL=false, hasD=false; for (let i=0;i<bytes.length;i++){ const ch = charset[bytes[i]%charset.length]; if (ch>='A'&&ch<='Z') hasU=true; else if (ch>='a'&&ch<='z') hasL=true; else if (ch>='0'&&ch<='9') hasD=true; out+=ch } if (hasU&&hasL&&hasD) return out } }
   const gate = () => { const a = useAuthStore(); if (!a.canWrite) { useNotify().info(t('access.readOnly')); return true } return false }
 
   const countUsers = async () => { const now = Date.now(); const activeLimit = Timestamp.fromMillis(now - activeThresholdMs); const totalSnap = await getCountFromServer(usersCol); const activeQ = query(usersCol, where('lastActiveAt', '>=', activeLimit)); const activeSnap = await getCountFromServer(activeQ); return { total: totalSnap.data().count, active: activeSnap.data().count, inactive: totalSnap.data().count - activeSnap.data().count } }

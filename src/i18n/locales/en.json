@@ -517,7 +517,10 @@
       "invalidated": "Code invalidated",
       "copied": "Copied",
       "migrate": "Migrate codes",
-      "migrated": "Migrated: {created} created, {skipped} skipped"
+      "migrated": "Migrated: {created} created, {skipped} skipped",
+      "status_unused": "Unused",
+      "status_used": "Used",
+      "status_expired": "Expired"
     }
   }
 }
