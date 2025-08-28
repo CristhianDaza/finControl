@@ -328,7 +328,8 @@
       "created": "Template created",
       "updated": "Template updated",
       "deleted": "Template deleted",
-      "processed": "Generated {count} recurring payment(s)"
+      "processed": "Generated {count} recurring payment(s)",
+      "partialCatchUp": "Partial catch-up on '{name}'. Check limits."
     }
   },
   "goals": {
