@@ -117,7 +117,7 @@ export const useAuthStore = defineStore('auth', {
           const months = plan === 'annual' ? 12 : plan === 'semiannual' ? 6 : 1
           const nowMs = Date.now()
           const planExpiresAt = Timestamp.fromMillis((() => { const d = new Date(nowMs); const day = d.getDate(); d.setMonth(d.getMonth()+months); if (d.getDate() !== day) d.setDate(0); return d.getTime() })())
-          trx.update(codeRef, { status: 'used', usedBy: cred.user.uid, usedAt: serverTimestamp() })
+          trx.update(codeRef, { status: 'used', usedBy: cred.user.uid, usedByEmail: email.toLowerCase(), usedAt: serverTimestamp() })
           trx.set(doc(db, 'users', cred.user.uid), { email: email.toLowerCase(), createdAt: serverTimestamp(), lastActiveAt: serverTimestamp(), isActive: true, role: 'user', planExpiresAt })
         })
         await this.fetchUserProfile()
@@ -153,7 +153,7 @@ export const useAuthStore = defineStore('auth', {
       if (!code) return { ok:false, error: t('validation.required') }
       try {
         const { applyCode } = useInviteCodes()
-        const newExp = await applyCode(code, this.user.uid)
+        const newExp = await applyCode(code, this.user.uid, this.profile?.email || this.user.email || '')
         await this.fetchUserProfile()
         useNotify().success(t('settings.extendSuccess'))
         return { ok:true, newExp }
