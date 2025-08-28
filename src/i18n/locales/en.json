@@ -30,10 +30,13 @@
     "recurring": "Recurring Payments",
     "goals": "Savings Goals",
     "budgets": "Budgets",
-    "settings": "Settings"
+    "settings": "Settings",
+    "admin": "Admin"
   },
   "auth": {
     "logout": "Log out",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
     "login": {
       "title": "Sign in",
       "description": "Access with your email and password.",
@@ -46,14 +49,36 @@
     },
     "show-password": "Show password",
     "hide-password": "Hide password",
-    "logoutConfirm": "Are you sure you want to log out?"
+    "logoutConfirm": "Are you sure you want to log out?",
+    "signup": {
+      "title": "Create account",
+      "description": "Create your account with an invite code.",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "code": "Invite code",
+      "code-placeholder": "Your invite code",
+      "submit": "Sign up",
+      "submitting": "Creating account…",
+      "toggleLogin": "Have an account? Sign in",
+      "toggleSignup": "New here? Create account",
+      "success": "Account created"
+    }
+  },
+  "access": {
+    "readOnly": "Your account is in read-only mode. Activate to continue.",
+    "inactiveNotice": "Your user is inactive or your plan has expired. Some actions are disabled.",
+    "activateNow": "Activate now",
+    "inactiveTitle": "Inactive account",
+    "expiredTitle": "Plan expired"
   },
   "validation": {
     "invalid-field": "Invalid field",
     "email-invalid": "Enter a valid email",
     "password-required": "Password is required",
     "required": "Field is required",
-    "positive_amount": "Amount must be greater than zero"
+    "positive_amount": "Amount must be greater than zero",
+    "code-required": "Invite code is required"
   },
   "errors": {
     "auth": {
@@ -64,11 +89,26 @@
       "too-many-requests": "Too many attempts. Try again later.",
       "generic": "We couldn't sign you in. Please try again."
     },
-    "generic": "An error occurred"
+    "generic": "An error occurred",
+    "insufficient_funds": "Insufficient funds in account",
+    "signup": { "password_mismatch": "Passwords do not match" },
+    "invite": {
+      "not_found": "Code not found",
+      "used": "Code already used",
+      "expired": "Code expired",
+      "invalid": "Invalid code",
+      "blocked": "Too many attempts. Try again after {date}"
+    },
+    "codeInvalid": "Invalid code"
   },
   "currency": {
     "default": "COP",
-    "invalid": "Invalid currency"
+    "invalid": "Invalid currency",
+    "errors": {
+      "duplicate": "Duplicate currency code",
+      "invalid": "Invalid code (use 3-5 letters)",
+      "cannotDeleteDefault": "You can't delete the default currency"
+    }
   },
   "accounts": {
     "title": "Accounts",
@@ -162,7 +202,11 @@
       "debtRemainingNegative": "Payment exceeds remaining debt",
       "debtRequired": "You must select a debt",
       "debtNotFound": "Debt not found",
-      "goalRequired": "You must select a goal"
+      "goalRequired": "You must select a goal",
+      "invalidAmount": "Invalid amount",
+      "invalidType": "Invalid transaction type",
+      "accountRequired": "Account required",
+      "invalidDate": "Invalid date"
     },
     "confirmDelete": {
       "title": "Delete transaction",
@@ -204,6 +248,12 @@
       "title": "Budgets (month)",
       "empty": "No budgets",
       "prev": "Prev month: {pct}%"
+    },
+    "amountFormat": {
+      "showCompact": "Show compact",
+      "showFull": "Show full",
+      "compactLabel": "Compact",
+      "fullLabel": "Full"
     }
   },
   "categories": {
@@ -243,6 +293,15 @@
     "pause": "Pause",
     "resume": "Resume",
     "badge": "Recurring",
+    "runNow": "Run now",
+    "statusPanel": {
+      "title": "Status",
+      "lastRun": "Last run",
+      "never": "Never",
+      "processing": "Processing…",
+      "processed": "Last processed",
+      "error": "Error"
+    },
     "table": {
       "name": "Name",
       "next": "Next run",
@@ -360,7 +419,7 @@
     "sampleSecondary": "Secondary action",
     "theme": {
       "title": "Theme",
-      "subtitle": "Customize the app's main colors. Changes apply live.",
+      "subtitle": "Customize the main colors of the app (Changes are applied live). Change the amount format.",
       "presets": {
         "title": "Preset themes",
         "subtitle": "Pick one of the accessible themes (light or dark). You can fine-tune colors afterwards.",
@@ -381,9 +440,87 @@
         }
       }
     },
+    "amountFormat": {
+      "title": "Amount format",
+      "subtitle": "Choose how monetary values are shown across the app.",
+      "full": "Full (with decimals)",
+      "compact": "Compact (K / M / B)"
+    },
+    "currencies": {
+      "title": "Currencies",
+      "subtitle": "Manage available currencies and set a default one.",
+      "code": "Code",
+      "symbol": "Symbol",
+      "name": "Name",
+      "isDefault": "Default",
+      "defaultBadge": "DEF",
+      "add": "Add",
+      "notifications": {
+        "created": "Currency added",
+        "deleted": "Currency deleted",
+        "defaultChanged": "Default currency updated"
+      }
+    },
     "notifications": {
       "saved": "Theme saved",
       "reset": "Theme reset"
+    },
+    "accountStatus": "Account status",
+    "expiresAt": "Expires",
+    "enterCode": "Enter new code",
+    "generateCode": "Generate new code",
+    "validateCode": "Validate",
+    "code": { "success": "Code valid. New expiration: {date}", "attempts": "Attempts left: {n}", "blocked": "Blocked until: {date}" },
+    "extendSuccess": "Plan extended"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "kpis": {
+      "total": "Total users",
+      "active": "Active users",
+      "inactive": "Inactive users"
+    },
+    "filters": {
+      "rangeType": "Range type",
+      "createdAt": "Created date",
+      "lastActiveAt": "Last active",
+      "role": "Role"
+    },
+    "users": {
+      "title": "Users",
+      "email": "Email",
+      "createdAt": "Created",
+      "lastActiveAt": "Last active",
+      "isActive": "Active",
+      "role": "Role",
+      "empty": "No users"
+    },
+    "invites": {
+      "title": "Invite Codes",
+      "create": "Generate code",
+      "plan": "Plan",
+      "plan_monthly": "Monthly",
+      "plan_semiannual": "Semiannual",
+      "plan_annual": "Annual",
+      "code": "Code",
+      "status": "Status",
+      "createdAt": "Created",
+      "expiresAt": "Expires",
+      "usedAt": "Used at",
+      "usedBy": "Used by",
+      "actions": "Actions",
+      "empty": "No codes",
+      "copy": "Copy",
+      "invalidate": "Invalidate",
+      "confirmInvalidate": "Invalidate code?",
+      "generated": "Code generated",
+      "invalidated": "Code invalidated",
+      "copied": "Copied",
+      "migrate": "Migrate codes",
+      "migrated": "Migrated: {created} created, {skipped} skipped",
+      "status_unused": "Unused",
+      "status_used": "Used",
+      "status_expired": "Expired"
     }
   }
 }

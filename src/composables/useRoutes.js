@@ -6,11 +6,12 @@ import RecurringIcon from '@/assets/icons/recurring.svg?raw'
 import DebtsIcon from '@/assets/icons/debts.svg?raw'
 import AccountsIcon from '@/assets/icons/accounts.svg?raw'
 import GoalsIcon from '@/assets/icons/goals.svg?raw'
-// import CategoriesIcon from '@/assets/icons/categories.svg?raw'
 import SettingsIcon from '@/assets/icons/settings.svg?raw'
 import BudgetsIcon from '@/assets/icons/budgets.svg?raw'
+import { useAuthStore } from '@/stores/auth.js'
 
 export const useRoutes = () => {
+  const auth = useAuthStore()
   const base = ref([
     { id: 1, key: 'navigation.dashboard', icon: DashboardIcon, url: 'home' },
     { id: 2, key: 'navigation.transactions', icon: TransactionsIcon, url: 'transactions' },
@@ -21,7 +22,10 @@ export const useRoutes = () => {
     { id: 5, key: 'navigation.budgets', icon: BudgetsIcon, url: 'budgets' },
     { id: 8, key: 'navigation.settings', icon: SettingsIcon, url: 'settings' },
   ])
-
-  const routes = computed(() => base.value.map(r => ({ ...r, name: t(r.key) })))
+  const routes = computed(() => {
+    const list = [...base.value]
+    if (auth.isAdmin) list.push({ id: 100, key: 'navigation.admin', icon: SettingsIcon, url: 'admin' })
+    return list.map(r => ({ ...r, name: t(r.key) }))
+  })
   return { routes }
 }

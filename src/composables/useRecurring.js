@@ -1,6 +1,10 @@
 import { auth, db } from '@/services/firebase.js'
-import { collection, doc, onSnapshot, orderBy as fbOrderBy, query, where, serverTimestamp, runTransaction, getDocs, getDoc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy as fbOrderBy, query, where, serverTimestamp, runTransaction, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { useTransactions } from '@/composables/useTransactions.js'
+import { validateTransactionPayload } from '@/utils/validateTransactionPayload.js'
+import { useAuthStore } from '@/stores/auth.js'
+import { useNotify } from '@/components/global/fcNotify.js'
+import { t } from '@/i18n/index.js'
 
 const pad2 = (n) => String(n).padStart(2, '0')
 const toISO = (d) => {
@@ -44,7 +48,31 @@ const nextFrom = (frequency, currentIso) => {
   }
 }
 
+const normalizeIsoDate = (val) => {
+  try {
+    if (!val) return toISO(new Date())
+    if (typeof val === 'string') {
+      const m = val.match(/^(\d{4}-\d{2}-\d{2})/)
+      if (m) return m[1]
+      const dt = new Date(val)
+      if (!isNaN(dt.getTime())) return toISO(dt)
+      return toISO(new Date())
+    }
+    if (val instanceof Date) return toISO(val)
+    return toISO(new Date(val))
+  } catch { return toISO(new Date()) }
+}
+
 export const useRecurring = () => {
+  const gate = () => {
+    const a = useAuthStore()
+    if (!a.canWrite) {
+      useNotify().info(t('access.readOnly'))
+      return true
+    }
+    return false
+  }
+
   const getUserPaths = () => {
     const uid = auth.currentUser && auth.currentUser.uid
     if (!uid) throw new Error('Unauthorized')
@@ -61,7 +89,11 @@ export const useRecurring = () => {
     if (opts.paused != null) clauses.push(where('paused', '==', !!opts.paused))
     const q = query(tplCol, ...clauses, fbOrderBy('createdAt', 'desc'))
     return onSnapshot(q, snap => {
-      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      const items = snap.docs.map(d => {
+        const raw = { id: d.id, ...d.data() }
+        const categoryId = raw.categoryId || raw.category || ''
+        return { ...raw, categoryId, category: categoryId }
+      })
       cb(items)
     })
   }
@@ -75,9 +107,11 @@ export const useRecurring = () => {
   }
 
   const createTemplate = async (payload) => {
+    if (gate()) return
     const { uid, tplCol } = getUserPaths()
     const ref = doc(tplCol)
-    const firstRun = payload.firstRunAt || payload.nextRunAt || toISO(new Date())
+    const firstRunRaw = payload.firstRunAt || payload.nextRunAt || new Date()
+    const firstRun = normalizeIsoDate(firstRunRaw)
     const data = {
       ownerId: uid,
       name: payload.name || '',
@@ -85,7 +119,7 @@ export const useRecurring = () => {
       amount: Number(payload.amount || 0),
       accountId: payload.accountId || payload.account || '',
       debtId: payload.debtId || payload.debt || null,
-      category: payload.category || '',
+      categoryId: payload.categoryId || payload.category || '',
       note: payload.note || '',
       frequency: payload.frequency || 'monthly',
       nextRunAt: firstRun,
@@ -98,55 +132,113 @@ export const useRecurring = () => {
   }
 
   const updateTemplate = async (id, patch) => {
+    if (gate()) return
     const { tplCol } = getUserPaths()
     const ref = doc(tplCol, id)
     const data = { ...patch, updatedAt: serverTimestamp() }
-    if (data.firstRunAt && !data.nextRunAt) { data.nextRunAt = data.firstRunAt; delete data.firstRunAt }
+    if (data.category && !data.categoryId) { data.categoryId = data.category; delete data.category }
+    if (data.firstRunAt && !data.nextRunAt) { data.nextRunAt = normalizeIsoDate(data.firstRunAt); delete data.firstRunAt }
+    if (data.nextRunAt) data.nextRunAt = normalizeIsoDate(data.nextRunAt)
     await updateDoc(ref, data)
   }
 
   const deleteTemplate = async (id) => {
+    if (gate()) return
     const { tplCol } = getUserPaths()
     await deleteDoc(doc(tplCol, id))
   }
 
   const processDueOnce = async () => {
+    if (gate()) return { processed:0 }
     const { uid, runsColPath, tplCol } = getUserPaths()
     const due = await fetchDueTemplates()
     if (!due.length) return { processed: 0 }
     const { createTransaction } = useTransactions()
     let processed = 0
-    for (const t of due) {
-      const periodKey = String(t.nextRunAt)
-      const lockId = `${t.id}__${periodKey}`
-      const lockRef = doc(db, ...runsColPath, lockId)
-      const locked = await runTransaction(db, async (trx) => {
-        const snap = await trx.get(lockRef)
-        if (snap.exists()) return false
-        trx.set(lockRef, { ownerId: uid, templateId: t.id, periodKey, status: 'pending', createdAt: serverTimestamp() })
-        return true
-      })
-      if (!locked) continue
+    const LOCK_TTL_MS = 10 * 60 * 1000
+
+    for (const tpl of due) {
       try {
-        const txId = await createTransaction({
-          type: t.type || 'expense',
-          amount: t.amount,
-          accountId: t.accountId,
-          categoryId: t.category || '',
-          debtId: t.debtId || undefined,
-          date: t.nextRunAt,
-          note: t.note || t.name || '',
-          meta: { isRecurring: true, recurringTemplateId: t.id, periodKey }
+        if (!tpl.accountId) continue
+        if (!(Number(tpl.amount) > 0)) continue
+        if (tpl.type === 'debtPayment' && !tpl.debtId) continue
+        const validation = validateTransactionPayload({
+          type: tpl.type,
+          amount: tpl.amount,
+          accountId: tpl.accountId,
+          date: tpl.nextRunAt
         })
-        const tplRef = doc(tplCol, t.id)
-        await runTransaction(db, async (trx) => {
-          const next = nextFrom(t.frequency, t.nextRunAt)
-          trx.update(tplRef, { lastRunAt: t.nextRunAt, nextRunAt: next, updatedAt: serverTimestamp() })
-          trx.update(lockRef, { status: 'done', txId, updatedAt: serverTimestamp() })
+        if (!validation.valid) continue
+
+        const periodKey = String(tpl.nextRunAt)
+        const lockId = `${tpl.id}__${periodKey}`
+        const lockRef = doc(db, ...runsColPath, lockId)
+        const nowIso = new Date().toISOString()
+
+        const locked = await runTransaction(db, async (trx) => {
+          const snap = await trx.get(lockRef)
+          if (snap.exists()) {
+            const data = snap.data() || {}
+            if (['pending','recovering','error'].includes(data.status)) {
+              let stale = false
+              try {
+                if (data.clientTime) {
+                  const age = Date.now() - Date.parse(data.clientTime)
+                  stale = age > LOCK_TTL_MS
+                } else {
+                  stale = true
+                }
+              } catch { stale = true }
+              if (data.status === 'error' && !stale) {
+                try {
+                  if (data.updatedAt?.toDate) {
+                    const age2 = Date.now() - data.updatedAt.toDate().getTime()
+                    if (age2 > 60 * 1000) stale = true
+                  }
+                } catch {}
+              }
+              if (stale) {
+                trx.set(lockRef, { ownerId: uid, templateId: tpl.id, periodKey, status: 'recovering', clientTime: nowIso, updatedAt: serverTimestamp(), createdAt: data.createdAt || serverTimestamp(), retries: (data.retries||0)+1 })
+                return true
+              }
+            }
+            return false
+          }
+          trx.set(lockRef, { ownerId: uid, templateId: tpl.id, periodKey, status: 'pending', clientTime: nowIso, createdAt: serverTimestamp(), retries: 0 })
+          return true
         })
-        processed += 1
-      } catch (e) {
-        try { await deleteDoc(lockRef) } catch {}
+        if (!locked) continue
+
+        let txId = null
+        try {
+          txId = await createTransaction({
+            type: tpl.type || 'expense',
+            amount: tpl.amount,
+            accountId: tpl.accountId,
+            categoryId: tpl.categoryId || tpl.category || '',
+            debtId: tpl.debtId || undefined,
+            date: tpl.nextRunAt,
+            note: tpl.note || tpl.name || '',
+            meta: { isRecurring: true, recurringTemplateId: tpl.id, periodKey }
+          })
+        } catch (e) {
+          try { await updateDoc(lockRef, { status: 'error', errorMessage: String(e?.message||e), updatedAt: serverTimestamp() }) } catch {}
+          continue
+        }
+
+        const tplRef = doc(tplCol, tpl.id)
+        try {
+          await runTransaction(db, async (trx) => {
+            const next = nextFrom(tpl.frequency, tpl.nextRunAt)
+            trx.update(tplRef, { lastRunAt: tpl.nextRunAt, nextRunAt: next, updatedAt: serverTimestamp() })
+            trx.update(lockRef, { status: 'done', txId, updatedAt: serverTimestamp() })
+          })
+          processed += 1
+        } catch (e) {
+          try { await updateDoc(lockRef, { status: 'error', errorMessage: String(e?.message||e), updatedAt: serverTimestamp() }) } catch {}
+        }
+      } catch (outer) {
+        console.error('[recurring] Error inesperado procesando plantilla', tpl?.id, outer)
       }
     }
     return { processed }

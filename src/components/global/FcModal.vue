@@ -1,28 +1,9 @@
 <script setup>
 import { t } from '@/i18n/index.js'
-defineProps({
-  showModal: {
-    type: Boolean,
-    default: false,
-    required: true
-  },
-  titleModal: {
-    type: String,
-    default: () => t('common.confirm')
-  }
-})
-
+const props = defineProps({ showModal: { type: Boolean, default: false, required: true }, titleModal: { type: String, default: () => t('common.confirm') }, acceptDisabled: { type: Boolean, default: false } })
 const emit = defineEmits(['update:showModal', 'accept', 'cancel-modal'])
-
-const cancel = () => {
-  emit('cancel-modal')
-  emit('update:showModal', false)
-}
-
-const accept = () => {
-  emit('accept')
-  emit('update:showModal', false)
-}
+const cancel = () => { emit('cancel-modal'); emit('update:showModal', false) }
+const accept = () => { if (!props.acceptDisabled) { emit('accept'); emit('update:showModal', false) } }
 </script>
 
 <template>
@@ -31,18 +12,12 @@ const accept = () => {
       <div v-if="showModal" class="modal-overlay" @click.self="cancel">
         <div class="modal-content" role="dialog" aria-modal="true">
           <header class="modal-header">
-            <h2 class="modal-title">
-              {{ titleModal }}
-            </h2>
+            <h2 class="modal-title">{{ titleModal }}</h2>
           </header>
-
-          <div class="modal-body">
-            <slot />
-          </div>
-
+          <div class="modal-body"><slot /></div>
           <footer class="modal-footer">
             <button class="btn cancel" @click="cancel">{{ t('common.cancel') }}</button>
-            <button class="btn accept" @click="accept">{{ t('common.confirm') }}</button>
+            <button class="btn accept" :disabled="acceptDisabled" :aria-disabled="acceptDisabled" @click="accept">{{ t('common.confirm') }}</button>
           </footer>
         </div>
       </div>
@@ -138,5 +113,10 @@ const accept = () => {
 
 .accept:hover {
   background-color: var(--hover-accent-color);
+}
+
+.btn[disabled], .btn[aria-disabled="true"] {
+  opacity: .55;
+  cursor: not-allowed;
 }
 </style>

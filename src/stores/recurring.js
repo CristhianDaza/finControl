@@ -9,6 +9,12 @@ export const useRecurringStore = defineStore('recurring', () => {
   const status = ref('idle')
   const error = ref(null)
   const unsubscribe = ref(null)
+  const lastRun = ref(null)
+  const lastProcessedCount = ref(0)
+  const lastErrorMsg = ref(null)
+  const processing = ref(false)
+  let lastTriggerTs = 0
+  const MIN_INTERVAL_MS = 30 * 1000
 
   const { subscribeTemplates, createTemplate, updateTemplate, deleteTemplate, processDueOnce } = useRecurring()
   const { success, error: notifyError, info } = useNotify()
@@ -51,15 +57,28 @@ export const useRecurringStore = defineStore('recurring', () => {
   const resume = async (id) => edit(id, { paused: false })
 
   const processDue = async () => {
+    if (processing.value) return { processed: 0 }
+    const now = Date.now()
+    if (now - lastTriggerTs < MIN_INTERVAL_MS) return { processed: 0 }
+    lastTriggerTs = now
+    processing.value = true
+    lastErrorMsg.value = null
     try {
       const res = await processDueOnce()
+      lastRun.value = new Date().toISOString()
+      lastProcessedCount.value = res?.processed || 0
       if (res?.processed > 0) info(t('recurring.notifications.processed', { count: String(res.processed) }))
       return res
-    } catch (e) { return { processed: 0 } }
+    } catch (e) {
+      lastErrorMsg.value = e?.message || 'Error'
+      return { processed: 0 }
+    } finally {
+      processing.value = false
+    }
   }
 
   onUnmounted(() => dispose())
 
-  return { items, status, error, init, dispose, add, edit, remove, pause, resume, processDue }
+  return { items, status, error, init, dispose, add, edit, remove, pause, resume, processDue, lastRun, lastProcessedCount, lastErrorMsg, processing }
 })
 

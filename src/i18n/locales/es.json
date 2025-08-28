@@ -35,10 +35,13 @@
     "recurring": "Pagos Recurrentes",
     "goals": "Metas de Ahorro",
     "budgets": "Presupuestos",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "admin": "Admin"
   },
   "auth": {
     "logout": "Cerrar sesión",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
     "login": {
       "title": "Iniciar sesión",
       "description": "Accede con tu correo y contraseña.",
@@ -51,14 +54,36 @@
     },
     "show-password": "Mostrar contraseña",
     "hide-password": "Ocultar contraseña",
-    "logoutConfirm": "¿Estás seguro que deseas cerrar sesión?"
+    "logoutConfirm": "¿Estás seguro que deseas cerrar sesión?",
+    "signup": {
+      "title": "Crear cuenta",
+      "description": "Crea tu cuenta con un código de invitación.",
+      "email": "Correo",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "code": "Código de invitación",
+      "code-placeholder": "Tu código",
+      "submit": "Registrarse",
+      "submitting": "Creando cuenta…",
+      "toggleLogin": "¿Ya tienes cuenta? Inicia sesión",
+      "toggleSignup": "¿Nuevo? Crear cuenta",
+      "success": "Cuenta creada"
+    }
+  },
+  "access": {
+    "readOnly": "Tu cuenta está en modo solo lectura. Activa para continuar.",
+    "inactiveNotice": "Tu usuario no está activo o tu plan ha vencido. Algunas acciones están deshabilitadas.",
+    "activateNow": "Activar ahora",
+    "inactiveTitle": "Cuenta inactiva",
+    "expiredTitle": "Plan vencido"
   },
   "validation": {
     "invalid-field": "Campo inválido",
     "email-invalid": "Ingresa un correo válido",
     "password-required": "La contraseña es requerida",
     "required": "Campo requerido",
-    "positive_amount": "El monto debe ser mayor que cero"
+    "positive_amount": "El monto debe ser mayor que cero",
+    "code-required": "El código es obligatorio"
   },
   "errors": {
     "auth": {
@@ -69,11 +94,26 @@
       "too-many-requests": "Demasiados intentos. Intenta más tarde.",
       "generic": "No pudimos iniciar sesión. Intenta de nuevo."
     },
-    "generic": "Ocurrió un error"
+    "generic": "Ocurrió un error",
+    "insufficient_funds": "Fondos insuficientes",
+    "signup": { "password_mismatch": "Las contraseñas no coinciden" },
+    "invite": {
+      "not_found": "Código no encontrado",
+      "used": "Código ya usado",
+      "expired": "Código expirado",
+      "invalid": "Código inválido",
+      "blocked": "Demasiados intentos. Intenta nuevamente después de {date}"
+    },
+    "codeInvalid": "Código inválido"
   },
   "currency": {
     "default": "COP",
-    "invalid": "Moneda inválida"
+    "invalid": "Moneda inválida",
+    "errors": {
+      "duplicate": "Código de moneda duplicado",
+      "invalid": "Código inválido (usa 3-5 letras)",
+      "cannotDeleteDefault": "No puedes eliminar la moneda por defecto"
+    }
   },
   "accounts": {
     "title": "Cuentas",
@@ -167,7 +207,11 @@
       "debtRemainingNegative": "El pago excede el saldo de la deuda",
       "debtRequired": "Debes seleccionar una deuda",
       "debtNotFound": "Deuda no encontrada",
-      "goalRequired": "Debes seleccionar una meta"
+      "goalRequired": "Debes seleccionar una meta",
+      "invalidAmount": "Monto inválido",
+      "invalidType": "Tipo de transacción inválido",
+      "accountRequired": "Cuenta requerida",
+      "invalidDate": "Fecha inválida"
     },
     "confirmDelete": {
       "title": "Eliminar transacción",
@@ -209,6 +253,12 @@
       "title": "Presupuestos (mes)",
       "empty": "Sin presupuestos",
       "prev": "Mes anterior: {pct}%"
+    },
+    "amountFormat": {
+      "showCompact": "Ver compacto",
+      "showFull": "Ver completo",
+      "compactLabel": "Compacto",
+      "fullLabel": "Completo"
     }
   },
   "categories": {
@@ -228,151 +278,10 @@
     }
   },
   "layout": { "brand": "FinControl" },
-  "transfers": {
-    "title": "Transferencias",
-    "new": "Nueva transferencia",
-    "edit": "Editar transferencia",
-    "from": "Desde",
-    "to": "Hacia",
-    "amount": "Monto",
-    "rate": "Tasa",
-    "date": "Fecha",
-    "note": "Nota",
-    "created": "Transferencia creada",
-    "updated": "Transferencia actualizada",
-    "deleted": "Transferencia eliminada",
-    "invalid_accounts": "Las cuentas deben ser distintas",
-    "insufficient_funds": "Fondos insuficientes en la cuenta origen",
-    "confirm_delete_title": "Eliminar transferencia",
-    "confirm_delete_message": "Esta acción moverá el dinero de vuelta. ¿Deseas continuar?",
-    "empty": "No hay transferencias"
-  },
-  "recurring": {
-    "title": "Pagos Recurrentes",
-    "add": "Agregar Pago recurrente",
-    "edit": "Editar plantilla",
-    "empty": "No hay plantillas de pagos recurrentes",
-    "paused": "Pausada",
-    "active": "Activa",
-    "pause": "Pausar",
-    "resume": "Reanudar",
-    "badge": "Recurrente",
-    "table": {
-      "name": "Nombre",
-      "next": "Próxima ejecución",
-      "amount": "Monto",
-      "account": "Cuenta",
-      "type": "Tipo",
-      "frequency": "Frecuencia",
-      "status": "Estado"
-    },
-    "form": {
-      "name": "Nombre",
-      "category": "Categoría",
-      "frequency": "Frecuencia",
-      "nextRunAt": "Fecha de pago",
-      "paused": "Pausada"
-    },
-    "frequency": {
-      "monthly": "Mensual",
-      "biweekly": "Quincenal",
-      "weekly": "Semanal",
-      "yearly": "Anual"
-    },
-    "notifications": {
-      "created": "Plantilla creada",
-      "updated": "Plantilla actualizada",
-      "deleted": "Plantilla eliminada",
-      "processed": "Se generaron {count} pago(s) recurrente(s)"
-    }
-  },
-  "goals": {
-    "title": "Metas de Ahorro",
-    "add": "Agregar meta",
-    "edit": "Editar meta",
-    "empty": "No hay metas de ahorro",
-    "completed": "Completada",
-    "paused": "Pausada",
-    "active": "Activa",
-    "resume": "Reanudar",
-    "pause": "Pausar",
-    "table": {
-      "name": "Nombre",
-      "account": "Cuenta",
-      "target": "Monto objetivo",
-      "progress": "Progreso",
-      "dueDate": "Fecha límite",
-      "status": "Estado",
-      "actions": "Acciones"
-    },
-    "form": {
-      "name": "Nombre",
-      "targetAmount": "Monto objetivo",
-      "dueDate": "Fecha límite (opcional)",
-      "account": "Cuenta asociada",
-      "note": "Notas",
-      "goal": "Meta (opcional)"
-    },
-    "notifications": {
-      "created": "Meta creada",
-      "updated": "Meta actualizada",
-      "deleted": "Meta eliminada"
-    }
-  },
-  "budgets": {
-    "title": "Presupuestos",
-    "add": "Agregar presupuesto",
-    "edit": "Editar presupuesto",
-    "empty": "No hay presupuestos",
-    "table": {
-      "name": "Nombre",
-      "period": "Periodo",
-      "target": "Objetivo",
-      "spent": "Gastado",
-      "remaining": "Restante",
-      "progress": "Progreso",
-      "alerts": "Alertas",
-      "actions": "Acciones"
-    },
-    "form": {
-      "name": "Nombre",
-      "targetAmount": "Monto objetivo",
-      "currency": "Moneda",
-      "periodType": "Periodo",
-      "monthly": "Mensual",
-      "custom": "Rango personalizado",
-      "from": "Desde",
-      "to": "Hasta",
-      "categories": "Ámbito (categorías)",
-      "excludeAccounts": "Excluir cuentas",
-      "threshold": "Umbral de alerta (%)",
-      "carryover": "Carryover (trasladar sobrante/déficit)",
-      "rates": "Tasas de conversión (ej: USD=4000, EUR=4500)",
-      "noteRates": "Se usa para convertir transacciones a la moneda del presupuesto"
-    },
-    "alerts": {
-      "ok": "Dentro del objetivo",
-      "warn": "> 80% consumido",
-      "over": "≥ 100% consumido"
-    },
-    "notifications": {
-      "created": "Presupuesto creado",
-      "updated": "Presupuesto actualizado",
-      "deleted": "Presupuesto eliminado",
-      "closed": "Periodo cerrado"
-    },
-    "closePeriod": "Cerrar periodo",
-    "periodMonthly": "{year} {month}",
-    "periodCustom": "{from} a {to}",
-    "sections": {
-      "general": "General",
-      "period": "Periodo",
-      "scope": "Ámbito",
-      "exclude": "Cuentas excluidas",
-      "alerts": "Alertas y carryover",
-      "conversion": "Conversión"
-    }
-  },
+  "transfers": { "title": "Transferencias", "new": "Nueva transferencia", "edit": "Editar transferencia", "from": "Desde", "to": "Hacia", "amount": "Monto", "rate": "Tasa", "date": "Fecha", "note": "Nota", "created": "Transferencia creada", "updated": "Transferencia actualizada", "deleted": "Transferencia eliminada", "invalid_accounts": "Las cuentas deben ser distintas", "insufficient_funds": "Fondos insuficientes en la cuenta origen", "confirm_delete_title": "Eliminar transferencia", "confirm_delete_message": "Esta acción moverá el dinero de vuelta. ¿Deseas continuar?", "empty": "No hay transferencias" },
+  "recurring": { "title": "Pagos Recurrentes", "add": "Agregar Pago recurrente", "edit": "Editar plantilla", "empty": "No hay plantillas de pagos recurrentes", "paused": "Pausada", "active": "Activa", "pause": "Pausar", "resume": "Reanudar", "badge": "Recurrente", "runNow": "Ejecutar ahora", "statusPanel": { "title": "Estado de ejecución", "lastRun": "Última ejecución", "never": "Nunca", "processing": "Procesando…", "processed": "Plantillas procesadas", "error": "Último error" }, "table": { "name": "Nombre", "next": "Próxima ejecución", "amount": "Monto", "account": "Cuenta", "type": "Tipo", "frequency": "Frecuencia", "status": "Estado" }, "form": { "name": "Nombre", "category": "Categoría", "frequency": "Frecuencia", "nextRunAt": "Fecha de pago", "paused": "Pausada" }, "frequency": { "monthly": "Mensual", "biweekly": "Quincenal", "weekly": "Semanal", "yearly": "Anual" }, "notifications": { "created": "Plantilla creada", "updated": "Plantilla actualizada", "deleted": "Plantilla eliminada", "processed": "Se generaron {count} pago(s) recurrente(s)" } },
+  "goals": { "title": "Metas de Ahorro", "add": "Agregar meta", "edit": "Editar meta", "empty": "No hay metas de ahorro", "completed": "Completada", "paused": "Pausada", "active": "Activa", "resume": "Reanudar", "pause": "Pausar", "table": { "name": "Nombre", "account": "Cuenta", "target": "Monto objetivo", "progress": "Progreso", "dueDate": "Fecha límite", "status": "Estado", "actions": "Acciones" }, "form": { "name": "Nombre", "targetAmount": "Monto objetivo", "dueDate": "Fecha límite (opcional)", "account": "Cuenta asociada", "note": "Notas", "goal": "Meta (opcional)" }, "notifications": { "created": "Meta creada", "updated": "Meta actualizada", "deleted": "Meta eliminada" } },
+  "budgets": { "title": "Presupuestos", "add": "Agregar presupuesto", "edit": "Editar presupuesto", "empty": "No hay presupuestos", "table": { "name": "Nombre", "period": "Periodo", "target": "Objetivo", "spent": "Gastado", "remaining": "Restante", "progress": "Progreso", "alerts": "Alertas", "actions": "Acciones" }, "form": { "name": "Nombre", "targetAmount": "Monto objetivo", "currency": "Moneda", "periodType": "Periodo", "monthly": "Mensual", "custom": "Rango personalizado", "from": "Desde", "to": "Hasta", "categories": "Ámbito (categorías)", "excludeAccounts": "Excluir cuentas", "threshold": "Umbral de alerta (%)", "carryover": "Carryover (trasladar sobrante/déficit)", "rates": "Tasas de conversión (ej: USD=4000, EUR=4500)", "noteRates": "Se usa para convertir transacciones a la moneda del presupuesto" }, "alerts": { "ok": "Dentro del objetivo", "warn": "> 80% consumido", "over": "≥ 100% consumido" }, "notifications": { "created": "Presupuesto creado", "updated": "Presupuesto actualizado", "deleted": "Presupuesto eliminado", "closed": "Periodo cerrado" }, "closePeriod": "Cerrar periodo", "periodMonthly": "{year} {month}", "periodCustom": "{from} a {to}", "sections": { "general": "General", "period": "Periodo", "scope": "Ámbito", "exclude": "Cuentas excluidas", "alerts": "Alertas y carryover", "conversion": "Conversión" } },
   "settings": {
     "title": "Configuración",
     "reset": "Resetear",
@@ -403,9 +312,44 @@
         }
       }
     },
+    "amountFormat": {
+      "title": "Formato de monto",
+      "subtitle": "Elige cómo se muestran los valores monetarios en la aplicación.",
+      "full": "Completo (con decimales)",
+      "compact": "Compacto (K / M / B)"
+    },
+    "currencies": {
+      "title": "Monedas",
+      "subtitle": "Gestiona las monedas disponibles y establece una por defecto.",
+      "code": "Código",
+      "symbol": "Símbolo",
+      "name": "Nombre",
+      "isDefault": "Por defecto",
+      "defaultBadge": "DEF",
+      "add": "Agregar",
+      "notifications": {
+        "created": "Moneda agregada",
+        "deleted": "Moneda eliminada",
+        "defaultChanged": "Moneda por defecto actualizada"
+      }
+    },
     "notifications": {
       "saved": "Tema guardado",
       "reset": "Tema reseteado"
-    }
+    },
+    "accountStatus": "Estado de la cuenta",
+    "expiresAt": "Vence",
+    "enterCode": "Ingresar nuevo código",
+    "generateCode": "Generar nuevo código",
+    "validateCode": "Validar",
+    "code": { "success": "Código válido. Nuevo vencimiento: {date}", "attempts": "Intentos restantes: {n}", "blocked": "Bloqueado hasta: {date}" },
+    "extendSuccess": "Plan extendido"
+  },
+  "admin": {
+    "title": "Panel Admin",
+    "kpis": { "total": "Usuarios totales", "active": "Usuarios activos", "inactive": "Usuarios inactivos" },
+    "filters": { "rangeType": "Tipo de rango", "createdAt": "Fecha de creación", "lastActiveAt": "Última actividad", "role": "Rol" },
+    "users": { "title": "Usuarios", "email": "Correo", "createdAt": "Creado", "lastActiveAt": "Última actividad", "planExpiresAt": "Vence plan", "isActive": "Activo", "role": "Rol", "empty": "Sin usuarios" },
+    "invites": { "title": "Códigos", "create": "Generar código", "plan": "Plan", "plan_monthly": "Mensual", "plan_semiannual": "Semestral", "plan_annual": "Anual", "code": "Código", "status": "Estado", "createdAt": "Creado", "expiresAt": "Expira", "usedAt": "Usado", "usedBy": "Usado por", "actions": "Acciones", "empty": "Sin códigos", "copy": "Copiar", "invalidate": "Invalidar", "confirmInvalidate": "¿Invalidar código?", "generated": "Código generado", "invalidated": "Código invalidado", "copied": "Copiado", "migrate": "Migrar códigos", "migrated": "Migración: {created} creados, {skipped} omitidos", "status_unused": "Sin usar", "status_used": "Usado", "status_expired": "Expirado" }
   }
 }

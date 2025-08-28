@@ -6,6 +6,12 @@ const router = createRouter({
   routes: [
     { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue') },
     {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('@/views/AdminDashboard.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: '/',
       name: 'home',
       component: () => import(/* webpackChunkName: "homeView" */  '@/views/HomeView.vue'),
@@ -68,6 +74,8 @@ router.beforeEach(async (to, _from, next) => {
 
   if (to.meta?.requiresAuth && !auth.isAuthenticated) {
     next({ name: 'login', query: { redirect: to.fullPath } })
+  } else if (to.meta?.requiresAdmin && !auth.isAdmin) {
+    next({ name: 'home' })
   } else if (to.name === 'login' && auth.isAuthenticated) {
     next({ name: 'home' })
   } else {

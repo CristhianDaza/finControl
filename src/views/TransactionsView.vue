@@ -9,9 +9,11 @@ import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
 import FCTransferModal from '@/components/FCTransferModal.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
-import { t, formatCurrency } from '@/i18n/index.js'
+import { t } from '@/i18n/index.js'
+import { formatAmount } from '@/utils/formatters.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
 import { useUserPrefs } from '@/composables/useUserPrefs.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 const TransactionsModalComponent = defineAsyncComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
 const tx = useTransactionsStore()
@@ -19,9 +21,9 @@ const acc = useAccountsStore()
 const deb = useDebtsStore()
 const tr = useTransfersStore()
 const goals = useGoalsStore()
+const auth = useAuthStore()
 
 const tab = ref('transactions')
-
 const showModal = ref(false)
 const modalTitle = ref(t('transactions.addTitle'))
 const editing = ref(null)
@@ -46,18 +48,7 @@ const availableMonths = computed(() => (tx.availablePeriods.monthsByYear && tx.a
 const selectedMonth = ref(new Date().getMonth())
 
 const rows = computed(() => tx.items)
-const filteredRows = computed(() => {
-  let list = rows.value
-  if (searchText.value) {
-    const q = searchText.value.toLowerCase()
-    list = list.filter(it => String(it.note || it.description || '').toLowerCase().includes(q))
-  }
-  if (minAmount.value) {
-    const min = Number(minAmount.value)
-    if (!isNaN(min) && min > 0) list = list.filter(it => Number(it.amount || 0) >= min)
-  }
-  return list
-})
+const filteredRows = computed(() => { let list = rows.value; if (searchText.value) { const q = searchText.value.toLowerCase(); list = list.filter(it => String(it.note || it.description || '').toLowerCase().includes(q)) } if (minAmount.value) { const min = Number(minAmount.value); if (!isNaN(min) && min > 0) list = list.filter(it => Number(it.amount || 0) >= min) } return list })
 const hasItems = computed(() => tx.hasItems)
 const isLoading = computed(() => tx.status === 'loading')
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
@@ -71,132 +62,34 @@ const isLoadingTransfers = computed(() => tr.status === 'loading')
 
 const { getTxFilters, saveTxFilters } = useUserPrefs()
 
-const openAdd = () => { editing.value = null; modalTitle.value = t('transactions.addTitle'); showModal.value = true }
-const openEdit = (item) => { editing.value = item; modalTitle.value = t('transactions.editTitle'); showModal.value = true }
-const askRemove = (id) => { toDeleteId.value = id; confirmOpen.value = true }
+const openAdd = () => { if (!auth.canWrite) return; editing.value = null; modalTitle.value = t('transactions.addTitle'); showModal.value = true }
+const openEdit = (item) => { if (!auth.canWrite) return; editing.value = item; modalTitle.value = t('transactions.editTitle'); showModal.value = true }
+const askRemove = (id) => { if (!auth.canWrite) return; toDeleteId.value = id; confirmOpen.value = true }
 
-const openAddTransfer = () => { editingTransfer.value = null; transferOpen.value = true }
-const openEditTransfer = (pair) => { editingTransfer.value = pair; transferOpen.value = true }
-const askRemoveTransfer = (transferId) => { toDeleteTransferId.value = transferId; confirmOpen.value = true }
+const openAddTransfer = () => { if (!auth.canWrite) return; editingTransfer.value = null; transferOpen.value = true }
+const openEditTransfer = (pair) => { if (!auth.canWrite) return; editingTransfer.value = pair; transferOpen.value = true }
+const askRemoveTransfer = (transferId) => { if (!auth.canWrite) return; toDeleteTransferId.value = transferId; confirmOpen.value = true }
 
-const onSave = async (payload) => {
-  busy.value = true
-  try {
-    if (editing.value && editing.value.id) { await tx.edit(editing.value.id, payload) } else { await tx.add(payload) }
-    showModal.value = false
-    editing.value = null
-  } finally { busy.value = false }
+const onSave = async (payload) => { if (!auth.canWrite) return; busy.value = true; try { if (editing.value && editing.value.id) { await tx.edit(editing.value.id, payload) } else { await tx.add(payload) } showModal.value = false; editing.value = null } finally { busy.value = false } }
+const onSaveTransfer = async (payload) => { if (!auth.canWrite) return; busy.value = true; try { if (editingTransfer.value && editingTransfer.value.transferId) { await tr.edit(editingTransfer.value.transferId, payload) } else { await tr.add(payload) } transferOpen.value = false; editingTransfer.value = null } finally { busy.value = false } }
+const onConfirmRemove = async () => { if (!auth.canWrite) return; busy.value = true; try { if (toDeleteTransferId.value) { await tr.remove(toDeleteTransferId.value) } else if (toDeleteId.value) { await tx.remove(toDeleteId.value) } } finally { busy.value = false; toDeleteId.value = null; toDeleteTransferId.value = null }
 }
 
-const onSaveTransfer = async (payload) => {
-  busy.value = true
-  try {
-    if (editingTransfer.value && editingTransfer.value.transferId) { await tr.edit(editingTransfer.value.transferId, payload) } else { await tr.add(payload) }
-    transferOpen.value = false
-    editingTransfer.value = null
-  } finally { busy.value = false }
-}
-
-const onConfirmRemove = async () => {
-  busy.value = true
-  try {
-    if (toDeleteTransferId.value) { await tr.remove(toDeleteTransferId.value) } else if (toDeleteId.value) { await tx.remove(toDeleteId.value) }
-  } finally { busy.value = false; toDeleteId.value = null; toDeleteTransferId.value = null }
-}
-
-const applyFilters = () => {
-  const f = {}
-  if (typeFilter.value) f.type = typeFilter.value
-  if (from.value) f.from = from.value
-  if (to.value) f.to = to.value
-  tx.setFilters(f)
-  const tf = {}
-  if (accountFilter.value) tf.accountId = accountFilter.value
-  if (from.value) tf.from = from.value
-  if (to.value) tf.to = to.value
-  tr.setFilters(tf)
-}
+const applyFilters = () => { const f = {}; if (typeFilter.value) f.type = typeFilter.value; if (from.value) f.from = from.value; if (to.value) f.to = to.value; tx.setFilters(f); const tf = {}; if (accountFilter.value) tf.accountId = accountFilter.value; if (from.value) tf.from = from.value; if (to.value) tf.to = to.value; tr.setFilters(tf) }
 
 const pad2 = (n) => String(n).padStart(2, '0')
-const setMonth = (m) => {
-  selectedMonth.value = m
-  const y = selectedYear.value
-  const fromStr = `${y}-${pad2(m + 1)}-01`
-  const toStr = `${y}-${pad2(m + 1)}-${pad2(daysInMonth(y, m))}`
-  from.value = fromStr
-  to.value = toStr
-  applyFilters()
-}
+const setMonth = (m) => { selectedMonth.value = m; const y = selectedYear.value; const fromStr = `${y}-${pad2(m + 1)}-01`; const toStr = `${y}-${pad2(m + 1)}-${pad2(daysInMonth(y, m))}`; from.value = fromStr; to.value = toStr; applyFilters() }
 
-const saveFilters = async () => {
-  const current = { type: typeFilter.value || '', from: from.value || '', to: to.value || '' }
-  await saveTxFilters(current)
-}
+const saveFilters = async () => { if (!auth.canWrite) return; const current = { type: typeFilter.value || '', from: from.value || '', to: to.value || '' }; await saveTxFilters(current) }
 const clearFilters = () => { typeFilter.value = ''; from.value = ''; to.value = ''; accountFilter.value=''; searchText.value=''; minAmount.value=''; applyFilters() }
-const loadSavedFilters = async () => {
-  try {
-    const saved = await getTxFilters()
-    if (saved) {
-      typeFilter.value = saved.type || ''
-      from.value = saved.from || ''
-      to.value = saved.to || ''
-      applyFilters()
-    }
-  } catch {}
+const loadSavedFilters = async () => { try { const saved = await getTxFilters(); if (saved) { typeFilter.value = saved.type || ''; from.value = saved.from || ''; to.value = saved.to || ''; applyFilters() } } catch {}
 }
 
-const exportCsv = () => {
-  const headers = [t('transactions.table.date'), t('transactions.table.description'), t('transactions.table.amount'), t('transactions.table.account'), t('transactions.table.type')]
-  const csvRows = [headers.join(',')]
-  for (const item of filteredRows.value) {
-    const desc = (item.note || item.description || '').replace(/"/g, '""')
-    const accName = accountNameById.value[item.accountId] || item.accountId
-    const isGoal = item.type === 'expense' && (item.goalId || item.goal)
-    const typ = item.type==='income'
-      ? t('transactions.form.income')
-      : item.type==='debtPayment'
-        ? t('transactions.form.debtPayment')
-        : isGoal
-          ? t('transactions.form.goalSaving')
-          : t('transactions.form.expense')
-    csvRows.push([item.date, `"${desc}"`, item.amount, `"${accName}"`, `"${typ}"`].join(','))
-  }
-  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'transactions.csv'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-}
+const exportCsv = () => { const headers = [t('transactions.table.date'), t('transactions.table.description'), t('transactions.table.amount'), t('transactions.table.account'), t('transactions.table.type')]; const csvRows = [headers.join(',')]; for (const item of filteredRows.value) { const desc = (item.note || item.description || '').replace(/"/g, '""'); const accName = accountNameById.value[item.accountId] || item.accountId; const isGoal = item.type === 'expense' && (item.goalId || item.goal); const typ = item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : isGoal ? t('transactions.form.goalSaving') : t('transactions.form.expense'); csvRows.push([item.date, `"${desc}"`, item.amount, `"${accName}"`, `"${typ}"`].join(',')) } const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'transactions.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url) }
 
-onMounted(async () => {
-  await acc.subscribeMyAccounts();
-  await deb.subscribeMyDebts();
-  await tx.init();
-  await tr.init();
-  await tx.loadAvailablePeriods();
-  await goals.init();
-  if (!availableYears.value.includes(selectedYear.value)) {
-    const lastY = availableYears.value[availableYears.value.length - 1]
-    if (lastY != null) selectedYear.value = lastY
-  }
-  if (!availableMonths.value.includes(selectedMonth.value)) {
-    const months = availableMonths.value
-    if (months.length) selectedMonth.value = months[months.length - 1]
-  }
-  setMonth(selectedMonth.value)
-  await loadSavedFilters()
-})
+onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDebts(); await tx.init(); await tr.init(); await tx.loadAvailablePeriods(); await goals.init(); if (!availableYears.value.includes(selectedYear.value)) { const lastY = availableYears.value[availableYears.value.length - 1]; if (lastY != null) selectedYear.value = lastY } if (!availableMonths.value.includes(selectedMonth.value)) { const months = availableMonths.value; if (months.length) selectedMonth.value = months[months.length - 1] } setMonth(selectedMonth.value); await loadSavedFilters() })
 
-watch(selectedYear, () => {
-  if (!availableMonths.value.includes(selectedMonth.value) && availableMonths.value.length) {
-    selectedMonth.value = availableMonths.value[availableMonths.value.length - 1]
-  }
-  setMonth(selectedMonth.value)
-})
+watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.value) && availableMonths.value.length) { selectedMonth.value = availableMonths.value[availableMonths.value.length - 1] } setMonth(selectedMonth.value) })
 </script>
 
 <template>
@@ -204,8 +97,8 @@ watch(selectedYear, () => {
     <div class="card" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;justify-content:space-between">
       <h2 class="page-title">{{ t('navigation.transactions') }}</h2>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button v-if="tab==='transactions'" class="button" @click="openAdd" :disabled="busy || isLoading">{{ t('transactions.addTitle') }}</button>
-        <button v-else class="button" @click="openAddTransfer" :disabled="busy || isLoadingTransfers">{{ t('common.transfer') }}</button>
+        <button v-if="tab==='transactions'" class="button" @click="openAdd" :disabled="busy || isLoading || !auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.addTitle') }}</button>
+        <button v-else class="button" @click="openAddTransfer" :disabled="busy || isLoadingTransfers || !auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('common.transfer') }}</button>
         <button class="button button-secondary" @click="exportCsv" :title="t('transactions.exportCsv')">{{ t('transactions.exportCsv') }}</button>
       </div>
     </div>
@@ -251,7 +144,7 @@ watch(selectedYear, () => {
             <input class="input" type="date" v-model="to" @change="applyFilters" />
           </div>
           <div style="display:flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap">
-            <button class="button button-secondary" @click="saveFilters" :title="t('transactions.filters.save')">{{ t('transactions.filters.save') }}</button>
+            <button class="button button-secondary" @click="saveFilters" :title="t('transactions.filters.save')" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.filters.save') }}</button>
             <button class="button button-secondary" @click="clearFilters" :title="t('transactions.filters.clear')">{{ t('transactions.filters.clear') }}</button>
           </div>
         </template>
@@ -283,7 +176,7 @@ watch(selectedYear, () => {
       <div v-if="isLoading" class="card" style="margin-top:1rem">{{ t('common.loading') }}</div>
       <div v-else-if="!hasItems" class="card" style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
         <span>{{ t('transactions.empty') }}</span>
-        <button class="button" @click="openAdd">{{ t('common.add') }}</button>
+        <button class="button" @click="openAdd" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.addTitle') }}</button>
       </div>
       <div v-else class="table-container">
         <table>
@@ -294,31 +187,20 @@ watch(selectedYear, () => {
               <th>{{ t('transactions.table.amount') }}</th>
               <th>{{ t('transactions.table.account') }}</th>
               <th>{{ t('transactions.table.type') }}</th>
-              <th></th>
+              <th>{{ t('transactions.table.actions') }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredRows" :key="item.id" :class="{ 'row-income': item.type==='income', 'row-expense': item.type==='expense' && !(item.goalId || item.goal), 'row-debt': item.type==='debtPayment', 'row-goal': item.type==='expense' && (item.goalId || item.goal) }">
-              <td :data-label="t('transactions.table.date')">{{ item.date }}</td>
-              <td :data-label="t('transactions.table.description')">
-                <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-                  <span>{{ item.note || item.description }}</span>
-                  <span v-if="item.isRecurring || item.recurringTemplateId" class="badge badge-rec">{{ t('recurring.badge') }}</span>
-                </div>
-              </td>
-              <td :data-label="t('transactions.table.amount')">{{ formatCurrency(item.amount) }}</td>
-              <td :data-label="t('transactions.table.account')">{{ accountNameById[item.accountId] || item.accountId }}</td>
-              <td :data-label="t('transactions.table.type')">
-                {{ item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : (item.type==='expense' && (item.goalId || item.goal)) ? t('transactions.form.goalSaving') : t('transactions.form.expense') }}
-              </td>
-              <td :data-label="t('transactions.table.actions')">
-                <div class="actions">
-                  <button class="button button-edit" @click="openEdit(item)" :disabled="busy">
-                    <svg class="icon-edit" v-html="EditIcon"></svg>
-                  </button>
-                  <button class="button button-delete" @click="askRemove(item.id)" :disabled="busy">
-                    <svg class="icon-delete" v-html="DeleteIcon"></svg>
-                  </button>
+            <tr v-for="it in filteredRows" :key="it.id">
+              <td>{{ it.date }}</td>
+              <td>{{ it.note || it.description }}</td>
+              <td>{{ formatAmount(it.amount, it.currency || 'COP') }}</td>
+              <td>{{ accountNameById[it.accountId] || it.accountId }}</td>
+              <td>{{ it.type }}</td>
+              <td>
+                <div style="display:flex;gap:.25rem;justify-content:flex-end">
+                  <button class="button button-edit" @click="openEdit(it)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-edit" v-html="EditIcon"></svg></button>
+                  <button class="button button-delete" @click="askRemove(it.id)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-delete" v-html="DeleteIcon"></svg></button>
                 </div>
               </td>
             </tr>
@@ -351,8 +233,8 @@ watch(selectedYear, () => {
               <td :data-label="t('transactions.table.account')">{{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }}</td>
               <td :data-label="t('transactions.table.amount')">
                 <div style="display:flex;flex-direction:column;gap:.25rem">
-                  <span>-{{ formatCurrency(pair.out.amountFrom, pair.out.currencyFrom) }}</span>
-                  <span>+{{ formatCurrency(pair.inn.amountTo, pair.inn.currencyTo) }}</span>
+                  <span>-{{ formatAmount(pair.out.amountFrom, pair.out.currencyFrom) }}</span>
+                  <span>+{{ formatAmount(pair.inn.amountTo, pair.inn.currencyTo) }}</span>
                 </div>
               </td>
               <td :data-label="t('transactions.table.actions')">
@@ -477,4 +359,9 @@ tr.row-expense { box-shadow: inset 6px 0 0 var(--tx-expense-color); }
 tr.row-debt { box-shadow: inset 6px 0 0 var(--tx-debtPayment-color); }
 tr.row-transfer { box-shadow: inset 6px 0 0 var(--tx-transfer-color); }
 tr.row-goal { box-shadow: inset 6px 0 0 var(--tx-goal-color); }
+
+.table-container table { width:100%; border-collapse:collapse }
+.table-container th, .table-container td { padding:.6rem .75rem; border-bottom:1px solid var(--secondary-color); text-align:left }
+.table-container th { background: var(--secondary-color); color: var(--accent-color); font-weight:600; font-size:.75rem; letter-spacing:1px; text-transform:uppercase }
+.button[disabled], .button[aria-disabled="true"] { opacity:.55; cursor:not-allowed }
 </style>

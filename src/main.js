@@ -6,8 +6,12 @@ import App from './App.vue'
 import { useAuthStore } from '@/stores/auth.js'
 import { initI18n } from '@/i18n/index.js'
 import { useSettingsStore } from '@/stores/settings.js'
+import { createLoadingPlugin } from '@/plugins/loadingPlugin.js'
+import { migrateCurrencies } from '@/utils/migrateCurrencies.js'
+import { auth } from '@/services/firebase.js'
 
 const pinia = createPinia()
+pinia.use(createLoadingPlugin())
 const app = createApp(App)
 
 ;(async () => {
@@ -15,8 +19,9 @@ const app = createApp(App)
   
   await useSettingsStore(pinia).initTheme()
   await initI18n()
-  const auth = useAuthStore(pinia)
-  await auth.initSessionListener()
+  const authStore = useAuthStore(pinia)
+  await authStore.initSessionListener()
+  if (auth.currentUser) { try { await migrateCurrencies(auth.currentUser.uid) } catch {} }
   
   app.use(router)
   app.mount('#fin-control')
