@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {computed, ref} from 'vue'
+import {computed, ref, watchEffect} from 'vue'
 import {useAccounts} from '@/composables/useAccounts.js'
 import {useNotify} from '@/components/global/fcNotify.js'
 import {t} from '@/i18n/index.js'
@@ -30,7 +30,16 @@ export const useAccountsStore = defineStore('accounts', () => {
 
   const unsubscribe = () => { if (_unsubscribe.value) { _unsubscribe.value(); _unsubscribe.value = null } }
 
-  const getAccountById = (id) => computed(() => items.value.find(a => a.id === id))
+  // Memoized accounts lookup for better performance
+  const accountsById = computed(() => {
+    const map = new Map()
+    for (const account of items.value) {
+      map.set(account.id, account)
+    }
+    return map
+  })
+  
+  const getAccountById = (id) => computed(() => accountsById.value.get(id))
 
   const create = async ({ name, balance, currency }) => {
     if (Number(balance) < 0) { notifyError(t('accounts.form.balanceError')); throw new Error('invalid-balance') }
@@ -58,17 +67,54 @@ export const useAccountsStore = defineStore('accounts', () => {
     }
   }
 
-  const totalBalance = computed(() => items.value.reduce((acc, a) => acc + Number(a.balance || 0), 0))
+  // Optimized balance calculation
+  const totalBalance = computed(() => {
+    let total = 0
+    for (const account of items.value) {
+      total += Number(account.balance || 0)
+    }
+    return total
+  })
+  
   const hasItems = computed(() => items.value.length > 0)
+  
+  // Additional memoized properties for better UX
+  const accountsByName = computed(() => {
+    return [...items.value].sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+  })
+  
+  const accountsByCurrency = computed(() => {
+    const grouped = new Map()
+    for (const account of items.value) {
+      const currency = account.currency || 'COP'
+      if (!grouped.has(currency)) {
+        grouped.set(currency, [])
+      }
+      grouped.get(currency).push(account)
+    }
+    return grouped
+  })
+  
+  const totalBalanceByCurrency = computed(() => {
+    const totals = new Map()
+    for (const account of items.value) {
+      const currency = account.currency || 'COP'
+      const balance = Number(account.balance || 0)
+      totals.set(currency, (totals.get(currency) || 0) + balance)
+    }
+    return totals
+  })
 
   return {
     items, status, error,
     subscribeMyAccounts, unsubscribe,
-    getAccountById,
+    getAccountById, accountsById,
     createAccount: create,
     updateAccountName: updateName,
     deleteAccount: remove,
     create, updateName, remove,
     totalBalance, hasItems,
+    // Additional memoized properties
+    accountsByName, accountsByCurrency, totalBalanceByCurrency
   }
 })

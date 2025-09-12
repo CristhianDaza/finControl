@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, computed, watchEffect } from 'vue'
 import { useBudgets } from '@/composables/useBudgets.js'
 import { useTransactions } from '@/composables/useTransactions.js'
 import { useNotify } from '@/components/global/fcNotify.js'
@@ -14,6 +14,34 @@ export const useBudgetsStore = defineStore('budgets', () => {
   const error = ref(null)
   const unsubscribe = ref(null)
   const progressById = ref({})
+  
+  // Memoized budget lookups
+  const budgetsById = computed(() => {
+    const map = new Map()
+    for (const budget of items.value) {
+      map.set(budget.id, budget)
+    }
+    return map
+  })
+  
+  const activeBudgets = computed(() => items.value.filter(b => b.active !== false))
+  const inactiveBudgets = computed(() => items.value.filter(b => b.active === false))
+  
+  // Memoized budget categories for faster lookups
+  const budgetsByCategory = computed(() => {
+    const map = new Map()
+    for (const budget of items.value) {
+      if (Array.isArray(budget.categories)) {
+        for (const categoryId of budget.categories) {
+          if (!map.has(categoryId)) {
+            map.set(categoryId, [])
+          }
+          map.get(categoryId).push(budget)
+        }
+      }
+    }
+    return map
+  })
 
   const { subscribeBudgets, createBudget, updateBudget, deleteBudget } = useBudgets()
   const { fetchTransactions } = useTransactions()
@@ -56,16 +84,33 @@ export const useBudgetsStore = defineStore('budgets', () => {
     return { fromStr, toStr }
   }
 
+  // Memoized computation cache to avoid repeated calculations
+  const computationCache = ref(new Map())
+  
   const computeBudget = async (budget, period) => {
     try {
       const from = period?.fromStr || budget.periodFrom
       const to = period?.toStr || budget.periodTo
       if (!from || !to) return { spent: 0, pct: 0, remaining: Number(budget.targetAmount||0), missingRates: false, from, to }
+      
+      // Create cache key for memoization
+      const cacheKey = `${budget.id}-${from}-${to}-${JSON.stringify(budget.categories)}-${JSON.stringify(budget.excludeAccounts)}`
+      
+      // Check cache first
+      if (computationCache.value.has(cacheKey)) {
+        const cached = computationCache.value.get(cacheKey)
+        // Cache for 5 minutes
+        if (Date.now() - cached.timestamp < 5 * 60 * 1000) {
+          return cached.result
+        }
+      }
+      
       const txs = await fetchTransactions({ from, to })
       const scopeCats = Array.isArray(budget.categories) && budget.categories.length ? new Set(budget.categories) : null
       const excludeAcc = new Set(budget.excludeAccounts || [])
       let spent = 0
       let missingRates = false
+      
       for (const tx of txs) {
         if (excludeAcc.has(tx.accountId)) continue
         if (scopeCats && tx.categoryId && !scopeCats.has(tx.categoryId)) continue
@@ -83,10 +128,19 @@ export const useBudgetsStore = defineStore('budgets', () => {
           spent += value
         }
       }
+      
       const effectiveTarget = Number(budget.targetAmount || 0) + (budget.carryover ? Number(budget.carryoverBalance || 0) : 0)
       const pct = effectiveTarget > 0 ? (spent / effectiveTarget) * 100 : 0
       const remaining = effectiveTarget - spent
-      return { spent, pct, remaining, missingRates, from, to, effectiveTarget }
+      const result = { spent, pct, remaining, missingRates, from, to, effectiveTarget }
+      
+      // Cache the result
+      computationCache.value.set(cacheKey, {
+        result,
+        timestamp: Date.now()
+      })
+      
+      return result
     } catch (e) {
       return { spent: 0, pct: 0, remaining: Number(budget.targetAmount||0), missingRates: false, from: period?.fromStr||budget.periodFrom, to: period?.toStr||budget.periodTo }
     }
@@ -96,11 +150,20 @@ export const useBudgetsStore = defineStore('budgets', () => {
     const perKey = (b) => `${b.id}|${year}-${pad2(monthIndex+1)}`
     const results = {}
     const period = buildPeriod(year, monthIndex)
-    for (const b of items.value) {
+    
+    // Process budgets in parallel for better performance
+    const computePromises = items.value.map(async (b) => {
       const usePeriod = b.periodType === 'monthly' ? period : { fromStr: b.periodFrom, toStr: b.periodTo }
       const r = await computeBudget(b, usePeriod)
-      results[b.id] = { ...r, periodKey: perKey(b) }
+      return { id: b.id, result: { ...r, periodKey: perKey(b) } }
+    })
+    
+    const computedResults = await Promise.all(computePromises)
+    
+    for (const { id, result } of computedResults) {
+      results[id] = result
     }
+    
     progressById.value = { ...progressById.value, ...results }
     return results
   }
@@ -128,7 +191,22 @@ export const useBudgetsStore = defineStore('budgets', () => {
     } catch (e) { notifyError(t('errors.generic')) }
   }
 
-  onUnmounted(() => dispose())
+  // Clear cache when budgets change
+  watchEffect(() => {
+    // Clear cache when items change
+    computationCache.value.clear()
+  })
+  
+  onUnmounted(() => {
+    dispose()
+    computationCache.value.clear()
+  })
 
-  return { items, status, error, progressById, init, dispose, add, edit, remove, computeBudget, computeForMonth, computePrevMonthPct, closePeriod }
+  return { 
+    items, status, error, progressById, 
+    init, dispose, add, edit, remove, 
+    computeBudget, computeForMonth, computePrevMonthPct, closePeriod,
+    // Additional memoized properties
+    budgetsById, activeBudgets, inactiveBudgets, budgetsByCategory
+  }
 })

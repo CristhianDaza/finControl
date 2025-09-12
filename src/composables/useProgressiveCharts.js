@@ -4,13 +4,11 @@ import { useLazyCharts } from '@/composables/useLazyCharts.js'
 export const useProgressiveCharts = () => {
   const { isChartVisible, isChartLoaded, chartContainer, loadChart } = useLazyCharts()
   
-  // Progressive data loading states
   const isDataProcessing = ref(false)
   const processedData = ref(null)
   const dataChunks = ref([])
   const currentChunkIndex = ref(0)
   
-  // Optimize large datasets by chunking
   const processDataInChunks = async (rawData, chunkSize = 100) => {
     if (!rawData || rawData.length === 0) return []
     
@@ -24,13 +22,11 @@ export const useProgressiveCharts = () => {
     dataChunks.value = chunks
     currentChunkIndex.value = 0
     
-    // Process first chunk immediately
     if (chunks.length > 0) {
       processedData.value = await processChunk(chunks[0])
       currentChunkIndex.value = 1
     }
     
-    // Process remaining chunks progressively
     if (chunks.length > 1) {
       await processRemainingChunks()
     }
@@ -39,14 +35,11 @@ export const useProgressiveCharts = () => {
     return processedData.value
   }
   
-  // Process a single chunk of data
   const processChunk = async (chunk) => {
     return new Promise((resolve) => {
-      // Use requestIdleCallback for non-blocking processing
       const processInIdle = (deadline) => {
         const processed = chunk.map(item => ({
           ...item,
-          // Add any data transformations here
           processedAt: Date.now()
         }))
         
@@ -56,29 +49,52 @@ export const useProgressiveCharts = () => {
       if (window.requestIdleCallback) {
         window.requestIdleCallback(processInIdle)
       } else {
-        // Fallback for browsers without requestIdleCallback
         setTimeout(() => processInIdle({ timeRemaining: () => 50 }), 0)
       }
     })
   }
   
-  // Process remaining chunks progressively
   const processRemainingChunks = async () => {
     for (let i = currentChunkIndex.value; i < dataChunks.value.length; i++) {
-      await nextTick() // Allow UI updates between chunks
+      await nextTick()
       
       const chunkData = await processChunk(dataChunks.value[i])
       processedData.value = [...(processedData.value || []), ...chunkData]
       currentChunkIndex.value = i + 1
       
-      // Add small delay to prevent blocking
       await new Promise(resolve => setTimeout(resolve, 10))
     }
   }
   
   const memoizedChartData = computed(() => {
-   return null
+    if (!processedData.value || processedData.value.length === 0) {
+      return null
+    }
+    
+    return {
+      labels: processedData.value.map(item => item.label || item.date || item.name),
+      datasets: [{
+        data: processedData.value.map(item => item.value || item.amount || 0),
+        backgroundColor: processedData.value.map((_, index) => 
+          `hsl(${(index * 137.508) % 360}, 70%, 50%)`
+        )
+      }]
+    }
   })
+  
+  const memoizedChartOptions = computed(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom'
+      }
+    },
+    animation: {
+      duration: isDataProcessing.value ? 0 : 300
+    }
+  }))
   
   let updateTimeout = null
   const debouncedUpdate = (newData, delay = 300) => {
@@ -88,14 +104,12 @@ export const useProgressiveCharts = () => {
     }, delay)
   }
   
-  // Watch for chart visibility and load accordingly
   watch(isChartVisible, async (visible) => {
     if (visible && !isChartLoaded.value) {
       await loadChart()
     }
   })
   
-  // Cleanup function
   const cleanup = () => {
     clearTimeout(updateTimeout)
     processedData.value = null
@@ -103,22 +117,32 @@ export const useProgressiveCharts = () => {
     currentChunkIndex.value = 0
   }
   
+  watchEffect(() => {
+    if (!isChartVisible.value && processedData.value) {
+      setTimeout(() => {
+        if (!isChartVisible.value) {
+          processedData.value = null
+          dataChunks.value = []
+          currentChunkIndex.value = 0
+        }
+      }, 5000)
+    }
+  })
+
   return {
-    // Lazy loading
     isChartVisible,
     isChartLoaded,
     chartContainer,
     loadChart,
     
-    // Progressive processing
     isDataProcessing,
     processedData,
     memoizedChartData,
+    memoizedChartOptions,
     processDataInChunks,
     debouncedUpdate,
     cleanup,
     
-    // Progress tracking
     processingProgress: computed(() => {
       if (dataChunks.value.length === 0) return 100
       return Math.round((currentChunkIndex.value / dataChunks.value.length) * 100)

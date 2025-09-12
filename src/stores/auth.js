@@ -7,6 +7,7 @@ import { doc, getDoc, updateDoc, serverTimestamp, runTransaction, setDoc, Timest
 import { t } from '@/i18n/index.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { useInviteCodes } from '@/composables/useInviteCodes.js'
+import { computed, watchEffect } from 'vue'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -20,11 +21,22 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: s => !!s.user,
+    // Memoized admin check to avoid repeated environment variable parsing
     isAdmin: s => {
-      const envAdmins = (import.meta.env.VITE_ADMIN_UIDS || '').split(',').map(v=>v.trim()).filter(Boolean)
-      return !!s.profile && (s.profile.role === 'admin' || envAdmins.includes(s.user?.uid || ''))
+      if (!s._cachedEnvAdmins) {
+        s._cachedEnvAdmins = (import.meta.env.VITE_ADMIN_UIDS || '').split(',').map(v=>v.trim()).filter(Boolean)
+      }
+      return !!s.profile && (s.profile.role === 'admin' || s._cachedEnvAdmins.includes(s.user?.uid || ''))
     },
-    isReadOnly: s => { const p = s.profile; if (!p) return false; const isActive = p.isActive !== false; const expMs = p.planExpiresAt?.toMillis ? p.planExpiresAt.toMillis() : p.planExpiresAt; return !isActive || (expMs && Date.now() >= expMs) },
+    // Optimized read-only check with better performance
+    isReadOnly: s => { 
+      const p = s.profile
+      if (!p) return false
+      const isActive = p.isActive !== false
+      if (!isActive) return true
+      const expMs = p.planExpiresAt?.toMillis ? p.planExpiresAt.toMillis() : p.planExpiresAt
+      return expMs && Date.now() >= expMs
+    },
     canWrite() { return !this.isReadOnly },
   },
   actions: {
