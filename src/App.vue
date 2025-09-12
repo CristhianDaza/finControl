@@ -1,16 +1,15 @@
 <script setup>
-import { defineAsyncComponent, ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useIsMobile} from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useRecurringStore } from '@/stores/recurring.js'
 import { useSettingsStore } from '@/stores/settings.js'
 import { useRoute } from 'vue-router'
 import { t } from '@/i18n/index.js'
+import { useLazyComponents } from '@/composables/useLazyComponents.js'
 import FCStatusBar from '@/components/FCStatusBar.vue'
 
-const FcSidebar = defineAsyncComponent(/* webpackChunkName: "FcSidebar" */ () => import('@/components/global/FcSidebar.vue'))
-const FCNotify = defineAsyncComponent(/* webpackChunkName: "FCNotify" */ () => import('@/components/global/FCNotify.vue'))
-const FCGlobalLoader = defineAsyncComponent(() => import('@/components/global/FCGlobalLoader.vue'))
+const { Sidebar, Notify, GlobalLoader, preloadModals } = useLazyComponents()
 
 const { isMobile } = useIsMobile()
 const auth = useAuthStore()
@@ -37,7 +36,11 @@ const triggerRecurring = () => {
 
 onMounted(async () => {
   try { await settings.initTheme() } catch {}
-  if (auth.isAuthenticated) triggerRecurring()
+  if (auth.isAuthenticated) {
+    triggerRecurring()
+    // Preload modals after authentication for better UX
+    setTimeout(() => preloadModals(), 2000)
+  }
   if (!visibilityHandlerAttached) {
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') triggerRecurring() })
     visibilityHandlerAttached = true
@@ -59,7 +62,7 @@ const statusMessage = computed(() => auth.isReadOnly ? t('access.inactiveNotice'
 <template>
   <FCStatusBar :open="auth.isReadOnly" type="warning" :message="statusMessage" :action-text="t('access.activateNow')" action-href="/settings" />
   <div class="layout" :class="{ 'is-login': isLoginRoute }">
-    <fc-sidebar v-if="auth.isAuthenticated" ref="sidebarRef" />
+    <Sidebar v-if="auth.isAuthenticated" ref="sidebarRef" />
     <main class="main-content" :class="{ 'login-page': isLoginRoute, 'has-bar': auth.isReadOnly }" @click="clickMainContent">
       <router-view v-slot="{ Component }">
         <transition name="route-fade" mode="out-in">
@@ -68,8 +71,8 @@ const statusMessage = computed(() => auth.isReadOnly ? t('access.inactiveNotice'
       </router-view>
     </main>
   </div>
-  <FCNotify />
-  <FCGlobalLoader />
+  <Notify />
+  <GlobalLoader />
 </template>
 
 <style scoped>

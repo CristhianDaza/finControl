@@ -6,25 +6,11 @@ import { useTransfersStore } from '@/stores/transfers.js'
 import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
 import { t, formatCurrency } from '@/i18n/index.js'
 import { useGoalsStore } from '@/stores/goals.js'
-import {
-  Chart,
-  BarController, BarElement,
-  CategoryScale, LinearScale,
-  Tooltip, Legend,
-  DoughnutController, ArcElement,
-  LineController, LineElement, PointElement
-} from 'chart.js'
 import { useBudgetsStore } from '@/stores/budgets.js'
+import { useRecurringStore } from '@/stores/recurring.js'
 import { formatAmount } from '@/utils/formatters.js'
 import { useSettingsStore } from '@/stores/settings.js'
-
-Chart.register(
-  BarController, BarElement,
-  CategoryScale, LinearScale,
-  Tooltip, Legend,
-  DoughnutController, ArcElement,
-  LineController, LineElement, PointElement
-)
+import { useCharts } from '@/composables/useCharts.js'
 
 const getCssVar = (name) => {
   try {
@@ -58,10 +44,10 @@ const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
 const transfersStore = useTransfersStore()
 const goalsStore = useGoalsStore()
-import { useRecurringStore } from '@/stores/recurring.js'
-const recurringStore = useRecurringStore()
 const budgetsStore = useBudgetsStore()
 const settingsStore = useSettingsStore()
+const recurringStore = useRecurringStore()
+const { createChart, destroyChart } = useCharts()
 
 const goalsList = computed(() => goalsStore.items || [])
 const goalProgressPct = (id) => {
@@ -243,7 +229,7 @@ const updateCharts = async () => {
     ]
   }
   if (!barChart && barCanvas.value) {
-    barChart = new Chart(barCanvas.value.getContext('2d'), {
+    barChart = createChart(barCanvas.value.getContext('2d'), {
       type: 'bar',
       data: barData,
       options: {
@@ -268,7 +254,7 @@ const updateCharts = async () => {
     datasets: [{ data: breakdown.data, backgroundColor: [colorSuccess, colorError, colorAccent] }]
   }
   if (!doughnutChart && doughnutCanvas.value) {
-    doughnutChart = new Chart(doughnutCanvas.value.getContext('2d'), {
+    doughnutChart = createChart(doughnutCanvas.value.getContext('2d'), {
       type: 'doughnut',
       data: doughnutData,
       options: {
@@ -290,7 +276,7 @@ const updateCharts = async () => {
     datasets: [{ label: t('dashboard.charts.net'), data: net.net, fill: false, borderColor: colorAccent, tension: 0.2, pointRadius: 2 }]
   }
   if (!lineChart && lineCanvas.value) {
-    lineChart = new Chart(lineCanvas.value.getContext('2d'), {
+    lineChart = createChart(lineCanvas.value.getContext('2d'), {
       type: 'line',
       data: lineData,
       options: {
@@ -316,7 +302,7 @@ const updateCharts = async () => {
       datasets: [{ label: t('goals.table.progress'), data: goalsData.data, backgroundColor: colorAccent }]
     }
     if (!goalsChart) {
-      goalsChart = new Chart(goalsCanvas.value.getContext('2d'), {
+      goalsChart = createChart(goalsCanvas.value.getContext('2d'), {
         type: 'bar',
         data,
         options: {
@@ -344,10 +330,10 @@ watch(() => goalsStore.items, () => updateCharts(), { deep: true })
 watch(() => settingsStore.amountFormat, () => updateCharts())
 
 onBeforeUnmount(() => {
-  if (barChart) { barChart.destroy(); barChart = null }
-  if (doughnutChart) { doughnutChart.destroy(); doughnutChart = null }
-  if (lineChart) { lineChart.destroy(); lineChart = null }
-  if (goalsChart) { goalsChart.destroy(); goalsChart = null }
+  if (barChart) { destroyChart(barChart); barChart = null }
+  if (doughnutChart) { destroyChart(doughnutChart); doughnutChart = null }
+  if (lineChart) { destroyChart(lineChart); lineChart = null }
+  if (goalsChart) { destroyChart(goalsChart); goalsChart = null }
 })
 </script>
 
