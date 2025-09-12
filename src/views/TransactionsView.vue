@@ -7,6 +7,7 @@ import { useTransfersStore } from '@/stores/transfers.js'
 import { useGoalsStore } from '@/stores/goals.js'
 import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
 import FCTransferModal from '@/components/FCTransferModal.vue'
+import VirtualTransactionsTable from '@/components/transactions/VirtualTransactionsTable.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 import { t } from '@/i18n/index.js'
@@ -48,7 +49,26 @@ const availableMonths = computed(() => (tx.availablePeriods.monthsByYear && tx.a
 const selectedMonth = ref(new Date().getMonth())
 
 const rows = computed(() => tx.items)
-const filteredRows = computed(() => { let list = rows.value; if (searchText.value) { const q = searchText.value.toLowerCase(); list = list.filter(it => String(it.note || it.description || '').toLowerCase().includes(q)) } if (minAmount.value) { const min = Number(minAmount.value); if (!isNaN(min) && min > 0) list = list.filter(it => Number(it.amount || 0) >= min) } return list })
+const filteredRows = computed(() => { 
+  let list = rows.value
+  if (searchText.value) { 
+    const q = searchText.value.toLowerCase()
+    list = list.filter(it => String(it.note || it.description || '').toLowerCase().includes(q)) 
+  } 
+  if (minAmount.value) { 
+    const min = Number(minAmount.value)
+    if (!isNaN(min) && min > 0) list = list.filter(it => Number(it.amount || 0) >= min) 
+  } 
+  return list 
+})
+
+// Performance optimization: use virtual scrolling for large datasets
+const useVirtualScrolling = computed(() => filteredRows.value.length > 50)
+const virtualScrollHeight = computed(() => {
+  const viewportHeight = window.innerHeight
+  return Math.min(600, Math.max(400, viewportHeight - 300))
+})
+const isDev = computed(() => import.meta.env.DEV)
 const hasItems = computed(() => tx.hasItems)
 const isLoading = computed(() => tx.status === 'loading')
 const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
@@ -181,6 +201,19 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
         <span>{{ t('transactions.empty') }}</span>
         <button class="button" @click="openAdd" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.addTitle') }}</button>
       </div>
+      <!-- Virtual scrolling for large datasets -->
+      <VirtualTransactionsTable
+        v-if="useVirtualScrolling"
+        :items="filteredRows"
+        :account-name-by-id="accountNameById"
+        :can-write="auth.canWrite"
+        :container-height="virtualScrollHeight"
+        :show-performance-info="isDev"
+        @edit="openEdit"
+        @delete="askRemove"
+      />
+      
+      <!-- Traditional table for smaller datasets -->
       <div v-else class="table-container tx-table-wrap">
         <h3 class="table-mobile-title">{{ t('navigation.transactions') }}</h3>
         <table>

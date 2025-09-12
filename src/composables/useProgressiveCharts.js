@@ -1,4 +1,4 @@
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, watchEffect } from 'vue'
 import { useLazyCharts } from '@/composables/useLazyCharts.js'
 
 export const useProgressiveCharts = () => {

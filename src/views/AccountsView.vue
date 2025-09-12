@@ -7,6 +7,7 @@ import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 import { useAuthStore } from '@/stores/auth.js'
+import VirtualAccountsGrid from '@/components/accounts/VirtualAccountsGrid.vue'
 
 const AccountsModalComponent = defineAsyncComponent(() => import('@/components/accounts/AccountsModalComponent.vue'))
 const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.vue'))
@@ -26,6 +27,14 @@ const busy = ref(false)
 const isLoading = computed(() => acc.status === 'loading')
 const hasItems = computed(() => acc.items.length > 0)
 const rows = computed(() => acc.items)
+
+// Performance optimization: use virtual scrolling for large datasets
+const useVirtualScrolling = computed(() => rows.value.length > 20)
+const virtualScrollHeight = computed(() => {
+  const viewportHeight = window.innerHeight
+  return Math.min(600, Math.max(400, viewportHeight - 300))
+})
+const isDev = computed(() => import.meta.env.DEV)
 
 const openCreate = () => { if (!auth.canWrite) return; editing.value = null; modalTitle.value = t('accounts.addTitle'); showModal.value = true }
 const openEdit = (item) => { if (!auth.canWrite) return; editing.value = item; modalTitle.value = t('accounts.editTitle'); showModal.value = true }
@@ -61,6 +70,18 @@ onMounted(() => { acc.subscribeMyAccounts() })
       <button class="button" @click="openCreate" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('common.add') }}</button>
     </div>
 
+    <!-- Virtual scrolling for large datasets -->
+    <VirtualAccountsGrid
+      v-if="useVirtualScrolling"
+      :items="rows"
+      :can-write="auth.canWrite"
+      :container-height="virtualScrollHeight"
+      :show-performance-info="isDev"
+      @edit="openEdit"
+      @delete="askRemove"
+    />
+    
+    <!-- Traditional grid for smaller datasets -->
     <div v-else class="account-list">
       <div class="account-card" v-for="item in rows" :key="item.id">
         <div class="account-header">

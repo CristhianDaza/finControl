@@ -1,22 +1,25 @@
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, h } from 'vue'
 
 // Loading component for better UX
 const LoadingComponent = {
-  template: `
-    <div class="lazy-loading">
-      <div class="spinner"></div>
-    </div>
-  `
+  render() {
+    return h('div', { class: 'lazy-loading' }, [
+      h('div', { class: 'spinner' })
+    ])
+  }
 }
 
 // Error component for failed loads
 const ErrorComponent = {
-  template: `
-    <div class="lazy-error">
-      <p>Error loading component</p>
-      <button @click="$emit('retry')">Retry</button>
-    </div>
-  `
+  emits: ['retry'],
+  render() {
+    return h('div', { class: 'lazy-error' }, [
+      h('p', 'Error loading component'),
+      h('button', { 
+        onClick: () => this.$emit('retry') 
+      }, 'Retry')
+    ])
+  }
 }
 
 // Create async component with optimized loading
