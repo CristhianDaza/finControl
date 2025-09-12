@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useAccountsStore } from '@/stores/accounts.js'
 import { useTransactionsStore } from '@/stores/transactions.js'
 import { useTransfersStore } from '@/stores/transfers.js'
@@ -10,7 +10,7 @@ import { useBudgetsStore } from '@/stores/budgets.js'
 import { useRecurringStore } from '@/stores/recurring.js'
 import { formatAmount } from '@/utils/formatters.js'
 import { useSettingsStore } from '@/stores/settings.js'
-import { useCharts } from '@/composables/useCharts.js'
+import LazyChart from '@/components/charts/LazyChart.vue'
 
 const getCssVar = (name) => {
   try {
@@ -47,7 +47,6 @@ const goalsStore = useGoalsStore()
 const budgetsStore = useBudgetsStore()
 const settingsStore = useSettingsStore()
 const recurringStore = useRecurringStore()
-const { createChart, destroyChart } = useCharts()
 
 const goalsList = computed(() => goalsStore.items || [])
 const goalProgressPct = (id) => {
@@ -159,14 +158,16 @@ const computeBudgetsMonth = async () => {
 watch(monthTx, async () => { await computeBudgetsMonth(); await goalsStore.loadProgress() })
 watch(() => budgetsStore.items, async () => { await computeBudgetsMonth() }, { deep: true })
 
-const barCanvas = ref(null)
-const doughnutCanvas = ref(null)
-const lineCanvas = ref(null)
-const goalsCanvas = ref(null)
-let barChart = null
-let doughnutChart = null
-let lineChart = null
-let goalsChart = null
+// Chart data for lazy charts
+const barChartData = ref({})
+const doughnutChartData = ref({})
+const lineChartData = ref({})
+const goalsChartData = ref({})
+
+const barChartOptions = ref({})
+const doughnutChartOptions = ref({})
+const lineChartOptions = ref({})
+const goalsChartOptions = ref({})
 
 const buildDailySeries = (items, y, m) => {
   const days = daysInMonth(y, m)
@@ -207,11 +208,13 @@ const buildNetLine = (daily) => {
 
 const updateCharts = async () => {
   await nextTick()
-  const colorText = getCssVar('--text-color')
-  const colorMuted = getCssVar('--muted-text-color')
-  const colorSuccess = getCssVar('--success-color')
-  const colorError = getCssVar('--error-color')
-  const colorAccent = getCssVar('--accent-color')
+  
+  const colorText = '#E0E1E9'
+  const colorMuted = '#A3A8B8'
+  const colorSuccess = '#22C55E'
+  const colorError = '#EF4444'
+  const colorAccent = '#3FA9F5'
+  
 
   const y = selectedYear.value
   const m = selectedMonth.value
@@ -221,106 +224,129 @@ const updateCharts = async () => {
   const net = buildNetLine(daily)
   const goalsData = buildGoalsProgress()
 
-  const barData = {
+  barChartData.value = {
     labels: daily.labels,
     datasets: [
-      { label: t('transactions.form.income'), data: daily.income, backgroundColor: hexToRgba(colorSuccess, 0.6) },
-      { label: t('transactions.form.expense'), data: daily.expense, backgroundColor: hexToRgba(colorError, 0.6) },
+      { 
+        label: t('transactions.form.income'), 
+        data: daily.income, 
+        backgroundColor: '#22C55E',
+        borderColor: '#22C55E',
+        borderWidth: 1
+      },
+      { 
+        label: t('transactions.form.expense'), 
+        data: daily.expense, 
+        backgroundColor: '#EF4444',
+        borderColor: '#EF4444',
+        borderWidth: 1
+      },
     ]
   }
-  if (!barChart && barCanvas.value) {
-    barChart = createChart(barCanvas.value.getContext('2d'), {
-      type: 'bar',
-      data: barData,
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top', labels: { color: colorText } },
-          tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}` } },
-        },
-        scales: {
-          x: { ticks: { color: colorMuted } },
-          y: { ticks: { color: colorMuted } },
-        },
+  barChartOptions.value = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { 
+        position: 'top', 
+        labels: { 
+          color: colorText,
+          usePointStyle: true,
+          padding: 20
+        } 
+      },
+      tooltip: { 
+        callbacks: { 
+          label: ctx => `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}` 
+        } 
+      },
+    },
+    scales: {
+      x: { 
+        ticks: { color: colorMuted },
+        grid: { color: 'rgba(224, 225, 233, 0.1)' }
+      },
+      y: { 
+        ticks: { color: colorMuted },
+        grid: { color: 'rgba(224, 225, 233, 0.1)' }
+      },
+    },
+    elements: {
+      bar: {
+        borderRadius: 4
       }
-    })
-  } else if (barChart) {
-    barChart.data = barData
-    barChart.update()
+    }
   }
 
-  const doughnutData = {
+  doughnutChartData.value = {
     labels: breakdown.labels,
-    datasets: [{ data: breakdown.data, backgroundColor: [colorSuccess, colorError, colorAccent] }]
+    datasets: [{ 
+      data: breakdown.data, 
+      backgroundColor: ['#22C55E', '#EF4444', '#3FA9F5'],
+      borderWidth: 0,
+      hoverBackgroundColor: ['#22C55E', '#EF4444', '#3FA9F5'],
+      hoverBorderWidth: 2,
+      hoverBorderColor: '#ffffff'
+    }]
   }
-  if (!doughnutChart && doughnutCanvas.value) {
-    doughnutChart = createChart(doughnutCanvas.value.getContext('2d'), {
-      type: 'doughnut',
-      data: doughnutData,
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom', labels: { color: colorText } },
-          tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatAmount(ctx.parsed)}` } },
-        },
-        cutout: '60%'
-      }
-    })
-  } else if (doughnutChart) {
-    doughnutChart.data = doughnutData
-    doughnutChart.update()
+  doughnutChartOptions.value = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { color: colorText } },
+      tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatAmount(ctx.parsed)}` } },
+    },
+    cutout: '60%'
   }
 
-  const lineData = {
+  // Update line chart data
+  lineChartData.value = {
     labels: net.labels,
-    datasets: [{ label: t('dashboard.charts.net'), data: net.net, fill: false, borderColor: colorAccent, tension: 0.2, pointRadius: 2 }]
+    datasets: [{ 
+      label: t('dashboard.charts.net'), 
+      data: net.net, 
+      fill: false, 
+      borderColor: '#3FA9F5', 
+      backgroundColor: '#3FA9F5',
+      tension: 0.2, 
+      pointRadius: 3,
+      pointBackgroundColor: '#3FA9F5',
+      pointBorderColor: '#3FA9F5',
+      borderWidth: 2
+    }]
   }
-  if (!lineChart && lineCanvas.value) {
-    lineChart = createChart(lineCanvas.value.getContext('2d'), {
-      type: 'line',
-      data: lineData,
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'top', labels: { color: colorText } },
-          tooltip: { callbacks: { label: ctx => `${formatAmount(ctx.parsed.y)}` } },
-        },
-        scales: {
-          x: { ticks: { color: colorMuted } },
-          y: { ticks: { color: colorMuted } },
-        },
-      }
-    })
-  } else if (lineChart) {
-    lineChart.data = lineData
-    lineChart.update()
+  lineChartOptions.value = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top', labels: { color: colorText } },
+      tooltip: { callbacks: { label: ctx => `${formatAmount(ctx.parsed.y)}` } },
+    },
+    scales: {
+      x: { ticks: { color: colorMuted } },
+      y: { ticks: { color: colorMuted } },
+    },
   }
 
-  if (goalsCanvas.value) {
-    const data = {
-      labels: goalsData.labels,
-      datasets: [{ label: t('goals.table.progress'), data: goalsData.data, backgroundColor: colorAccent }]
-    }
-    if (!goalsChart) {
-      goalsChart = createChart(goalsCanvas.value.getContext('2d'), {
-        type: 'bar',
-        data,
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'top', labels: { color: colorText } },
-            tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y}%` } },
-          },
-          scales: {
-            x: { ticks: { color: colorMuted } },
-            y: { beginAtZero: true, max: 100, ticks: { color: colorMuted, callback: (v)=> `${v}%` } },
-          },
-        }
-      })
-    } else {
-      goalsChart.data = data
-      goalsChart.update()
-    }
+  // Update goals chart data
+  goalsChartData.value = {
+    labels: goalsData.labels,
+    datasets: [{ 
+      label: t('goals.table.progress'), 
+      data: goalsData.data, 
+      backgroundColor: '#3FA9F5',
+      borderColor: '#3FA9F5',
+      borderWidth: 1
+    }]
+  }
+  goalsChartOptions.value = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top', labels: { color: colorText } },
+      tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y}%` } },
+    },
+    scales: {
+      x: { ticks: { color: colorMuted } },
+      y: { beginAtZero: true, max: 100, ticks: { color: colorMuted, callback: (v)=> `${v}%` } },
+    },
   }
 }
 
@@ -329,12 +355,15 @@ watch(() => goalsStore.progressById, () => updateCharts(), { deep: true })
 watch(() => goalsStore.items, () => updateCharts(), { deep: true })
 watch(() => settingsStore.amountFormat, () => updateCharts())
 
-onBeforeUnmount(() => {
-  if (barChart) { destroyChart(barChart); barChart = null }
-  if (doughnutChart) { destroyChart(doughnutChart); doughnutChart = null }
-  if (lineChart) { destroyChart(lineChart); lineChart = null }
-  if (goalsChart) { destroyChart(goalsChart); goalsChart = null }
+// Initialize charts on mount
+onMounted(async () => {
+  await nextTick()
+  setTimeout(() => {
+    updateCharts()
+  }, 100)
 })
+
+// No need for manual chart cleanup with LazyChart components
 </script>
 
 <template>
@@ -389,19 +418,51 @@ onBeforeUnmount(() => {
     <section class="charts-grid" v-if="!isLoading && !hasError">
       <div class="card chart-card">
         <h3>{{ t('dashboard.charts.daily') }}</h3>
-        <canvas ref="barCanvas" :aria-label="t('dashboard.charts.daily')" role="img"></canvas>
+        <LazyChart
+          chart-type="bar"
+          :chart-data="barChartData"
+          :chart-options="barChartOptions"
+          :raw-data="monthTx"
+          :aria-label="t('dashboard.charts.daily')"
+          :enable-progressive="true"
+          @chart-ready="(chart) => console.log('Bar chart ready', chart)"
+        />
       </div>
       <div class="card chart-card">
         <h3>{{ t('dashboard.charts.breakdown') }}</h3>
-        <canvas ref="doughnutCanvas" :aria-label="t('dashboard.charts.breakdown')" role="img"></canvas>
+        <LazyChart
+          chart-type="doughnut"
+          :chart-data="doughnutChartData"
+          :chart-options="doughnutChartOptions"
+          :raw-data="monthTx"
+          :aria-label="t('dashboard.charts.breakdown')"
+          :enable-progressive="true"
+          @chart-ready="(chart) => console.log('Doughnut chart ready', chart)"
+        />
       </div>
       <div class="card chart-card">
         <h3>{{ t('dashboard.charts.net') }}</h3>
-        <canvas ref="lineCanvas" :aria-label="t('dashboard.charts.net')" role="img"></canvas>
+        <LazyChart
+          chart-type="line"
+          :chart-data="lineChartData"
+          :chart-options="lineChartOptions"
+          :raw-data="monthTx"
+          :aria-label="t('dashboard.charts.net')"
+          :enable-progressive="true"
+          @chart-ready="(chart) => console.log('Line chart ready', chart)"
+        />
       </div>
       <div class="card chart-card">
         <h3>{{ t('goals.title') }}</h3>
-        <canvas ref="goalsCanvas" :aria-label="t('goals.title')" role="img"></canvas>
+        <LazyChart
+          chart-type="bar"
+          :chart-data="goalsChartData"
+          :chart-options="goalsChartOptions"
+          :raw-data="goalsList"
+          :aria-label="t('goals.title')"
+          :enable-progressive="false"
+          @chart-ready="(chart) => console.log('Goals chart ready', chart)"
+        />
       </div>
     </section>
 

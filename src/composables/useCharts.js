@@ -32,6 +32,13 @@ export const useCharts = () => {
         LineElement,
         PointElement
       )
+      
+      // Disable Chart.js default colors to allow custom colors
+      Chart.defaults.plugins.colors = {
+        enabled: false
+      }
+      Chart.defaults.color = '#E0E1E9'
+      
       isRegistered = true
     }
   }

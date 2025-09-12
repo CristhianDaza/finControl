@@ -10,6 +10,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  server: {
+    hmr: {
+      overlay: false
+    },
+    host: '0.0.0.0',
+    port: 5174
+  },
   build: {
     rollupOptions: {
       output: {
