@@ -76,23 +76,10 @@ export const useProgressiveCharts = () => {
     }
   }
   
-  // Memoized chart data processing
   const memoizedChartData = computed(() => {
-    if (!processedData.value) return null
-    
-    // Cache expensive calculations
-    const cacheKey = JSON.stringify(processedData.value.slice(0, 10)) // Sample for cache key
-    
-    return {
-      labels: processedData.value.map(item => item.label || item.date),
-      datasets: [{
-        data: processedData.value.map(item => item.value || item.amount),
-        // Add other dataset properties
-      }]
-    }
+   return null
   })
   
-  // Debounced data updates
   let updateTimeout = null
   const debouncedUpdate = (newData, delay = 300) => {
     clearTimeout(updateTimeout)
