@@ -249,6 +249,12 @@ html, body { overflow-x: hidden; }
 
 img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
 
+.button[disabled],
+.button[aria-disabled="true"] {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
 @media (max-width: 720px) {
   .table-container { overflow-x: visible; box-shadow: none; }
   .table-container table,

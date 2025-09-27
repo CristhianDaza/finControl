@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue'
 import { useIsMobile} from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useRecurringStore } from '@/stores/recurring.js'
@@ -7,8 +7,9 @@ import { useSettingsStore } from '@/stores/settings.js'
 import { useRoute } from 'vue-router'
 import { t } from '@/i18n/index.js'
 import { useLazyComponents } from '@/composables/useLazyComponents.js'
-import FCStatusBar from '@/components/FCStatusBar.vue'
-import FCGlobalLoader from '@/components/global/FCGlobalLoader.vue'
+
+const FCStatusBar = defineAsyncComponent(/* webpackChunkName: "fCStatusBar" */ () => import('@/components/FCStatusBar.vue'))
+const FCGlobalLoader = defineAsyncComponent(/* webpackChunkName: "fCGlobalLoader" */ () => import('@/components/global/FCGlobalLoader.vue'))
 
 const { Sidebar, Notify, preloadModals } = useLazyComponents()
 
