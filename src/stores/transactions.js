@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {computed, onUnmounted, ref, watchEffect, shallowRef} from 'vue'
+import {computed, onUnmounted, ref, watchEffect} from 'vue'
 import {useTransactions} from '@/composables/useTransactions.js'
 import {useNotify} from '@/components/global/fcNotify.js'
 import {t} from '@/i18n/index.js'
@@ -126,14 +126,12 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   const setFilters = f => {
     filters.value = Object.fromEntries(Object.entries(f || {}).filter(([_, v]) => v !== '' && v != null))
-    init().then(r => { return r }).catch(() => { /* noop */ })
+    init().catch(() => {})
   }
-  const setOrder = o => { orderBy.value = Array.isArray(o) ? o : orderBy.value; init().then(r => { return r }).catch(() => { /* noop */ }) }
+  const setOrder = o => { orderBy.value = Array.isArray(o) ? o : orderBy.value; init().catch(() => {}) }
 
-  // Memoized computed properties with better performance
   const hasItems = computed(() => items.value.length > 0)
   
-  // Cache for byId lookups to avoid repeated finds
   const itemsById = computed(() => {
     const map = new Map()
     for (const item of items.value) {
@@ -144,7 +142,6 @@ export const useTransactionsStore = defineStore('transactions', () => {
   
   const byId = id => computed(() => itemsById.value.get(id))
   
-  // Optimized totals calculation with memoization
   const totals = computed(() => {
     let income = 0
     let expense = 0
@@ -161,14 +158,12 @@ export const useTransactionsStore = defineStore('transactions', () => {
     return { income, expense, balance: income - expense }
   })
   
-  // Memoized filtered items for better performance
   const incomeItems = computed(() => items.value.filter(i => i.type === 'income'))
   const expenseItems = computed(() => items.value.filter(i => i.type === 'expense'))
   const transferItems = computed(() => items.value.filter(i => i.isTransfer === true))
 
   const availablePeriods = ref({ years: [], monthsByYear: {} })
   
-  // Memoized available periods computation
   const computedAvailablePeriods = computed(() => {
     const monthsMap = {}
     for (const item of items.value) {
@@ -187,7 +182,6 @@ export const useTransactionsStore = defineStore('transactions', () => {
     return { years, monthsByYear }
   })
   
-  // Use watchEffect to update availablePeriods reactively
   watchEffect(() => {
     availablePeriods.value = computedAvailablePeriods.value
   })
@@ -196,15 +190,13 @@ export const useTransactionsStore = defineStore('transactions', () => {
     try {
       const { onAuthReady } = useAuth()
       const user = await onAuthReady()
-      if (!user) { 
+      if (!user) {
         availablePeriods.value = { years: [], monthsByYear: {} }
-        return availablePeriods.value 
+        return availablePeriods.value
       }
-      // If items are already loaded, use computed periods
       if (items.value.length > 0) {
         return computedAvailablePeriods.value
       }
-      // Otherwise fetch all transactions
       const all = await fetchTransactions({})
       const monthsMap = {}
       for (const it of all) {
@@ -230,11 +222,10 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   onUnmounted(() => dispose())
 
-  return { 
-    items, status, error, selected, filters, orderBy, unsubscribe, 
-    init, dispose, reload, add, edit, remove, setFilters, setOrder, 
+  return {
+    items, status, error, selected, filters, orderBy, unsubscribe,
+    init, dispose, reload, add, edit, remove, setFilters, setOrder,
     hasItems, byId, totals, availablePeriods, loadAvailablePeriods,
-    // Additional memoized properties
     itemsById, incomeItems, expenseItems, transferItems, computedAvailablePeriods
   }
 })

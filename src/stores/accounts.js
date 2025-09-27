@@ -30,7 +30,6 @@ export const useAccountsStore = defineStore('accounts', () => {
 
   const unsubscribe = () => { if (_unsubscribe.value) { _unsubscribe.value(); _unsubscribe.value = null } }
 
-  // Memoized accounts lookup for better performance
   const accountsById = computed(() => {
     const map = new Map()
     for (const account of items.value) {
@@ -67,7 +66,6 @@ export const useAccountsStore = defineStore('accounts', () => {
     }
   }
 
-  // Optimized balance calculation
   const totalBalance = computed(() => {
     let total = 0
     for (const account of items.value) {
@@ -78,7 +76,6 @@ export const useAccountsStore = defineStore('accounts', () => {
   
   const hasItems = computed(() => items.value.length > 0)
   
-  // Additional memoized properties for better UX
   const accountsByName = computed(() => {
     return [...items.value].sort((a, b) => (a.name || '').localeCompare(b.name || ''))
   })
@@ -114,7 +111,6 @@ export const useAccountsStore = defineStore('accounts', () => {
     deleteAccount: remove,
     create, updateName, remove,
     totalBalance, hasItems,
-    // Additional memoized properties
     accountsByName, accountsByCurrency, totalBalanceByCurrency
   }
 })

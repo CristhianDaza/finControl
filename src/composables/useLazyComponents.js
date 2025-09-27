@@ -1,6 +1,5 @@
 import { defineAsyncComponent, h } from 'vue'
 
-// Loading component for better UX
 const LoadingComponent = {
   render() {
     return h('div', { class: 'lazy-loading' }, [
@@ -9,33 +8,30 @@ const LoadingComponent = {
   }
 }
 
-// Error component for failed loads
 const ErrorComponent = {
   emits: ['retry'],
   render() {
     return h('div', { class: 'lazy-error' }, [
       h('p', 'Error loading component'),
-      h('button', { 
-        onClick: () => this.$emit('retry') 
+      h('button', {
+        onClick: () => this.$emit('retry')
       }, 'Retry')
     ])
   }
 }
 
-// Create async component with optimized loading
-const createAsyncComponent = (loader, chunkName) => {
+const createAsyncComponent = (loader) => {
   return defineAsyncComponent({
     loader,
     loadingComponent: LoadingComponent,
     errorComponent: ErrorComponent,
-    delay: 200, // Show loading after 200ms
-    timeout: 10000, // Timeout after 10s
+    delay: 200,
+    timeout: 10000,
     suspensible: false
   })
 }
 
 export const useLazyComponents = () => {
-  // Modal components (heavy, rarely used initially)
   const TransactionsModal = createAsyncComponent(
     () => import(/* webpackChunkName: "modals-transactions" */ '@/components/transactions/TransactionsModalComponent.vue'),
     'modals-transactions'
@@ -71,7 +67,6 @@ export const useLazyComponents = () => {
     'modals-confirm'
   )
 
-  // Global components (used frequently, but can be lazy)
   const Sidebar = createAsyncComponent(
     () => import(/* webpackChunkName: "global-sidebar" */ '@/components/global/FcSidebar.vue'),
     'global-sidebar'
@@ -87,20 +82,16 @@ export const useLazyComponents = () => {
     'global-loader'
   )
 
-  // Utility function to preload components
   const preloadComponent = (componentLoader) => {
     return componentLoader()
   }
 
-  // Preload critical components on user interaction
   const preloadModals = () => {
-    // Preload modals when user hovers over action buttons
     preloadComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
     preloadComponent(() => import('@/components/accounts/AccountsModalComponent.vue'))
   }
 
   return {
-    // Modal components
     TransactionsModal,
     AccountsModal,
     CategoriesModal,
@@ -108,13 +99,9 @@ export const useLazyComponents = () => {
     TransferModal,
     AuthModal,
     ConfirmModal,
-    
-    // Global components
     Sidebar,
     Notify,
     GlobalLoader,
-    
-    // Utilities
     preloadComponent,
     preloadModals,
     createAsyncComponent

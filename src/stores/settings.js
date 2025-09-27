@@ -10,7 +10,6 @@ export const EDITABLE_VARS = [
   { key: '--background-color', label: 'Fondo principal' },
   { key: '--text-color', label: 'Texto principal' },
   { key: '--accent-color', label: 'Color de acento' },
-
   { key: '--tx-expense-color', label: 'Gasto' },
   { key: '--tx-goal-color', label: 'Agregar a la meta' },
   { key: '--tx-debtPayment-color', label: 'Pago de deuda' },
@@ -28,7 +27,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#0D1117',
       '--background-color': '#0A192F',
       '--text-color': '#E0E1E9',
-      '--accent-color': '#3FA9F5', // azul
+      '--accent-color': '#3FA9F5',
       '--tx-expense-color': '#EF4444',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#8B5CF6',
@@ -45,7 +44,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#14141b',
       '--background-color': '#121216',
       '--text-color': '#EAEAF0',
-      '--accent-color': '#FF7AB6', // rosado
+      '--accent-color': '#FF7AB6',
       '--tx-expense-color': '#F43F5E',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#C084FC',
@@ -62,7 +61,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#122019',
       '--background-color': '#0D1713',
       '--text-color': '#E3EEE8',
-      '--accent-color': '#4ADE80', // verde
+      '--accent-color': '#4ADE80',
       '--tx-expense-color': '#F87171',
       '--tx-goal-color': '#FBBF24',
       '--tx-debtPayment-color': '#34D399',
@@ -79,7 +78,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#F1F5F9',
       '--background-color': '#F7FAFC',
       '--text-color': '#111827',
-      '--accent-color': '#2563EB', // azul
+      '--accent-color': '#2563EB',
       '--tx-expense-color': '#DC2626',
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#7C3AED',
@@ -96,7 +95,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#FDF2F8',
       '--background-color': '#FFF7FB',
       '--text-color': '#1F2937',
-      '--accent-color': '#DB2777', // rosado
+      '--accent-color': '#DB2777',
       '--tx-expense-color': '#E11D48',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
@@ -113,7 +112,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#F3F4F6',
       '--background-color': '#FAFAFA',
       '--text-color': '#111827',
-      '--accent-color': '#0EA5E9', // cian
+      '--accent-color': '#0EA5E9',
       '--tx-expense-color': '#DC2626',
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#6366F1',
@@ -121,7 +120,6 @@ export const THEME_PRESETS = [
       '--tx-transfer-color': '#22D3EE',
     },
   },
-  // Nuevos oscuros
   {
     id: 'dark-amber',
     mode: 'dark',
@@ -131,7 +129,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#1C170F',
       '--background-color': '#14100B',
       '--text-color': '#F3EEE6',
-      '--accent-color': '#F59E0B', // ámbar
+      '--accent-color': '#F59E0B',
       '--tx-expense-color': '#F87171',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
@@ -148,7 +146,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#0F1A20',
       '--background-color': '#0B1418',
       '--text-color': '#E2EEF2',
-      '--accent-color': '#14B8A6', // teal
+      '--accent-color': '#14B8A6',
       '--tx-expense-color': '#F87171',
       '--tx-goal-color': '#FBBF24',
       '--tx-debtPayment-color': '#06B6D4',
@@ -156,7 +154,6 @@ export const THEME_PRESETS = [
       '--tx-transfer-color': '#14B8A6',
     },
   },
-  // Nuevos claros
   {
     id: 'light-emerald',
     mode: 'light',
@@ -166,7 +163,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#F0FDF4',
       '--background-color': '#F8FFF9',
       '--text-color': '#111827',
-      '--accent-color': '#10B981', // esmeralda
+      '--accent-color': '#10B981',
       '--tx-expense-color': '#DC2626',
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#6366F1',
@@ -183,7 +180,7 @@ export const THEME_PRESETS = [
       '--secondary-color': '#FFFBEB',
       '--background-color': '#FFFDF5',
       '--text-color': '#1F2937',
-      '--accent-color': '#F59E0B', // ámbar
+      '--accent-color': '#F59E0B',
       '--tx-expense-color': '#DC2626',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
@@ -195,8 +192,8 @@ export const THEME_PRESETS = [
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    themeVars: /** @type {Record<string,string>} */ ({}),
-    initialDefaults: /** @type {Record<string,string>} */ ({}),
+    themeVars: {},
+    initialDefaults: {},
     loaded: false,
     amountFormat: 'full',
   }),

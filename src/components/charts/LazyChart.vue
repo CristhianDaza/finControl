@@ -1,25 +1,22 @@
 <template>
   <div ref="chartContainer" class="lazy-chart-container">
-    <!-- Skeleton loading state -->
-    <ChartSkeleton 
-      v-if="!isChartVisible || isDataProcessing" 
-      :type="chartType" 
+    <ChartSkeleton
+      v-if="!isChartVisible || isDataProcessing"
+      :type="chartType"
       :height="height"
     />
-    
-    <!-- Processing indicator -->
+
     <div v-if="isDataProcessing && isChartVisible" class="processing-overlay">
       <div class="processing-content">
         <div class="processing-spinner"></div>
         <p>Processing data... {{ processingProgress }}%</p>
       </div>
     </div>
-    
-    <!-- Actual chart -->
+
     <div v-show="isChartVisible && !isDataProcessing" class="chart-wrapper">
-      <canvas 
-        ref="canvasRef" 
-        :aria-label="ariaLabel" 
+      <canvas
+        ref="canvasRef"
+        :aria-label="ariaLabel"
         role="img"
         :style="{ height: height + 'px' }"
       ></canvas>
@@ -83,18 +80,17 @@ const {
   processingProgress
 } = useProgressiveCharts()
 
-// Create chart instance
 const createChart = async () => {
   if (!canvasRef.value || !isChartLoaded.value) return
-  
+
   try {
     const { useCharts } = await import('@/composables/useCharts.js')
     const { createChart: chartFactory } = useCharts()
-    
-    const finalData = props.enableProgressive && memoizedChartData.value 
-      ? memoizedChartData.value 
+
+    const finalData = props.enableProgressive && memoizedChartData.value
+      ? memoizedChartData.value
       : props.chartData
-    
+
     chartInstance = chartFactory(canvasRef.value.getContext('2d'), {
       type: props.chartType,
       data: finalData,
@@ -104,26 +100,24 @@ const createChart = async () => {
         ...props.chartOptions
       }
     })
-    
+
     emit('chart-ready', chartInstance)
   } catch (error) {
     console.error('Failed to create chart:', error)
   }
 }
 
-// Update chart data
 const updateChart = () => {
   if (!chartInstance) return
-  
-  const finalData = props.enableProgressive && memoizedChartData.value 
-    ? memoizedChartData.value 
+
+  const finalData = props.enableProgressive && memoizedChartData.value
+    ? memoizedChartData.value
     : props.chartData
-  
+
   chartInstance.data = finalData
-  chartInstance.update('none') // No animation for better performance
+  chartInstance.update('none')
 }
 
-// Watch for data changes
 watch(() => props.rawData, (newData) => {
   if (props.enableProgressive && newData.length > 0) {
     debouncedUpdate(newData)
@@ -156,7 +150,6 @@ watch(processedData, (data) => {
 })
 
 onMounted(() => {
-  // Process initial data if progressive mode is enabled
   if (props.enableProgressive && props.rawData.length > 0) {
     processDataInChunks(props.rawData)
   }

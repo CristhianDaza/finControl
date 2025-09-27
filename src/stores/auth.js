@@ -11,7 +11,7 @@ import { computed, watchEffect } from 'vue'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: /** @type {any} */(null),
+    user: (null),
     profile: null,
     status: 'idle',
     error: null,
@@ -21,15 +21,13 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: s => !!s.user,
-    // Memoized admin check to avoid repeated environment variable parsing
     isAdmin: s => {
       if (!s._cachedEnvAdmins) {
         s._cachedEnvAdmins = (import.meta.env.VITE_ADMIN_UIDS || '').split(',').map(v=>v.trim()).filter(Boolean)
       }
       return !!s.profile && (s.profile.role === 'admin' || s._cachedEnvAdmins.includes(s.user?.uid || ''))
     },
-    // Optimized read-only check with better performance
-    isReadOnly: s => { 
+    isReadOnly: s => {
       const p = s.profile
       if (!p) return false
       const isActive = p.isActive !== false

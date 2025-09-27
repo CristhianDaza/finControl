@@ -1,15 +1,15 @@
 <template>
   <div class="virtual-grid-container">
-    <div 
-      ref="containerRef" 
+    <div
+      ref="containerRef"
       class="virtual-grid-body"
       :style="{ height: containerHeight + 'px' }"
       @scroll="handleScroll"
     >
       <div :style="gridStyle">
         <div :style="visibleCardsStyle">
-          <div 
-            v-for="(item, index) in visibleItems" 
+          <div
+            v-for="(item, index) in visibleItems"
             :key="item.id"
             class="account-card"
             :style="{ height: itemHeight + 'px', minHeight: itemHeight + 'px' }"
@@ -19,22 +19,22 @@
               <p class="account-balance">{{ formatAmount(item.balance, item.currency || 'COP') }}</p>
             </div>
             <div class="account-actions">
-              <button 
-                class="button button-edit" 
-                :aria-label="t('common.edit')" 
-                :title="t('common.edit')" 
-                @click="$emit('edit', item)" 
-                :disabled="!canWrite" 
+              <button
+                class="button button-edit"
+                :aria-label="t('common.edit')"
+                :title="t('common.edit')"
+                @click="$emit('edit', item)"
+                :disabled="!canWrite"
                 :aria-disabled="!canWrite"
               >
                 <svg class="icon-edit" v-html="EditIcon"></svg>
               </button>
-              <button 
-                class="button button-delete" 
-                :aria-label="t('common.delete')" 
-                :title="t('common.delete')" 
-                @click="$emit('delete', item.id)" 
-                :disabled="!canWrite" 
+              <button
+                class="button button-delete"
+                :aria-label="t('common.delete')"
+                :title="t('common.delete')"
+                @click="$emit('delete', item.id)"
+                :disabled="!canWrite"
                 :aria-disabled="!canWrite"
               >
                 <svg class="icon-delete" v-html="DeleteIcon"></svg>
@@ -43,8 +43,7 @@
           </div>
         </div>
       </div>
-      
-      <!-- Performance indicator (dev mode only) -->
+
       <div v-if="showPerformanceInfo" class="performance-info">
         <small>
           Rendering {{ virtualizedItemsCount }}/{{ itemsCount }} accounts ({{ renderRatio }}%)
@@ -88,7 +87,6 @@ const props = defineProps({
 
 const emit = defineEmits(['edit', 'delete'])
 
-// Virtual scrolling setup
 const {
   containerRef,
   visibleItems,
@@ -110,7 +108,6 @@ const {
   overscan: 3
 })
 
-// Watch for items changes
 watch(() => props.items, (newItems) => {
   setItems(newItems)
 }, { immediate: true })
@@ -192,9 +189,9 @@ watch(() => props.items, (newItems) => {
   padding-top: 1rem;
 }
 
-.account-actions button[disabled] { 
-  opacity: 0.55; 
-  cursor: not-allowed; 
+.account-actions button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .performance-info {
@@ -219,12 +216,11 @@ watch(() => props.items, (newItems) => {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive grid layout */
 @media (min-width: 768px) {
   .virtual-grid-body {
     padding: 2rem;
   }
-  
+
   .account-card {
     width: calc(50% - 0.5rem);
     display: inline-block;

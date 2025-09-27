@@ -108,7 +108,7 @@ watch([selectedMonth, selectedYear], async ([m, y]) => { applyMonthFilter(y, m);
 const totalBalance = computed(() => accountsStore.totalBalance)
 const monthTx = computed(() => transactionsStore.items)
 const monthTransferPairs = computed(() => transfersStore.filtered)
-const monthTransferAsTx = computed(() => monthTransferPairs.value.map(p => ({ id: `tr:${p.transferId}`, date: p.out.date, note: `${t('transfers.title')}: ${p.out.fromAccountId} → ${p.out.toAccountId}${p.out.note ? ' · '+p.out.note : ''}`, accountId: p.out.fromAccountId, amount: 0, type: 'transfer' })))
+const monthTransferAsTx = computed(() => monthTransferPairs.value.map(p => ({ id: `tr:${p.transferId}`, date: p.out.date, note: `${t('transfers.title')}: ${p.out.fromAccountId} \u2192 ${p.out.toAccountId}${p.out.note ? ' \u00b7 '+p.out.note : ''}`, accountId: p.out.fromAccountId, amount: 0, type: 'transfer' })))
 const monthEvents = computed(() => [...monthTx.value, ...monthTransferAsTx.value].sort((a,b)=> (a.date===b.date?0:(a.date>b.date?-1:1))))
 
 const incomeSum = computed(() => monthTx.value.filter(i => i.type === 'income').reduce((a,b)=>a+Number(b.amount||0),0))
@@ -158,7 +158,6 @@ const computeBudgetsMonth = async () => {
 watch(monthTx, async () => { await computeBudgetsMonth(); await goalsStore.loadProgress() })
 watch(() => budgetsStore.items, async () => { await computeBudgetsMonth() }, { deep: true })
 
-// Chart data for lazy charts
 const barChartData = ref({})
 const doughnutChartData = ref({})
 const lineChartData = ref({})
@@ -208,13 +207,13 @@ const buildNetLine = (daily) => {
 
 const updateCharts = async () => {
   await nextTick()
-  
+
   const colorText = '#E0E1E9'
   const colorMuted = '#A3A8B8'
   const colorSuccess = '#22C55E'
   const colorError = '#EF4444'
   const colorAccent = '#3FA9F5'
-  
+
 
   const y = selectedYear.value
   const m = selectedMonth.value
@@ -227,16 +226,16 @@ const updateCharts = async () => {
   barChartData.value = {
     labels: daily.labels,
     datasets: [
-      { 
-        label: t('transactions.form.income'), 
-        data: daily.income, 
+      {
+        label: t('transactions.form.income'),
+        data: daily.income,
         backgroundColor: '#22C55E',
         borderColor: '#22C55E',
         borderWidth: 1
       },
-      { 
-        label: t('transactions.form.expense'), 
-        data: daily.expense, 
+      {
+        label: t('transactions.form.expense'),
+        data: daily.expense,
         backgroundColor: '#EF4444',
         borderColor: '#EF4444',
         borderWidth: 1
@@ -247,26 +246,26 @@ const updateCharts = async () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { 
-        position: 'top', 
-        labels: { 
+      legend: {
+        position: 'top',
+        labels: {
           color: colorText,
           usePointStyle: true,
           padding: 20
-        } 
+        }
       },
-      tooltip: { 
-        callbacks: { 
-          label: ctx => `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}` 
-        } 
+      tooltip: {
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}`
+        }
       },
     },
     scales: {
-      x: { 
+      x: {
         ticks: { color: colorMuted },
         grid: { color: 'rgba(224, 225, 233, 0.1)' }
       },
-      y: { 
+      y: {
         ticks: { color: colorMuted },
         grid: { color: 'rgba(224, 225, 233, 0.1)' }
       },
@@ -280,8 +279,8 @@ const updateCharts = async () => {
 
   doughnutChartData.value = {
     labels: breakdown.labels,
-    datasets: [{ 
-      data: breakdown.data, 
+    datasets: [{
+      data: breakdown.data,
       backgroundColor: ['#22C55E', '#EF4444', '#3FA9F5'],
       borderWidth: 0,
       hoverBackgroundColor: ['#22C55E', '#EF4444', '#3FA9F5'],
@@ -298,16 +297,15 @@ const updateCharts = async () => {
     cutout: '60%'
   }
 
-  // Update line chart data
   lineChartData.value = {
     labels: net.labels,
-    datasets: [{ 
-      label: t('dashboard.charts.net'), 
-      data: net.net, 
-      fill: false, 
-      borderColor: '#3FA9F5', 
+    datasets: [{
+      label: t('dashboard.charts.net'),
+      data: net.net,
+      fill: false,
+      borderColor: '#3FA9F5',
       backgroundColor: '#3FA9F5',
-      tension: 0.2, 
+      tension: 0.2,
       pointRadius: 3,
       pointBackgroundColor: '#3FA9F5',
       pointBorderColor: '#3FA9F5',
@@ -326,12 +324,11 @@ const updateCharts = async () => {
     },
   }
 
-  // Update goals chart data
   goalsChartData.value = {
     labels: goalsData.labels,
-    datasets: [{ 
-      label: t('goals.table.progress'), 
-      data: goalsData.data, 
+    datasets: [{
+      label: t('goals.table.progress'),
+      data: goalsData.data,
       backgroundColor: '#3FA9F5',
       borderColor: '#3FA9F5',
       borderWidth: 1
@@ -355,15 +352,12 @@ watch(() => goalsStore.progressById, () => updateCharts(), { deep: true })
 watch(() => goalsStore.items, () => updateCharts(), { deep: true })
 watch(() => settingsStore.amountFormat, () => updateCharts())
 
-// Initialize charts on mount
 onMounted(async () => {
   await nextTick()
   setTimeout(() => {
     updateCharts()
   }, 100)
 })
-
-// No need for manual chart cleanup with LazyChart components
 </script>
 
 <template>
@@ -473,7 +467,7 @@ onMounted(async () => {
         <li v-for="it in budgetsMonth.slice(0,3)" :key="it.b.id" class="budget-item">
           <div class="b-left">
             <div class="b-name">{{ it.b.name }}</div>
-            <div class="b-period">{{ it.b.periodType==='monthly' ? (monthLabels[selectedMonth] + ' ' + selectedYear) : (it.b.periodFrom + ' → ' + it.b.periodTo) }}</div>
+            <div class="b-period">{{ it.b.periodType==='monthly' ? (monthLabels[selectedMonth] + ' ' + selectedYear) : (it.b.periodFrom + ' \u2192 ' + it.b.periodTo) }}</div>
           </div>
           <div class="b-center">
             <div class="progress">

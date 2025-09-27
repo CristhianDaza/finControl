@@ -15,7 +15,6 @@ export const useBudgetsStore = defineStore('budgets', () => {
   const unsubscribe = ref(null)
   const progressById = ref({})
   
-  // Memoized budget lookups
   const budgetsById = computed(() => {
     const map = new Map()
     for (const budget of items.value) {
@@ -27,7 +26,6 @@ export const useBudgetsStore = defineStore('budgets', () => {
   const activeBudgets = computed(() => items.value.filter(b => b.active !== false))
   const inactiveBudgets = computed(() => items.value.filter(b => b.active === false))
   
-  // Memoized budget categories for faster lookups
   const budgetsByCategory = computed(() => {
     const map = new Map()
     for (const budget of items.value) {
@@ -84,7 +82,6 @@ export const useBudgetsStore = defineStore('budgets', () => {
     return { fromStr, toStr }
   }
 
-  // Memoized computation cache to avoid repeated calculations
   const computationCache = ref(new Map())
   
   const computeBudget = async (budget, period) => {
@@ -93,13 +90,10 @@ export const useBudgetsStore = defineStore('budgets', () => {
       const to = period?.toStr || budget.periodTo
       if (!from || !to) return { spent: 0, pct: 0, remaining: Number(budget.targetAmount||0), missingRates: false, from, to }
       
-      // Create cache key for memoization
       const cacheKey = `${budget.id}-${from}-${to}-${JSON.stringify(budget.categories)}-${JSON.stringify(budget.excludeAccounts)}`
       
-      // Check cache first
       if (computationCache.value.has(cacheKey)) {
         const cached = computationCache.value.get(cacheKey)
-        // Cache for 5 minutes
         if (Date.now() - cached.timestamp < 5 * 60 * 1000) {
           return cached.result
         }
@@ -134,7 +128,6 @@ export const useBudgetsStore = defineStore('budgets', () => {
       const remaining = effectiveTarget - spent
       const result = { spent, pct, remaining, missingRates, from, to, effectiveTarget }
       
-      // Cache the result
       computationCache.value.set(cacheKey, {
         result,
         timestamp: Date.now()
@@ -151,7 +144,6 @@ export const useBudgetsStore = defineStore('budgets', () => {
     const results = {}
     const period = buildPeriod(year, monthIndex)
     
-    // Process budgets in parallel for better performance
     const computePromises = items.value.map(async (b) => {
       const usePeriod = b.periodType === 'monthly' ? period : { fromStr: b.periodFrom, toStr: b.periodTo }
       const r = await computeBudget(b, usePeriod)
@@ -191,9 +183,7 @@ export const useBudgetsStore = defineStore('budgets', () => {
     } catch (e) { notifyError(t('errors.generic')) }
   }
 
-  // Clear cache when budgets change
   watchEffect(() => {
-    // Clear cache when items change
     computationCache.value.clear()
   })
   
@@ -202,11 +192,10 @@ export const useBudgetsStore = defineStore('budgets', () => {
     computationCache.value.clear()
   })
 
-  return { 
-    items, status, error, progressById, 
-    init, dispose, add, edit, remove, 
+  return {
+    items, status, error, progressById,
+    init, dispose, add, edit, remove,
     computeBudget, computeForMonth, computePrevMonthPct, closePeriod,
-    // Additional memoized properties
     budgetsById, activeBudgets, inactiveBudgets, budgetsByCategory
   }
 })

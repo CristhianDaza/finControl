@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
   resolve: {
@@ -21,12 +20,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Vendor chunks
           'vendor-vue': ['vue', 'vue-router', 'pinia'],
           'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
           'vendor-charts': ['chart.js'],
-          
-          // Feature-based chunks
           'auth': [
             './src/stores/auth.js',
             './src/composables/useAuth.js',
@@ -65,17 +61,13 @@ export default defineConfig({
         }
       }
     },
-    // Optimize chunk size
     chunkSizeWarningLimit: 1000,
-    // Enable source maps for better debugging
     sourcemap: true
   },
-  // Optimize dependencies
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia'],
-    exclude: ['chart.js'] // Let chart.js be tree-shaken
+    exclude: ['chart.js']
   },
-  // Bundle analyzer configuration
   define: {
     __VUE_PROD_DEVTOOLS__: false,
     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false

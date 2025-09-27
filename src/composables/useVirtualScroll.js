@@ -8,17 +8,14 @@ export const useVirtualScroll = (options = {}) => {
     threshold = 0.1
   } = options
 
-  // Refs
   const containerRef = ref(null)
   const scrollTop = ref(0)
   const containerSize = ref(containerHeight)
   const items = ref([])
   const isScrolling = ref(false)
   
-  // Scroll timeout for performance
   let scrollTimeout = null
   
-  // Computed properties
   const visibleStartIndex = computed(() => {
     return Math.max(0, Math.floor(scrollTop.value / itemHeight) - overscan)
   })
@@ -43,7 +40,6 @@ export const useVirtualScroll = (options = {}) => {
     return visibleStartIndex.value * itemHeight
   })
   
-  // Performance metrics
   const virtualizedItemsCount = computed(() => {
     return visibleEndIndex.value - visibleStartIndex.value + 1
   })
@@ -53,7 +49,6 @@ export const useVirtualScroll = (options = {}) => {
     return Math.round((virtualizedItemsCount.value / items.value.length) * 100)
   })
 
-  // Intersection Observer for better scroll performance
   let intersectionObserver = null
   
   const setupIntersectionObserver = () => {
@@ -63,10 +58,8 @@ export const useVirtualScroll = (options = {}) => {
       (entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            // Container is visible, enable scroll tracking
             enableScrollTracking()
           } else {
-            // Container is not visible, disable scroll tracking
             disableScrollTracking()
           }
         })
@@ -87,27 +80,23 @@ export const useVirtualScroll = (options = {}) => {
     scrollTrackingEnabled = false
   }
 
-  // Scroll handler with performance optimizations
   const handleScroll = (event) => {
     if (!scrollTrackingEnabled) return
     
     const target = event.target
     scrollTop.value = target.scrollTop
     
-    // Set scrolling state
     isScrolling.value = true
     clearTimeout(scrollTimeout)
     scrollTimeout = setTimeout(() => {
       isScrolling.value = false
     }, 150)
     
-    // Update container size if needed
     if (target.clientHeight !== containerSize.value) {
       containerSize.value = target.clientHeight
     }
   }
 
-  // Optimized scroll handler with requestAnimationFrame
   let rafId = null
   const optimizedScrollHandler = (event) => {
     if (rafId) return
@@ -118,7 +107,6 @@ export const useVirtualScroll = (options = {}) => {
     })
   }
 
-  // Methods
   const setItems = (newItems) => {
     items.value = newItems || []
   }
@@ -141,7 +129,6 @@ export const useVirtualScroll = (options = {}) => {
     scrollToIndex(items.value.length - 1, behavior)
   }
 
-  // Resize observer for responsive container height
   let resizeObserver = null
   
   const setupResizeObserver = () => {
@@ -159,7 +146,6 @@ export const useVirtualScroll = (options = {}) => {
     resizeObserver.observe(containerRef.value)
   }
 
-  // Lifecycle
   onMounted(async () => {
     await nextTick()
     if (containerRef.value) {
@@ -182,7 +168,6 @@ export const useVirtualScroll = (options = {}) => {
     }
   })
 
-  // Watch for items changes and reset scroll if needed
   watchEffect(() => {
     if (items.value.length === 0) {
       scrollTop.value = 0
@@ -190,10 +175,7 @@ export const useVirtualScroll = (options = {}) => {
   })
 
   return {
-    // Refs
     containerRef,
-    
-    // Computed
     visibleItems,
     visibleStartIndex,
     visibleEndIndex,
@@ -202,25 +184,20 @@ export const useVirtualScroll = (options = {}) => {
     isScrolling,
     virtualizedItemsCount,
     renderRatio,
-    
-    // Methods
     setItems,
     scrollToIndex,
     scrollToTop,
     scrollToBottom,
     handleScroll: optimizedScrollHandler,
-    
-    // State
     scrollTop: computed(() => scrollTop.value),
     containerSize: computed(() => containerSize.value),
     itemsCount: computed(() => items.value.length)
   }
 }
 
-// Composable for virtual table rows
 export const useVirtualTable = (options = {}) => {
   const virtualScroll = useVirtualScroll({
-    itemHeight: 60, // Standard table row height
+    itemHeight: 60,
     containerHeight: 500,
     overscan: 3,
     ...options
@@ -228,13 +205,10 @@ export const useVirtualTable = (options = {}) => {
   
   return {
     ...virtualScroll,
-    
-    // Table-specific computed properties
     tableStyle: computed(() => ({
       height: `${virtualScroll.totalHeight.value}px`,
       position: 'relative'
     })),
-    
     visibleRowsStyle: computed(() => ({
       transform: `translateY(${virtualScroll.offsetY.value}px)`,
       position: 'absolute',
@@ -245,10 +219,9 @@ export const useVirtualTable = (options = {}) => {
   }
 }
 
-// Composable for virtual card grids
 export const useVirtualGrid = (options = {}) => {
   const virtualScroll = useVirtualScroll({
-    itemHeight: 120, // Standard card height
+    itemHeight: 120,
     containerHeight: 600,
     overscan: 2,
     ...options
@@ -256,13 +229,10 @@ export const useVirtualGrid = (options = {}) => {
   
   return {
     ...virtualScroll,
-    
-    // Grid-specific computed properties
     gridStyle: computed(() => ({
       height: `${virtualScroll.totalHeight.value}px`,
       position: 'relative'
     })),
-    
     visibleCardsStyle: computed(() => ({
       transform: `translateY(${virtualScroll.offsetY.value}px)`,
       position: 'absolute',

@@ -49,20 +49,19 @@ const availableMonths = computed(() => (tx.availablePeriods.monthsByYear && tx.a
 const selectedMonth = ref(new Date().getMonth())
 
 const rows = computed(() => tx.items)
-const filteredRows = computed(() => { 
+const filteredRows = computed(() => {
   let list = rows.value
-  if (searchText.value) { 
+  if (searchText.value) {
     const q = searchText.value.toLowerCase()
-    list = list.filter(it => String(it.note || it.description || '').toLowerCase().includes(q)) 
-  } 
-  if (minAmount.value) { 
+    list = list.filter(it => String(it.note || it.description || '').toLowerCase().includes(q))
+  }
+  if (minAmount.value) {
     const min = Number(minAmount.value)
-    if (!isNaN(min) && min > 0) list = list.filter(it => Number(it.amount || 0) >= min) 
-  } 
-  return list 
+    if (!isNaN(min) && min > 0) list = list.filter(it => Number(it.amount || 0) >= min)
+  }
+  return list
 })
 
-// Performance optimization: use virtual scrolling for large datasets
 const useVirtualScrolling = computed(() => filteredRows.value.length > 50)
 const virtualScrollHeight = computed(() => {
   const viewportHeight = window.innerHeight
@@ -107,7 +106,6 @@ const loadSavedFilters = async () => { try { const saved = await getTxFilters();
 
 const exportCsv = () => { const headers = [t('transactions.table.date'), t('transactions.table.description'), t('transactions.table.amount'), t('transactions.table.account'), t('transactions.table.type')]; const csvRows = [headers.join(',')]; for (const item of filteredRows.value) { const desc = (item.note || item.description || '').replace(/"/g, '""'); const accName = accountNameById.value[item.accountId] || item.accountId; const isGoal = item.type === 'expense' && (item.goalId || item.goal); const typ = item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : isGoal ? t('transactions.form.goalSaving') : t('transactions.form.expense'); csvRows.push([item.date, `"${desc}"`, item.amount, `"${accName}"`, `"${typ}"`].join(',')) } const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'transactions.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url) }
 
-// Helper para etiqueta traducida del tipo
 const typeLabel = (it) => { const isGoal = it.type === 'expense' && (it.goalId || it.goal); return it.type==='income' ? t('transactions.form.income') : it.type==='debtPayment' ? t('transactions.form.debtPayment') : isGoal ? t('transactions.form.goalSaving') : t('transactions.form.expense') }
 
 onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDebts(); await tx.init(); await tr.init(); await tx.loadAvailablePeriods(); await goals.init(); if (!availableYears.value.includes(selectedYear.value)) { const lastY = availableYears.value[availableYears.value.length - 1]; if (lastY != null) selectedYear.value = lastY } if (!availableMonths.value.includes(selectedMonth.value)) { const months = availableMonths.value; if (months.length) selectedMonth.value = months[months.length - 1] } setMonth(selectedMonth.value); await loadSavedFilters() })
@@ -201,7 +199,6 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
         <span>{{ t('transactions.empty') }}</span>
         <button class="button" @click="openAdd" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.addTitle') }}</button>
       </div>
-      <!-- Virtual scrolling for large datasets -->
       <VirtualTransactionsTable
         v-if="useVirtualScrolling"
         :items="filteredRows"
@@ -212,8 +209,7 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
         @edit="openEdit"
         @delete="askRemove"
       />
-      
-      <!-- Traditional table for smaller datasets -->
+
       <div v-else class="table-container tx-table-wrap">
         <h3 class="table-mobile-title">{{ t('navigation.transactions') }}</h3>
         <table>

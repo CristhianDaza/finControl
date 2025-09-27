@@ -8,8 +8,9 @@ import { useRoute } from 'vue-router'
 import { t } from '@/i18n/index.js'
 import { useLazyComponents } from '@/composables/useLazyComponents.js'
 import FCStatusBar from '@/components/FCStatusBar.vue'
+import FCGlobalLoader from '@/components/global/FCGlobalLoader.vue'
 
-const { Sidebar, Notify, GlobalLoader, preloadModals } = useLazyComponents()
+const { Sidebar, Notify, preloadModals } = useLazyComponents()
 
 const { isMobile } = useIsMobile()
 const auth = useAuthStore()
@@ -38,7 +39,6 @@ onMounted(async () => {
   try { await settings.initTheme() } catch {}
   if (auth.isAuthenticated) {
     triggerRecurring()
-    // Preload modals after authentication for better UX
     setTimeout(() => preloadModals(), 2000)
   }
   if (!visibilityHandlerAttached) {
@@ -72,7 +72,7 @@ const statusMessage = computed(() => auth.isReadOnly ? t('access.inactiveNotice'
     </main>
   </div>
   <Notify />
-  <GlobalLoader />
+  <FCGlobalLoader />
 </template>
 
 <style scoped>

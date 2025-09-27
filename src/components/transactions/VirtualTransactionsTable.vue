@@ -14,9 +14,9 @@
         </thead>
       </table>
     </div>
-    
-    <div 
-      ref="containerRef" 
+
+    <div
+      ref="containerRef"
       class="virtual-table-body"
       :style="{ height: containerHeight + 'px' }"
       @scroll="handleScroll"
@@ -25,8 +25,8 @@
         <div :style="visibleRowsStyle">
           <table>
             <tbody>
-              <tr 
-                v-for="(item, index) in visibleItems" 
+              <tr
+                v-for="(item, index) in visibleItems"
                 :key="item.id"
                 :class="{
                   'row-income': item.type==='income',
@@ -43,18 +43,18 @@
                 <td :data-label="t('transactions.table.type')">{{ getTypeLabel(item) }}</td>
                 <td :data-label="t('transactions.table.actions')">
                   <div class="actions">
-                    <button 
-                      class="button button-edit" 
-                      @click="$emit('edit', item)" 
-                      :disabled="!canWrite" 
+                    <button
+                      class="button button-edit"
+                      @click="$emit('edit', item)"
+                      :disabled="!canWrite"
                       :aria-disabled="!canWrite"
                     >
                       <svg class="icon-edit" v-html="EditIcon"></svg>
                     </button>
-                    <button 
-                      class="button button-delete" 
-                      @click="$emit('delete', item.id)" 
-                      :disabled="!canWrite" 
+                    <button
+                      class="button button-delete"
+                      @click="$emit('delete', item.id)"
+                      :disabled="!canWrite"
                       :aria-disabled="!canWrite"
                     >
                       <svg class="icon-delete" v-html="DeleteIcon"></svg>
@@ -66,8 +66,7 @@
           </table>
         </div>
       </div>
-      
-      <!-- Performance indicator (dev mode only) -->
+
       <div v-if="showPerformanceInfo" class="performance-info">
         <small>
           Rendering {{ virtualizedItemsCount }}/{{ itemsCount }} items ({{ renderRatio }}%)
@@ -115,7 +114,6 @@ const props = defineProps({
 
 const emit = defineEmits(['edit', 'delete'])
 
-// Virtual scrolling setup
 const {
   containerRef,
   visibleItems,
@@ -137,12 +135,10 @@ const {
   overscan: 5
 })
 
-// Watch for items changes
 watch(() => props.items, (newItems) => {
   setItems(newItems)
 }, { immediate: true })
 
-// Helper function for type labels
 const getTypeLabel = (item) => {
   const isGoal = item.type === 'expense' && (item.goalId || item.goal)
   if (item.type === 'income') return t('transactions.form.income')
@@ -239,24 +235,23 @@ tr:hover {
   justify-content: flex-end;
 }
 
-/* Transaction type styling */
-tr.row-income { 
-  box-shadow: inset 6px 0 0 var(--tx-income-color); 
+tr.row-income {
+  box-shadow: inset 6px 0 0 var(--tx-income-color);
 }
-tr.row-expense { 
-  box-shadow: inset 6px 0 0 var(--tx-expense-color); 
+tr.row-expense {
+  box-shadow: inset 6px 0 0 var(--tx-expense-color);
 }
-tr.row-debt { 
-  box-shadow: inset 6px 0 0 var(--tx-debtPayment-color); 
+tr.row-debt {
+  box-shadow: inset 6px 0 0 var(--tx-debtPayment-color);
 }
-tr.row-goal { 
-  box-shadow: inset 6px 0 0 var(--tx-goal-color); 
+tr.row-goal {
+  box-shadow: inset 6px 0 0 var(--tx-goal-color);
 }
 
-.button[disabled], 
-.button[aria-disabled="true"] { 
-  opacity: 0.55; 
-  cursor: not-allowed; 
+.button[disabled],
+.button[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .performance-info {
@@ -281,20 +276,19 @@ tr.row-goal {
   to { transform: rotate(360deg); }
 }
 
-/* Mobile responsive */
 @media (max-width: 720px) {
   .table-header {
     display: none;
   }
-  
+
   .virtual-table-body table {
     display: block;
   }
-  
+
   .virtual-table-body tbody {
     display: block;
   }
-  
+
   .virtual-table-body tr {
     display: block;
     margin-bottom: 1rem;
@@ -303,20 +297,20 @@ tr.row-goal {
     padding: 1rem;
     background: var(--primary-color);
   }
-  
+
   .virtual-table-body td {
     display: block;
     padding: 0.5rem 0;
     border: none;
     text-align: left;
   }
-  
+
   .virtual-table-body td:before {
     content: attr(data-label) ": ";
     font-weight: bold;
     color: var(--accent-color);
   }
-  
+
   .actions {
     justify-content: flex-start;
     margin-top: 0.5rem;

@@ -17,13 +17,11 @@ import { useNotify } from '@/components/global/fcNotify.js'
 import { t } from '@/i18n/index.js'
 
 export const useCurrenciesStore = defineStore('currencies', () => {
-  // state
   const items = ref([])
   const status = ref('idle')
   const error = ref(null)
   const _unsub = ref(null)
   
-  // helpers
   const gate = () => {
     const authStore = useAuthStore()
     if (!authStore.canWrite) {
@@ -39,7 +37,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     return { col: collection(db, 'users', uid, 'currencies'), uid }
   }
   
-  // actions
   const subscribe = async () => {
     if (_unsub.value) _unsub.value()
     status.value = 'loading'
@@ -72,7 +69,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     const snap = await getDocs(query(col))
     
     if (snap.empty) {
-      // si es solo lectura, no intentes crear
       if (gate()) return
       
       await addDoc(col, {
@@ -144,7 +140,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     
     await deleteDoc(doc(col, id))
     
-    // si no queda default, pone el primero como default
     const hasOtherDefault = items.value.some((i) => i.isDefault && i.id !== id)
     if (!hasOtherDefault) {
       const first = items.value.find((i) => i.id !== id)
@@ -169,7 +164,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     })
   }
   
-  // getters
   const defaultCurrency = computed(
     () => items.value.find((i) => i.isDefault) || items.value[0] || { code: 'COP', symbol: '$' },
   )

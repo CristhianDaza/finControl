@@ -289,7 +289,6 @@ img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
   .button { padding: 0.6rem 1rem; }
 }
 
-/* Lazy loading components styles */
 .lazy-loading {
   display: flex;
   align-items: center;

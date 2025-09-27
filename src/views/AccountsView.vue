@@ -28,7 +28,6 @@ const isLoading = computed(() => acc.status === 'loading')
 const hasItems = computed(() => acc.items.length > 0)
 const rows = computed(() => acc.items)
 
-// Performance optimization: use virtual scrolling for large datasets
 const useVirtualScrolling = computed(() => rows.value.length > 20)
 const virtualScrollHeight = computed(() => {
   const viewportHeight = window.innerHeight
@@ -70,7 +69,6 @@ onMounted(() => { acc.subscribeMyAccounts() })
       <button class="button" @click="openCreate" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('common.add') }}</button>
     </div>
 
-    <!-- Virtual scrolling for large datasets -->
     <VirtualAccountsGrid
       v-if="useVirtualScrolling"
       :items="rows"
@@ -80,8 +78,7 @@ onMounted(() => { acc.subscribeMyAccounts() })
       @edit="openEdit"
       @delete="askRemove"
     />
-    
-    <!-- Traditional grid for smaller datasets -->
+
     <div v-else class="account-list">
       <div class="account-card" v-for="item in rows" :key="item.id">
         <div class="account-header">
