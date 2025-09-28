@@ -17,7 +17,8 @@
     "select-option": "Select an option",
     "transfer": "Transfer",
     "month": "Month",
-    "year": "Year"
+    "year": "Year",
+    "no-note": "No note"
   },
   "language": { "switcher": "Language" },
   "notification": { "dismiss": "Dismiss notification" },
@@ -261,7 +262,16 @@
     "incomeTitle": "Income Categories",
     "expenseTitle": "Expense Categories",
     "table": { "name": "Name", "actions": "Actions" },
-    "samples": { "salary": "Salary", "rent": "Rent" }
+    "samples": { "salary": "Salary", "rent": "Rent" },
+    "form": {
+      "name": "Category name",
+      "namePlaceholder": "e.g., Groceries",
+      "nameError": "Name is required and must not exceed 100 characters.",
+      "type": "Type",
+      "income": "Income",
+      "expense": "Expense",
+      "typeError": "Select a category type."
+    }
   },
   "layout": { "brand": "FinControl" },
   "transfers": {
@@ -409,7 +419,15 @@
     },
     "closePeriod": "Close period",
     "periodMonthly": "{year} {month}",
-    "periodCustom": "{from} to {to}"
+    "periodCustom": "{from} to {to}",
+    "sections": {
+      "general": "General",
+      "period": "Period",
+      "scope": "Scope",
+      "exclude": "Excluded accounts",
+      "alerts": "Alerts and carryover",
+      "conversion": "Conversion"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -492,6 +510,7 @@
       "email": "Email",
       "createdAt": "Created",
       "lastActiveAt": "Last active",
+      "planExpiresAt": "Plan expires",
       "isActive": "Active",
       "role": "Role",
       "empty": "No users"
