@@ -235,4 +235,6 @@ No license file included. If you plan to distribute, add a suitable license (MIT
 
 ## 📫 Support
 
-Questions or suggestions? Open an issue or PR. If you need help with Firebase setup or deployment, include environment details and relevant error logs.
+Questions or suggestions?
+Open an issue or PR.
+If you need help with Firebase setup or deployment, include environment details and relevant error logs.
