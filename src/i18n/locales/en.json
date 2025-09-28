@@ -489,7 +489,11 @@
     "enterCode": "Enter new code",
     "generateCode": "Generate new code",
     "validateCode": "Validate",
-    "code": { "success": "Code valid. New expiration: {date}", "attempts": "Attempts left: {n}", "blocked": "Blocked until: {date}" },
+    "code": {
+      "success": "Code valid. New expiration: {date}",
+      "attempts": "Attempts left: {n}",
+      "blocked": "Blocked until: {date}"
+    },
     "extendSuccess": "Plan extended",
     "accountStatusActive": "Active",
     "accountStatusInactive": "Inactive",

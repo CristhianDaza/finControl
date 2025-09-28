@@ -144,6 +144,4 @@ watch(showModal, v => emit('update:showModal', v))
   </FcModal>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
