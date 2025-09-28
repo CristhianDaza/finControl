@@ -744,284 +744,284 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-  .period-toolbar {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    align-items: flex-end;
-    flex-wrap: wrap;
-  }
-  .field {
-    min-width: 160px;
-  }
-  .field label {
-    display: block;
-    margin-bottom: .25rem;
-    color: var(--muted-text-color);
-  }
+.period-toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.field {
+  min-width: 160px;
+}
+.field label {
+  display: block;
+  margin-bottom: .25rem;
+  color: var(--muted-text-color);
+}
 
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
-  }
-  .dashboard-card {
-    background-color: var(--primary-color);
-    padding: 1.5rem;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px var(--shadow-soft);
-    border-left: 6px solid var(--accent-color);
-    transition: transform 0.2s ease;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-  .dashboard-card:hover {
-    transform: translateY(-4px);
-  }
-  .dashboard-card h3 {
-    margin: 0;
-    font-size: 1rem;
-    color: var(--muted-text-color);
-  }
-  .dashboard-card .amount {
-    margin-top: .5rem;
-    font-size: clamp(1.1rem, 1.2vw + .8rem, 1.6rem);
-    font-weight: bold;
-    color: var(--text-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-  }
-  .amount-format-toggle {
-    display: none;
-  }
-  .dashboard-card.income {
-    border-left-color: var(--success-color);
-  }
-  .dashboard-card.expense {
-    border-left-color: var(--error-color);
-  }
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+}
+.dashboard-card {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px var(--shadow-soft);
+  border-left: 6px solid var(--accent-color);
+  transition: transform 0.2s ease;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.dashboard-card:hover {
+  transform: translateY(-4px);
+}
+.dashboard-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted-text-color);
+}
+.dashboard-card .amount {
+  margin-top: .5rem;
+  font-size: clamp(1.1rem, 1.2vw + .8rem, 1.6rem);
+  font-weight: bold;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.amount-format-toggle {
+  display: none;
+}
+.dashboard-card.income {
+  border-left-color: var(--success-color);
+}
+.dashboard-card.expense {
+  border-left-color: var(--error-color);
+}
 
-  .charts-grid {
-    margin-top: 1.5rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-  }
-  .chart-card h3 {
-    margin-top: 0;
-    color: var(--muted-text-color);
-  }
+.charts-grid {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.chart-card h3 {
+  margin-top: 0;
+  color: var(--muted-text-color);
+}
 
-  .budgets-card {
-    margin-top: 1rem;
-  }
-  .budgets-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
-  }
+.budgets-card {
+  margin-top: 1rem;
+}
+.budgets-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.budget-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem 0;
+  border-bottom: 1px solid var(--primary-color);
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+.b-left {
+  display: grid;
+  min-width: 180px;
+}
+.b-name {
+  color: var(--text-color);
+  font-weight: 600;
+}
+.b-period {
+  color: var(--muted-text-color);
+  font-size: .9rem;
+}
+.b-center {
+  flex: 1 1 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+}
+.b-right {
+  text-align: right;
+  display: grid;
+  min-width: 140px;
+}
+.progress {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  max-width: 360px;
+}
+.progress .bar {
+  width: 100%;
+  height: 8px;
+  background: var(--secondary-color);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress .fill {
+  height: 100%;
+  background: var(--accent-color);
+}
+.progress .fill.warn {
+  background: var(--warning-color);
+}
+.progress .fill.over {
+  background: var(--error-color);
+}
+.progress .pct {
+  color: var(--muted-text-color);
+  font-size: .85rem;
+}
+
+.goals-card {
+  margin-top: 1rem;
+}
+.goals-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.goal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem 0;
+  border-bottom: 1px solid var(--primary-color);
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+.goal-left {
+  display: grid;
+  min-width: 160px;
+}
+.goal-name {
+  color: var(--text-color);
+  font-weight: 600;
+}
+.goal-note {
+  color: var(--muted-text-color);
+  font-size: .9rem;
+}
+.goal-right {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  padding: .125rem .5rem;
+  border-radius: 999px;
+  font-size: .75rem;
+}
+.badge-green {
+  background: var(--hover-success-color);
+  color: var(--white);
+}
+
+.tx-list {
+  margin-top: 1.5rem;
+}
+.tx-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tx-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .75rem 0;
+  border-bottom: 1px solid var(--secondary-color);
+}
+.tx-left {
+  display: grid;
+}
+.tx-date {
+  color: var(--muted-text-color);
+  font-size: .9rem;
+}
+.tx-note {
+  color: var(--text-color);
+}
+.tx-right {
+  text-align: right;
+}
+.tx-account {
+  color: var(--muted-text-color);
+  font-size: .9rem;
+}
+.tx-amount {
+  font-weight: 600;
+}
+.tx-amount.inc {
+  color: var(--success-color);
+}
+.tx-amount.exp {
+  color: var(--error-color);
+}
+.see-more {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.error-state,
+.loading-state {
+  margin-top: 1rem;
+}
+.badge {
+  display: inline-block;
+  padding: .125rem .5rem;
+  border-radius: 999px;
+  font-size: .75rem;
+}
+.badge-rec {
+  background: var(--recurring-badge-color);
+  color: var(--white);
+  margin-left: .5rem;
+}
+
+@media (max-width: 600px) {
   .budget-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: .5rem 0;
-    border-bottom: 1px solid var(--primary-color);
-    gap: .75rem;
-    flex-wrap: wrap;
-  }
-  .b-left {
-    display: grid;
-    min-width: 180px;
-  }
-  .b-name {
-    color: var(--text-color);
-    font-weight: 600;
-  }
-  .b-period {
-    color: var(--muted-text-color);
-    font-size: .9rem;
+    flex-direction: column;
+    align-items: stretch;
   }
   .b-center {
-    flex: 1 1 240px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 200px;
+    order: 3;
   }
   .b-right {
-    text-align: right;
-    display: grid;
-    min-width: 140px;
-  }
-  .progress {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    width: 100%;
-    max-width: 360px;
-  }
-  .progress .bar {
-    width: 100%;
-    height: 8px;
-    background: var(--secondary-color);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-  .progress .fill {
-    height: 100%;
-    background: var(--accent-color);
-  }
-  .progress .fill.warn {
-    background: var(--warning-color);
-  }
-  .progress .fill.over {
-    background: var(--error-color);
-  }
-  .progress .pct {
-    color: var(--muted-text-color);
-    font-size: .85rem;
-  }
-
-  .goals-card {
-    margin-top: 1rem;
-  }
-  .goals-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
+    order: 2;
+    text-align: left;
   }
   .goal-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: .5rem 0;
-    border-bottom: 1px solid var(--primary-color);
-    gap: .75rem;
-    flex-wrap: wrap;
-  }
-  .goal-left {
-    display: grid;
-    min-width: 160px;
-  }
-  .goal-name {
-    color: var(--text-color);
-    font-weight: 600;
-  }
-  .goal-note {
-    color: var(--muted-text-color);
-    font-size: .9rem;
+    flex-direction: column;
+    align-items: stretch;
   }
   .goal-right {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    flex-wrap: wrap;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: .125rem .5rem;
-    border-radius: 999px;
-    font-size: .75rem;
-  }
-  .badge-green {
-    background: var(--hover-success-color);
-    color: var(--white);
-  }
-
-  .tx-list {
-    margin-top: 1.5rem;
-  }
-  .tx-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .tx-item {
-    display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: .75rem 0;
-    border-bottom: 1px solid var(--secondary-color);
   }
-  .tx-left {
-    display: grid;
+  .field {
+    min-width: 120px;
   }
-  .tx-date {
-    color: var(--muted-text-color);
-    font-size: .9rem;
-  }
-  .tx-note {
-    color: var(--text-color);
-  }
-  .tx-right {
-    text-align: right;
-  }
-  .tx-account {
-    color: var(--muted-text-color);
-    font-size: .9rem;
-  }
-  .tx-amount {
-    font-weight: 600;
-  }
-  .tx-amount.inc {
-    color: var(--success-color);
-  }
-  .tx-amount.exp {
-    color: var(--error-color);
-  }
-  .see-more {
-    margin-top: 1rem;
-    text-align: center;
-  }
-
-  .error-state,
-  .loading-state {
-    margin-top: 1rem;
-  }
-  .badge {
-    display: inline-block;
-    padding: .125rem .5rem;
-    border-radius: 999px;
-    font-size: .75rem;
-  }
-  .badge-rec {
-    background: var(--recurring-badge-color);
-    color: var(--white);
-    margin-left: .5rem;
-  }
-
-  @media (max-width: 600px) {
-    .budget-item {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    .b-center {
-      order: 3;
-    }
-    .b-right {
-      order: 2;
-      text-align: left;
-    }
-    .goal-item {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    .goal-right {
-      justify-content: space-between;
-    }
-    .field {
-      min-width: 120px;
-    }
-  }
+}
 </style>
