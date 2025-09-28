@@ -1,89 +1,89 @@
 body.no-scroll, html.no-scroll { overflow: hidden !important; }
 
 :root {
-    --primary-color: #243447;
-    --hover-prrimary-color: #2c3e50;
-    --secondary-color: #0D1117;
-    --hover-secondary-color: #161b22;
-    --background-color: #0A192F;
-    --hover-background-color: #0D1117;
-    --text-color: #E0E1E9;
-    --hover-text-color: #C9D1D9;
-    --accent-color: #3FA9F5;
-    --hover-accent-color: #3498db;
-    --muted-text-color: #A3A8B8;
-    --hover-muted-text-color: #8B95A1;
-    --success-color: #22C55E;
-    --hover-success-color: #16A34A;
-    --warning-color: #F59E0B;
-    --hover-warning-color: #D97706;
-    --error-color: #EF4444;
-    --hover-error-color: #DC2626;
-    --info-color: #11567e;
-    --hover-info-color: #0d4f6c;
-    --debt-color: #8B5CF6;
-    --hover-debt-color: #7C3AED;
-    --white: #ffffff;
-    --black: #000000;
-    --badge-gray-color: #6b7280;
-    --recurring-badge-color: #2563eb;
-    --shadow-elev-2: rgba(0, 0, 0, 0.25);
-    --shadow-elev-1: rgba(0, 0, 0, 0.2);
-    --shadow-soft: rgba(0, 0, 0, 0.15);
-    --shadow-accent: rgba(63, 169, 245, 0.3);
-    --focus-accent-glow: rgba(63, 169, 245, 0.4);
-    --shadow-elev-3: rgba(0, 0, 0, 0.3);
-    --shadow-elev-4: rgba(0, 0, 0, 0.4);
-    --overlay-40: rgba(0, 0, 0, 0.4);
-    --overlay-50: rgba(0, 0, 0, 0.5);
+  --primary-color: #243447;
+  --hover-prrimary-color: #2c3e50;
+  --secondary-color: #0D1117;
+  --hover-secondary-color: #161b22;
+  --background-color: #0A192F;
+  --hover-background-color: #0D1117;
+  --text-color: #E0E1E9;
+  --hover-text-color: #C9D1D9;
+  --accent-color: #3FA9F5;
+  --hover-accent-color: #3498db;
+  --muted-text-color: #A3A8B8;
+  --hover-muted-text-color: #8B95A1;
+  --success-color: #22C55E;
+  --hover-success-color: #16A34A;
+  --warning-color: #F59E0B;
+  --hover-warning-color: #D97706;
+  --error-color: #EF4444;
+  --hover-error-color: #DC2626;
+  --info-color: #11567e;
+  --hover-info-color: #0d4f6c;
+  --debt-color: #8B5CF6;
+  --hover-debt-color: #7C3AED;
+  --white: #ffffff;
+  --black: #000000;
+  --badge-gray-color: #6b7280;
+  --recurring-badge-color: #2563eb;
+  --shadow-elev-2: rgba(0, 0, 0, 0.25);
+  --shadow-elev-1: rgba(0, 0, 0, 0.2);
+  --shadow-soft: rgba(0, 0, 0, 0.15);
+  --shadow-accent: rgba(63, 169, 245, 0.3);
+  --focus-accent-glow: rgba(63, 169, 245, 0.4);
+  --shadow-elev-3: rgba(0, 0, 0, 0.3);
+  --shadow-elev-4: rgba(0, 0, 0, 0.4);
+  --overlay-40: rgba(0, 0, 0, 0.4);
+  --overlay-50: rgba(0, 0, 0, 0.5);
 
-    --tx-expense-color: #EF4444;
-    --tx-goal-color: #F59E0B;
-    --tx-debtPayment-color: #8B5CF6;
-    --tx-income-color: #22C55E;
-    --tx-transfer-color: #3FA9F5;
+  --tx-expense-color: #EF4444;
+  --tx-goal-color: #F59E0B;
+  --tx-debtPayment-color: #8B5CF6;
+  --tx-income-color: #22C55E;
+  --tx-transfer-color: #3FA9F5;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 .card {
-    background-color: var(--primary-color);
-    border: 1px solid var(--secondary-color);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px var(--shadow-elev-2);
+  background-color: var(--primary-color);
+  border: 1px solid var(--secondary-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px var(--shadow-elev-2);
 }
 
 .card h2 {
-    color: var(--accent-color);
-    margin: 0 0 0.5rem 0;
+  color: var(--accent-color);
+  margin: 0 0 0.5rem 0;
 }
 
 .card p {
-    color: var(--muted-text-color);
-    margin: 0.5rem 0 1rem;
+  color: var(--muted-text-color);
+  margin: 0.5rem 0 1rem;
 }
 
 .button {
-    background-color: var(--accent-color);
-    color: var(--background-color);
-    border: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 6px var(--shadow-accent);
+  background-color: var(--accent-color);
+  color: var(--background-color);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px var(--shadow-accent);
 }
 
 .button:hover {
-    background-color: color-mix(in srgb, var(--accent-color) 85%, var(--black));
+  background-color: color-mix(in srgb, var(--accent-color) 85%, var(--black));
 }
 
 input[type="text"],
@@ -91,163 +91,173 @@ input[type="number"],
 input[type="email"],
 input[type="password"],
 textarea {
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-    padding: 0.6rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    width: 100%;
-    box-sizing: border-box;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border: 1px solid var(--primary-color);
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 input::placeholder,
 textarea::placeholder {
-    color: var(--muted-text-color);
+  color: var(--muted-text-color);
 }
 
 input:focus,
 textarea:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 4px var(--focus-accent-glow);
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 4px var(--focus-accent-glow);
 }
 
 select {
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-    padding: 0.6rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    width: 100%;
-    box-sizing: border-box;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A3A8B8'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.8rem center;
-    background-size: 10px 6px;
-    cursor: pointer;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border: 1px solid var(--primary-color);
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A3A8B8'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 10px 6px;
+  cursor: pointer;
 }
 
 select:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 4px var(--focus-accent-glow);
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 4px var(--focus-accent-glow);
 }
 
 input[type="date"] {
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-    padding: 0.6rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    width: 100%;
-    box-sizing: border-box;
-    appearance: none;
-    cursor: pointer;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border: 1px solid var(--primary-color);
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  cursor: pointer;
 }
 
 input[type="date"]::placeholder {
-    color: var(--muted-text-color);
+  color: var(--muted-text-color);
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    cursor: pointer;
+  filter: invert(1);
+  cursor: pointer;
 }
 
 input[type="date"]:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 4px var(--focus-accent-glow);
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 4px var(--focus-accent-glow);
 }
 
 .alert-success {
-    background-color: var(--success-color);
-    color: var(--white);
-    padding: 0.75rem;
-    border-radius: 6px;
+  background-color: var(--success-color);
+  color: var(--white);
+  padding: 0.75rem;
+  border-radius: 6px;
 }
 
 .alert-warning {
-    background-color: var(--warning-color);
-    color: var(--black);
-    padding: 0.75rem;
-    border-radius: 6px;
+  background-color: var(--warning-color);
+  color: var(--black);
+  padding: 0.75rem;
+  border-radius: 6px;
 }
 
 .alert-error {
-    background-color: var(--error-color);
-    color: var(--white);
-    padding: 0.75rem;
-    border-radius: 6px;
+  background-color: var(--error-color);
+  color: var(--white);
+  padding: 0.75rem;
+  border-radius: 6px;
 }
 
 .button-delete {
-    background-color: var(--error-color);
-    color: var(--text-color);
+  background-color: var(--error-color);
+  color: var(--text-color);
 }
 
-
 .button-delete:hover {
-    background-color: color-mix(in srgb, var(--error-color) 85%, var(--black));
+  background-color: color-mix(in srgb, var(--error-color) 85%, var(--black));
 }
 
 .button-pause {
-    background-color: var(--hover-prrimary-color);
-    color: var(--text-color);
+  background-color: var(--hover-prrimary-color);
+  color: var(--text-color);
 }
 
 .button-pause:hover {
-    background-color: color-mix(in srgb, var(--hover-prrimary-color) 85%, var(--black));
+  background-color: color-mix(in srgb, var(--hover-prrimary-color) 85%, var(--black));
 }
 
 .button-edit {
-    background-color: var(--info-color);
-    color: var(--text-color);
+  background-color: var(--info-color);
+  color: var(--text-color);
 }
 
 .button-edit:hover {
-    background-color: color-mix(in srgb, var(--info-color) 85%, var(--black));
+  background-color: color-mix(in srgb, var(--info-color) 85%, var(--black));
 }
 
 .button-secondary {
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    box-shadow: 0 2px 6px var(--shadow-elev-1);
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  box-shadow: 0 2px 6px var(--shadow-elev-1);
 }
 
 .button-secondary:hover {
-    background-color: color-mix(in srgb, var(--secondary-color) 85%, var(--text-color));
+  background-color: color-mix(in srgb, var(--secondary-color) 85%, var(--text-color));
 }
 
 .icon-delete,
 .icon-edit,
 .icon-pause {
-    width: 20px;
-    height: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 button.button.button-edit,
 button.button.button-delete,
 button.button.button-pause {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
-    opacity: 0;
+  opacity: 0;
 }
 
-html, body { overflow-x: hidden; }
+html,
+body {
+  overflow-x: hidden;
+}
 
-img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
+img,
+canvas,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 
 .button[disabled],
 .button[aria-disabled="true"] {
@@ -256,11 +266,19 @@ img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
 }
 
 @media (max-width: 720px) {
-  .table-container { overflow-x: visible; box-shadow: none; }
+  .table-container {
+    overflow-x: visible;
+    box-shadow: none;
+  }
   .table-container table,
-  .category-table { border: 0; box-shadow: none; }
+  .category-table {
+    border: 0;
+    box-shadow: none;
+  }
   .table-container thead,
-  .category-table thead { display: none; }
+  .category-table thead {
+    display: none;
+  }
   .table-container tbody tr,
   .category-table tbody tr {
     display: block;
@@ -277,7 +295,9 @@ img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
     border-bottom: 1px solid var(--secondary-color);
   }
   .table-container tbody td,
-  .category-table tbody td { border-bottom: 0; }
+  .category-table tbody td {
+    border-bottom: 0;
+  }
 
   .table-container tbody td::before,
   .category-table tbody td::before {
@@ -289,10 +309,13 @@ img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
     letter-spacing: 1px;
   }
 
-  .actions { justify-content: flex-start !important; }
+  .actions {
+    justify-content: flex-start !important;
+  }
 
-
-  .button { padding: 0.6rem 1rem; }
+  .button {
+    padding: 0.6rem 1rem;
+  }
 }
 
 .lazy-loading {
@@ -313,8 +336,12 @@ img, canvas, svg, video { max-width: 100%; height: auto; display: block; }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .lazy-error {
