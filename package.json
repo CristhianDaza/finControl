@@ -13,14 +13,14 @@
     "i18n:unused": "node scripts/i18n-unused.js"
   },
   "dependencies": {
-    "chart.js": "^4.4.3",
-    "firebase": "^11.0.0",
+    "chart.js": "^4.0.0",
+    "firebase": "^12.0.0",
     "pinia": "^3.0.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.0",
-    "vite": "^6.0.0"
+    "@vitejs/plugin-vue": "^6.0.0",
+    "vite": "^7.0.0"
   }
 }
