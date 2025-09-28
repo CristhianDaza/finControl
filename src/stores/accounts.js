@@ -1,9 +1,9 @@
-import {defineStore} from 'pinia'
-import {computed, ref, watchEffect} from 'vue'
-import {useAccounts} from '@/composables/useAccounts.js'
-import {useNotify} from '@/components/global/fcNotify.js'
-import {t} from '@/i18n/index.js'
-import {useAuth} from '@/composables/useAuth.js'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
+import { useAccounts } from '@/composables/useAccounts.js'
+import { useNotify } from '@/components/global/fcNotify.js'
+import { t } from '@/i18n/index.js'
+import { useAuth } from '@/composables/useAuth.js'
 
 export const useAccountsStore = defineStore('accounts', () => {
   const items = ref([])
@@ -11,7 +11,13 @@ export const useAccountsStore = defineStore('accounts', () => {
   const error = ref(null)
   const _unsubscribe = ref(null)
 
-  const { subscribeAccounts, createAccount, updateAccountName, deleteAccount } = useAccounts()
+  const {
+    subscribeAccounts,
+    createAccount,
+    updateAccountName,
+    deleteAccount
+  } = useAccounts()
+
   const { success, error: notifyError } = useNotify()
 
   const subscribeMyAccounts = async () => {
@@ -20,15 +26,27 @@ export const useAccountsStore = defineStore('accounts', () => {
     try {
       const { onAuthReady } = useAuth()
       const user = await onAuthReady()
-      if (!user) { items.value = []; status.value = 'success'; return }
-      _unsubscribe.value = subscribeAccounts(list => { items.value = list; status.value = 'success' })
+      if (!user) {
+        items.value = []
+        status.value = 'success'
+        return
+      }
+      _unsubscribe.value = subscribeAccounts(list => {
+        items.value = list
+        status.value = 'success'
+      })
     } catch (e) {
       error.value = e?.message || 'Error'
       status.value = 'error'
     }
   }
 
-  const unsubscribe = () => { if (_unsubscribe.value) { _unsubscribe.value(); _unsubscribe.value = null } }
+  const unsubscribe = () => {
+    if (_unsubscribe.value) {
+      _unsubscribe.value()
+      _unsubscribe.value = null
+    }
+  }
 
   const accountsById = computed(() => {
     const map = new Map()
@@ -37,13 +55,20 @@ export const useAccountsStore = defineStore('accounts', () => {
     }
     return map
   })
-  
-  const getAccountById = (id) => computed(() => accountsById.value.get(id))
+
+  const getAccountById = id => computed(() => accountsById.value.get(id))
 
   const create = async ({ name, balance, currency }) => {
-    if (Number(balance) < 0) { notifyError(t('accounts.form.balanceError')); throw new Error('invalid-balance') }
+    if (Number(balance) < 0) {
+      notifyError(t('accounts.form.balanceError'))
+      throw new Error('invalid-balance')
+    }
     try {
-      const id = await createAccount({ name, balance: Number(balance), currency: currency || t('currency.default') })
+      const id = await createAccount({
+        name,
+        balance: Number(balance),
+        currency: currency || t('currency.default')
+      })
       success(t('accounts.notifications.created'))
       return id
     } catch (e) {
@@ -53,11 +78,16 @@ export const useAccountsStore = defineStore('accounts', () => {
   }
 
   const updateName = async (id, name) => {
-    try { await updateAccountName(id, name); success(t('accounts.notifications.updated')) }
-    catch (e) { notifyError(e?.message || 'Error'); throw e }
+    try {
+      await updateAccountName(id, name)
+      success(t('accounts.notifications.updated'))
+    } catch (e) {
+      notifyError(e?.message || 'Error')
+      throw e
+    }
   }
 
-  const remove = async (id) => {
+  const remove = async id => {
     try {
       await deleteAccount(id)
       success(t('accounts.notifications.deleted'))
@@ -73,13 +103,15 @@ export const useAccountsStore = defineStore('accounts', () => {
     }
     return total
   })
-  
+
   const hasItems = computed(() => items.value.length > 0)
-  
+
   const accountsByName = computed(() => {
-    return [...items.value].sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+    return [...items.value].sort((a, b) =>
+      (a.name || '').localeCompare(b.name || '')
+    )
   })
-  
+
   const accountsByCurrency = computed(() => {
     const grouped = new Map()
     for (const account of items.value) {
@@ -91,7 +123,7 @@ export const useAccountsStore = defineStore('accounts', () => {
     }
     return grouped
   })
-  
+
   const totalBalanceByCurrency = computed(() => {
     const totals = new Map()
     for (const account of items.value) {
@@ -103,14 +135,23 @@ export const useAccountsStore = defineStore('accounts', () => {
   })
 
   return {
-    items, status, error,
-    subscribeMyAccounts, unsubscribe,
-    getAccountById, accountsById,
+    items,
+    status,
+    error,
+    subscribeMyAccounts,
+    unsubscribe,
+    getAccountById,
+    accountsById,
     createAccount: create,
     updateAccountName: updateName,
     deleteAccount: remove,
-    create, updateName, remove,
-    totalBalance, hasItems,
-    accountsByName, accountsByCurrency, totalBalanceByCurrency
+    create,
+    updateName,
+    remove,
+    totalBalance,
+    hasItems,
+    accountsByName,
+    accountsByCurrency,
+    totalBalanceByCurrency
   }
 })

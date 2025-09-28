@@ -1,6 +1,6 @@
-import {defineStore} from 'pinia'
-import {auth} from '@/services/firebase.js'
-import {useUserPrefs} from '@/composables/useUserPrefs.js'
+import { defineStore } from 'pinia'
+import { auth } from '@/services/firebase.js'
+import { useUserPrefs } from '@/composables/useUserPrefs.js'
 
 const STORAGE_KEY = 'fincontrol.themeVars'
 
@@ -14,7 +14,7 @@ export const EDITABLE_VARS = [
   { key: '--tx-goal-color', label: 'Agregar a la meta' },
   { key: '--tx-debtPayment-color', label: 'Pago de deuda' },
   { key: '--tx-income-color', label: 'Ingreso' },
-  { key: '--tx-transfer-color', label: 'Transferencia' },
+  { key: '--tx-transfer-color', label: 'Transferencia' }
 ]
 
 export const THEME_PRESETS = [
@@ -32,8 +32,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#8B5CF6',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#3FA9F5',
-    },
+      '--tx-transfer-color': '#3FA9F5'
+    }
   },
   {
     id: 'dark-rose',
@@ -49,8 +49,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#C084FC',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#FB7185',
-    },
+      '--tx-transfer-color': '#FB7185'
+    }
   },
   {
     id: 'dark-forest',
@@ -66,8 +66,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#FBBF24',
       '--tx-debtPayment-color': '#34D399',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#2DD4BF',
-    },
+      '--tx-transfer-color': '#2DD4BF'
+    }
   },
   {
     id: 'light-ocean',
@@ -83,8 +83,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#7C3AED',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#0284C7',
-    },
+      '--tx-transfer-color': '#0284C7'
+    }
   },
   {
     id: 'light-rose',
@@ -100,8 +100,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#EC4899',
-    },
+      '--tx-transfer-color': '#EC4899'
+    }
   },
   {
     id: 'light-slate',
@@ -117,8 +117,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#6366F1',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#22D3EE',
-    },
+      '--tx-transfer-color': '#22D3EE'
+    }
   },
   {
     id: 'dark-amber',
@@ -134,8 +134,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#FBBF24',
-    },
+      '--tx-transfer-color': '#FBBF24'
+    }
   },
   {
     id: 'dark-teal',
@@ -151,8 +151,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#FBBF24',
       '--tx-debtPayment-color': '#06B6D4',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#14B8A6',
-    },
+      '--tx-transfer-color': '#14B8A6'
+    }
   },
   {
     id: 'light-emerald',
@@ -168,8 +168,8 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#6366F1',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#34D399',
-    },
+      '--tx-transfer-color': '#34D399'
+    }
   },
   {
     id: 'light-amber',
@@ -185,9 +185,9 @@ export const THEME_PRESETS = [
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#FBBF24',
-    },
-  },
+      '--tx-transfer-color': '#FBBF24'
+    }
+  }
 ]
 
 export const useSettingsStore = defineStore('settings', {
@@ -195,7 +195,7 @@ export const useSettingsStore = defineStore('settings', {
     themeVars: {},
     initialDefaults: {},
     loaded: false,
-    amountFormat: 'full',
+    amountFormat: 'full'
   }),
   actions: {
     _readCssVar(key) {
@@ -231,14 +231,19 @@ export const useSettingsStore = defineStore('settings', {
         } catch {}
       }
 
-      this.themeVars = {...defaults, ...cached, ...(remote || {})}
+      this.themeVars = { ...defaults, ...cached, ...(remote || {}) }
       this._applyAll(this.themeVars)
       this.loaded = true
 
       if (remote) {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars))
+        } catch {}
       }
-      try { const af = localStorage.getItem('fincontrol.amountFormat'); if (af === 'compact' || af === 'full') this.amountFormat = af } catch {}
+      try {
+        const af = localStorage.getItem('fincontrol.amountFormat')
+        if (af === 'compact' || af === 'full') this.amountFormat = af
+      } catch {}
     },
     setVar(key, value) {
       this.themeVars[key] = value
@@ -247,10 +252,14 @@ export const useSettingsStore = defineStore('settings', {
     setAmountFormat(mode) {
       if (mode !== 'full' && mode !== 'compact') return
       this.amountFormat = mode
-      try { localStorage.setItem('fincontrol.amountFormat', mode) } catch {}
+      try {
+        localStorage.setItem('fincontrol.amountFormat', mode)
+      } catch {}
     },
     async save() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars))
+      } catch {}
 
       if (auth.currentUser) {
         try {
@@ -265,7 +274,9 @@ export const useSettingsStore = defineStore('settings', {
       await this.save()
     },
     clearCacheOnLogout() {
-      try { localStorage.removeItem(STORAGE_KEY) } catch {}
+      try {
+        localStorage.removeItem(STORAGE_KEY)
+      } catch {}
       if (Object.keys(this.initialDefaults).length) {
         this.themeVars = { ...this.initialDefaults }
         this._applyAll(this.themeVars)
@@ -275,8 +286,8 @@ export const useSettingsStore = defineStore('settings', {
     applyPreset(id) {
       const preset = THEME_PRESETS.find(p => p.id === id)
       if (!preset) return
-      this.themeVars = {...this.initialDefaults, ...preset.vars}
+      this.themeVars = { ...this.initialDefaults, ...preset.vars }
       this._applyAll(this.themeVars)
-    },
-  },
+    }
+  }
 })

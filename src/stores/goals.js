@@ -18,7 +18,9 @@ export const useGoalsStore = defineStore('goals', () => {
   const { success, error: notifyError } = useNotify()
 
   const init = async (opts = {}) => {
-    if (unsubscribe.value) unsubscribe.value()
+    if (unsubscribe.value) {
+      unsubscribe.value()
+    }
     status.value = 'loading'
     try {
       const { onAuthReady } = useAuth()
@@ -32,7 +34,11 @@ export const useGoalsStore = defineStore('goals', () => {
       unsubscribe.value = subscribeGoals(async (list) => {
         items.value = list
         status.value = 'success'
-        try { await loadProgress() } catch { /* noop */ }
+        try {
+          await loadProgress()
+        } catch {
+          /* noop */
+        }
       }, opts)
     } catch (e) {
       error.value = e?.message || 'Error'
@@ -40,21 +46,41 @@ export const useGoalsStore = defineStore('goals', () => {
     }
   }
 
-  const dispose = () => { if (unsubscribe.value) { unsubscribe.value(); unsubscribe.value = null } }
+  const dispose = () => {
+    if (unsubscribe.value) {
+      unsubscribe.value()
+      unsubscribe.value = null
+    }
+  }
 
   const add = async (payload) => {
-    try { await createGoal(payload); success(t('goals.notifications.created')) }
-    catch (e) { notifyError(t('errors.generic')); throw e }
+    try {
+      await createGoal(payload)
+      success(t('goals.notifications.created'))
+    } catch (e) {
+      notifyError(t('errors.generic'))
+      throw e
+    }
   }
 
   const edit = async (id, patch) => {
-    try { await updateGoal(id, patch); success(t('goals.notifications.updated')) }
-    catch (e) { notifyError(t('errors.generic')); throw e }
+    try {
+      await updateGoal(id, patch)
+      success(t('goals.notifications.updated'))
+    } catch (e) {
+      notifyError(t('errors.generic'))
+      throw e
+    }
   }
 
   const remove = async (id) => {
-    try { await deleteGoal(id); success(t('goals.notifications.deleted')) }
-    catch (e) { notifyError(t('errors.generic')); throw e }
+    try {
+      await deleteGoal(id)
+      success(t('goals.notifications.deleted'))
+    } catch (e) {
+      notifyError(t('errors.generic'))
+      throw e
+    }
   }
 
   const pause = async (id) => edit(id, { paused: true })
@@ -65,30 +91,47 @@ export const useGoalsStore = defineStore('goals', () => {
     for (const g of items.value) {
       try {
         const txs = await fetchTransactions({ goalId: g.id })
-        map[g.id] = txs.reduce((a,b)=> a + Number(b.amount||0), 0)
-      } catch { map[g.id] = 0 }
+        map[g.id] = txs.reduce((a, b) => a + Number(b.amount || 0), 0)
+      } catch {
+        map[g.id] = 0
+      }
     }
     progressById.value = map
     return map
   }
 
   const progressPct = (id) => {
-    const g = items.value.find(x=>x.id===id)
+    const g = items.value.find(x => x.id === id)
     if (!g) return 0
-    const tgt = Number(g.targetAmount||0)
+    const tgt = Number(g.targetAmount || 0)
     if (tgt <= 0) return 0
     const cur = Number(progressById.value[id] || 0)
     return Math.min(100, (cur / tgt) * 100)
   }
 
   const isCompleted = (id) => {
-    const g = items.value.find(x=>x.id===id)
+    const g = items.value.find(x => x.id === id)
     if (!g) return false
     const cur = Number(progressById.value[id] || 0)
-    return cur >= Number(g.targetAmount||0) && Number(g.targetAmount||0) > 0
+    return cur >= Number(g.targetAmount || 0) && Number(g.targetAmount || 0) > 0
   }
 
   onUnmounted(() => dispose())
 
-  return { items, status, error, progressById, init, dispose, add, edit, remove, pause, resume, loadProgress, progressPct, isCompleted }
+  return {
+    items,
+    status,
+    error,
+    progressById,
+    init,
+    dispose,
+    add,
+    edit,
+    remove,
+    pause,
+    resume,
+    loadProgress,
+    progressPct,
+    isCompleted
+  }
 })
