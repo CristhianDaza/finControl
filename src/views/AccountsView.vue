@@ -8,8 +8,9 @@ import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 import { useAuthStore } from '@/stores/auth.js'
 
-const AccountsModalComponent = defineAsyncComponent(() => import('@/components/accounts/AccountsModalComponent.vue'))
-const FcModal = defineAsyncComponent(() => import('@/components/global/FcModal.vue'))
+const AccountsModalComponent = defineAsyncComponent(/* webpackChunkName: "accountsModalComponent" */() => import('@/components/accounts/AccountsModalComponent.vue'))
+const FcModal = defineAsyncComponent(/* webpackChunkName: "fcModal" */() => import('@/components/global/FcModal.vue'))
+const VirtualAccountsGrid = defineAsyncComponent(/* webpackChunkName: "virtualAccountsGrid" */() => import('@/components/accounts/VirtualAccountsGrid.vue'))
 
 const router = useRouter()
 const acc = useAccountsStore()
@@ -27,23 +28,92 @@ const isLoading = computed(() => acc.status === 'loading')
 const hasItems = computed(() => acc.items.length > 0)
 const rows = computed(() => acc.items)
 
-const openCreate = () => { if (!auth.canWrite) return; editing.value = null; modalTitle.value = t('accounts.addTitle'); showModal.value = true }
-const openEdit = (item) => { if (!auth.canWrite) return; editing.value = item; modalTitle.value = t('accounts.editTitle'); showModal.value = true }
-const askRemove = (id) => { if (!auth.canWrite) return; toDeleteId.value = id; confirmOpen.value = true }
+const useVirtualScrolling = computed(() => rows.value.length > 20)
+const virtualScrollHeight = computed(() => {
+  const viewportHeight = window.innerHeight
+  return Math.min(600, Math.max(400, viewportHeight - 300))
+})
+const isDev = computed(() => import.meta.env.DEV)
 
-const onSave = async (payload) => { if (!auth.canWrite) return; busy.value = true; try { if (payload.id) { await acc.updateAccountName(payload.id, payload.name) } else { await acc.createAccount({ name: payload.name, balance: payload.balance, currency: payload.currency }) } } finally { busy.value = false } }
+const openCreate = () => {
+  if (!auth.canWrite) return
+  editing.value = null
+  modalTitle.value = t('accounts.addTitle')
+  showModal.value = true
+}
 
-const onConfirmDelete = async () => { if (!auth.canWrite) return; if (!toDeleteId.value) return; busy.value = true; try { await acc.deleteAccount(toDeleteId.value) } catch (e) { if (e && (e.code === 'account/has-transactions' || /transacciones/i.test(e.message))) { blockOpen.value = true } } finally { busy.value = false; toDeleteId.value = null; confirmOpen.value = false } }
+const openEdit = (item) => {
+  if (!auth.canWrite) return
+  editing.value = item
+  modalTitle.value = t('accounts.editTitle')
+  showModal.value = true
+}
 
-onMounted(() => { acc.subscribeMyAccounts() })
+const askRemove = (id) => {
+  if (!auth.canWrite) return
+  toDeleteId.value = id
+  confirmOpen.value = true
+}
+
+const onSave = async (payload) => {
+  if (!auth.canWrite) return
+  busy.value = true
+  try {
+    if (payload.id) {
+      await acc.updateAccountName(payload.id, payload.name);
+    } else {
+      await acc.createAccount({
+        name: payload.name,
+        balance: payload.balance,
+        currency: payload.currency,
+      })
+    }
+  } finally {
+    busy.value = false
+  }
+}
+
+const onConfirmDelete = async () => {
+  if (!auth.canWrite) return
+  if (!toDeleteId.value) return
+  busy.value = true
+  try {
+    await acc.deleteAccount(toDeleteId.value);
+  } catch (e) {
+    if (
+      e &&
+      (e.code === 'account/has-transactions' ||
+        /transacciones/i.test(e.message))
+    ) {
+      blockOpen.value = true
+    }
+  } finally {
+    busy.value = false
+    toDeleteId.value = null
+    confirmOpen.value = false
+  }
+}
+
+onMounted(() => {
+  acc.subscribeMyAccounts()
+})
 </script>
 
 <template>
   <section>
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap">
-      <h2 style="margin:0">{{ t('accounts.title') }}</h2>
-      <div style="display:flex;gap:.5rem">
-        <button class="button" @click="openCreate" :disabled="busy || isLoading || !auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('accounts.addButton') }}</button>
+    <div class="card accounts-toolbar">
+      <h2 class="accounts-title">
+        {{ t('accounts.title') }}
+      </h2>
+      <div class="toolbar-actions">
+        <button
+          class="button"
+          @click="openCreate"
+          :disabled="busy || isLoading || !auth.canWrite"
+          :aria-disabled="!auth.canWrite"
+        >
+          {{ t('accounts.addButton') }}
+        </button>
       </div>
     </div>
 
@@ -55,11 +125,28 @@ onMounted(() => { acc.subscribeMyAccounts() })
       @update:showModal="showModal = $event"
     />
 
-    <div v-if="isLoading" class="card" style="margin-top:1rem">{{ t('common.loading') }}</div>
-    <div v-else-if="!hasItems" class="card" style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
+    <div v-if="isLoading" class="card mt-1">{{ t('common.loading') }}</div>
+    <div v-else-if="!hasItems" class="card mt-1 empty-state">
       <span>{{ t('common.empty') }}</span>
-      <button class="button" @click="openCreate" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('common.add') }}</button>
+      <button
+        class="button"
+        @click="openCreate"
+        :disabled="!auth.canWrite"
+        :aria-disabled="!auth.canWrite"
+      >
+        {{ t('common.add') }}
+      </button>
     </div>
+
+    <VirtualAccountsGrid
+      v-if="useVirtualScrolling"
+      :items="rows"
+      :can-write="auth.canWrite"
+      :container-height="virtualScrollHeight"
+      :show-performance-info="isDev"
+      @edit="openEdit"
+      @delete="askRemove"
+    />
 
     <div v-else class="account-list">
       <div class="account-card" v-for="item in rows" :key="item.id">
@@ -68,10 +155,24 @@ onMounted(() => { acc.subscribeMyAccounts() })
           <p class="account-balance">{{ formatAmount(item.balance, item.currency || 'COP') }}</p>
         </div>
         <div class="account-actions">
-          <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')" @click="openEdit(item)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">
+          <button
+            class="button button-edit"
+            :aria-label="t('common.edit')"
+            :title="t('common.edit')"
+            @click="openEdit(item)"
+            :disabled="!auth.canWrite"
+            :aria-disabled="!auth.canWrite"
+          >
             <svg class="icon-edit" v-html="EditIcon"></svg>
           </button>
-          <button class="button button-delete" :aria-label="t('common.delete')" :title="t('common.delete')" @click="askRemove(item.id)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">
+          <button
+            class="button button-delete"
+            :aria-label="t('common.delete')"
+            :title="t('common.delete')"
+            @click="askRemove(item.id)"
+            :disabled="!auth.canWrite"
+            :aria-disabled="!auth.canWrite"
+          >
             <svg class="icon-delete" v-html="DeleteIcon"></svg>
           </button>
         </div>
@@ -97,14 +198,52 @@ onMounted(() => { acc.subscribeMyAccounts() })
       :title-modal="t('accounts.confirmDelete.title')"
     >
       <p>{{ t('accounts.confirmDelete.message') }}</p>
-      <div style="display:flex;gap:.5rem;justify-content:flex-end">
-        <button class="button" @click="() => { blockOpen = false; router.push({ name: 'transactions' }) }">{{ t('accounts.confirmDelete.cta') }}</button>
+      <div class="modal-actions-right">
+        <button
+          class="button"
+          @click="() => { blockOpen = false; router.push({ name: 'transactions' }) }"
+        >
+          {{ t('accounts.confirmDelete.cta') }}
+        </button>
       </div>
     </FcModal>
   </section>
 </template>
 
 <style scoped>
+.accounts-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.accounts-title {
+  margin: 0;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: .5rem;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-actions-right {
+  display: flex;
+  gap: .5rem;
+  justify-content: flex-end;
+}
+
 .account-card {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   border: 1px solid var(--secondary-color);
@@ -156,5 +295,7 @@ onMounted(() => { acc.subscribeMyAccounts() })
   padding-top: 1rem;
 }
 
-.account-actions button[disabled] { opacity:.55; cursor:not-allowed }
+.account-actions button[disabled] {
+  opacity:.55; cursor:not-allowed
+}
 </style>

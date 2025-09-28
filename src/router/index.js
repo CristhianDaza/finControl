@@ -4,11 +4,11 @@ import { useAuthStore } from '@/stores/auth.js'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/login', name: 'login', component: () => import('@/views/LoginView.vue') },
+    { path: '/login', name: 'login', component: () => import(/* webpackChunkName: "loginView" */  '@/views/LoginView.vue') },
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/views/AdminDashboard.vue'),
+      component: () => import(/* webpackChunkName: "adminDashboard" */  '@/views/AdminDashboard.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {

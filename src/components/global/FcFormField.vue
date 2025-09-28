@@ -18,13 +18,19 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const attrs = useAttrs()
+
 const model = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: val => emit('update:modelValue', val)
 })
 
-const isFormattedNumber = computed(() => props.type === 'number' && props.formatThousands)
-const displayValue = isFormattedNumber.value ? useFormattedNumber(model) : model
+const isFormattedNumber = computed(
+  () => props.type === 'number' && props.formatThousands
+)
+
+const displayValue = isFormattedNumber.value
+  ? useFormattedNumber(model)
+  : model
 
 const touched = ref(false)
 
@@ -50,9 +56,11 @@ const desiredDigitsLeftAfter = ref(null)
 
 const countDigitsLeft = (str, pos) => {
   let c = 0
-  for (let i = 0; i < Math.max(0, pos); i++) if (/[0-9]/.test(str[i])) c++
+  for (let i = 0; i < Math.max(0, pos); i++)
+    if (/[0-9]/.test(str[i])) c++
   return c
 }
+
 const findPosByDigits = (str, digitsLeft) => {
   if (digitsLeft == null) return null
   if (digitsLeft <= 0) return 0
@@ -66,7 +74,7 @@ const findPosByDigits = (str, digitsLeft) => {
   return str.length
 }
 
-const handleKeyDown = (e) => {
+const handleKeyDown = e => {
   if (!isFormattedNumber.value) return
   const el = e.target
   const start = el.selectionStart ?? 0
@@ -79,7 +87,7 @@ const handleKeyDown = (e) => {
   const isDelete = key === 'Delete'
   const isDecimal = key === '.' || key === ','
 
-  let desired = digitsLeft
+  let desired
 
   if (isDigit) {
     desired = countDigitsLeft(value, start) + 1
@@ -102,6 +110,7 @@ const handleKeyDown = (e) => {
 
   desiredDigitsLeftAfter.value = desired != null ? Math.max(0, desired) : null
 }
+
 const handleInput = () => {
   if (!isFormattedNumber.value) return
   const desired = desiredDigitsLeftAfter.value
@@ -117,9 +126,15 @@ const handleInput = () => {
 
 <template>
   <div class="form-field">
-    <label v-if="label" :for="id">{{ label }}</label>
+    <label v-if="label" :for="id">
+      {{ label }}
+    </label>
     <slot name="label" />
-    <div v-if="!['textarea', 'select', 'number'].includes(type)" class="input-wrapper">
+
+    <div
+      v-if="!['textarea', 'select', 'number'].includes(type)"
+      class="input-wrapper"
+    >
       <input
         :type="currentInputType"
         :id="id"
@@ -139,7 +154,6 @@ const handleInput = () => {
         {{ showPassword ? '🙈' : '👁️' }}
       </button>
     </div>
-
 
     <input
       v-if="type === 'number'"
@@ -177,7 +191,13 @@ const handleInput = () => {
       @blur="touched = true"
       :class="{ invalid: touched && !isValid }"
     >
-      <option v-if="!attrs.multiple" disabled value="">-- {{ t('common.select-option') }} --</option>
+      <option
+        v-if="!attrs.multiple"
+        disabled
+        value=""
+      >
+        -- {{ t('common.select-option') }} --
+      </option>
       <option
         v-for="(option, index) in options"
         :key="index"
@@ -187,7 +207,10 @@ const handleInput = () => {
       </option>
     </select>
 
-    <p v-if="touched && !isValid && (errorMessage || t('validation.invalid-field'))" class="error-message">
+    <p
+      v-if="touched && !isValid && (errorMessage || t('validation.invalid-field'))"
+      class="error-message"
+    >
       {{ errorMessage || t('validation.invalid-field') }}
     </p>
   </div>
@@ -210,5 +233,4 @@ const handleInput = () => {
   cursor: pointer;
   font-size: 1rem;
 }
-
 </style>

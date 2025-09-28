@@ -27,7 +27,7 @@ export const useUserPrefs = () => {
     return snap.exists() ? snap.data() : null
   }
 
-  const saveTxFilters = async (filters) => {
+  const saveTxFilters = async filters => {
     if (gate()) return
     const uid = getUid()
     const ref = doc(db, 'users', uid, 'preferences', 'transactionsFilters')
@@ -41,7 +41,7 @@ export const useUserPrefs = () => {
     return snap.exists() ? snap.data() : null
   }
 
-  const saveThemeVars = async (vars) => {
+  const saveThemeVars = async vars => {
     if (gate()) return
     const uid = getUid()
     const ref = doc(db, 'users', uid, 'preferences', 'themeVars')

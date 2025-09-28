@@ -1,9 +1,9 @@
-import {defineStore} from 'pinia'
-import {computed, onUnmounted, ref} from 'vue'
-import {useTransactions} from '@/composables/useTransactions.js'
-import {useNotify} from '@/components/global/fcNotify.js'
-import {t} from '@/i18n/index.js'
-import {useAuth} from '@/composables/useAuth.js'
+import { defineStore } from 'pinia'
+import { computed, onUnmounted, ref, watchEffect } from 'vue'
+import { useTransactions } from '@/composables/useTransactions.js'
+import { useNotify } from '@/components/global/fcNotify.js'
+import { t } from '@/i18n/index.js'
+import { useAuth } from '@/composables/useAuth.js'
 
 export const useTransactionsStore = defineStore('transactions', () => {
   const items = ref([])
@@ -11,10 +11,21 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const error = ref(null)
   const selected = ref(null)
   const filters = ref({})
-  const orderBy = ref([{ field: 'date', dir: 'desc' }, { field: 'createdAt', 'dir': 'desc' }])
+  const orderBy = ref([
+    { field: 'date', dir: 'desc' },
+    { field: 'createdAt', dir: 'desc' }
+  ])
   const unsubscribe = ref(null)
 
-  const { subscribeTransactions, fetchTransactions, createTransaction, updateTransaction, editTransaction, deleteTransaction } = useTransactions()
+  const {
+    subscribeTransactions,
+    fetchTransactions,
+    createTransaction,
+    updateTransaction,
+    editTransaction,
+    deleteTransaction
+  } = useTransactions()
+
   const { success, error: notifyError } = useNotify()
 
   const init = async () => {
@@ -23,23 +34,45 @@ export const useTransactionsStore = defineStore('transactions', () => {
     try {
       const { onAuthReady } = useAuth()
       const user = await onAuthReady()
-      if (!user) { items.value = []; status.value = 'success'; return }
-      unsubscribe.value = subscribeTransactions(list => { items.value = list; status.value = 'success' }, { ...filters.value, orderBy: orderBy.value })
+      if (!user) {
+        items.value = []
+        status.value = 'success'
+        return
+      }
+      unsubscribe.value = subscribeTransactions(
+        list => {
+          items.value = list
+          status.value = 'success'
+        },
+        { ...filters.value, orderBy: orderBy.value }
+      )
     } catch (e) {
       error.value = e && e.message ? e.message : 'Error'
       status.value = 'error'
     }
   }
 
-  const dispose = () => { if (unsubscribe.value) { unsubscribe.value(); unsubscribe.value = null } }
+  const dispose = () => {
+    if (unsubscribe.value) {
+      unsubscribe.value()
+      unsubscribe.value = null
+    }
+  }
 
   const reload = async () => {
     status.value = 'loading'
     try {
       const { onAuthReady } = useAuth()
       const user = await onAuthReady()
-      if (!user) { items.value = []; status.value = 'success'; return }
-      items.value = await fetchTransactions({...filters.value, orderBy: orderBy.value})
+      if (!user) {
+        items.value = []
+        status.value = 'success'
+        return
+      }
+      items.value = await fetchTransactions({
+        ...filters.value,
+        orderBy: orderBy.value
+      })
       status.value = 'success'
     } catch (e) {
       error.value = e && e.message ? e.message : 'Error'
@@ -49,7 +82,15 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   const add = async payload => {
     try {
-      const id = await createTransaction({ type: payload.type, amount: payload.amount, accountId: payload.account, date: payload.date, note: payload.description, debtId: payload.debt, goalId: payload.goal })
+      const id = await createTransaction({
+        type: payload.type,
+        amount: payload.amount,
+        accountId: payload.account,
+        date: payload.date,
+        note: payload.description,
+        debtId: payload.debt,
+        goalId: payload.goal
+      })
       success(t('transactions.notifications.created'))
       return id
     } catch (e) {
@@ -75,8 +116,12 @@ export const useTransactionsStore = defineStore('transactions', () => {
     try {
       const prev = items.value.find(i => i.id === id)
       const wantsType = patch?.type
-      const isIncomeOrExpense = (tpe) => ['income','expense'].includes(tpe)
-      if (prev && prev.isTransfer !== true && (isIncomeOrExpense(prev.type) || (wantsType && isIncomeOrExpense(wantsType)))) {
+      const isIncomeOrExpense = tpe => ['income', 'expense'].includes(tpe)
+      if (
+        prev &&
+        prev.isTransfer !== true &&
+        (isIncomeOrExpense(prev.type) || (wantsType && isIncomeOrExpense(wantsType)))
+      ) {
         await editTransaction(id, patch)
       } else {
         await updateTransaction(id, patch)
@@ -125,21 +170,93 @@ export const useTransactionsStore = defineStore('transactions', () => {
   }
 
   const setFilters = f => {
-    filters.value = Object.fromEntries(Object.entries(f || {}).filter(([_, v]) => v !== '' && v != null))
-    init().then(r => { return r }).catch(() => { /* noop */ })
+    filters.value = Object.fromEntries(
+      Object.entries(f || {}).filter(([_, v]) => v !== '' && v != null)
+    )
+    init().catch(() => {})
   }
-  const setOrder = o => { orderBy.value = Array.isArray(o) ? o : orderBy.value; init().then(r => { return r }).catch(() => { /* noop */ }) }
+
+  const setOrder = o => {
+    orderBy.value = Array.isArray(o) ? o : orderBy.value
+    init().catch(() => {})
+  }
 
   const hasItems = computed(() => items.value.length > 0)
-  const byId = id => computed(() => items.value.find(ti => ti.id === id))
-  const totals = computed(() => { const income = items.value.filter(i => i.type === 'income').reduce((a,b)=>a+Number(b.amount||0),0); const expense = items.value.filter(i => i.type === 'expense').reduce((a,b)=>a+Number(b.amount||0),0); return { income, expense, balance: income - expense } })
 
-  const availablePeriods = ref({ years: [], monthsByYear: {} })
+  const itemsById = computed(() => {
+    const map = new Map()
+    for (const item of items.value) {
+      map.set(item.id, item)
+    }
+    return map
+  })
+
+  const byId = id => computed(() => itemsById.value.get(id))
+
+  const totals = computed(() => {
+    let income = 0
+    let expense = 0
+
+    for (const item of items.value) {
+      const amount = Number(item.amount || 0)
+      if (item.type === 'income') {
+        income += amount
+      } else if (item.type === 'expense') {
+        expense += amount
+      }
+    }
+
+    return {
+      income,
+      expense,
+      balance: income - expense
+    }
+  })
+
+  const incomeItems = computed(() => items.value.filter(i => i.type === 'income'))
+  const expenseItems = computed(() => items.value.filter(i => i.type === 'expense'))
+  const transferItems = computed(() => items.value.filter(i => i.isTransfer === true))
+
+  const availablePeriods = ref({
+    years: [],
+    monthsByYear: {}
+  })
+
+  const computedAvailablePeriods = computed(() => {
+    const monthsMap = {}
+    for (const item of items.value) {
+      const ds = String(item.date || '')
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(ds)) continue
+      const y = Number(ds.slice(0, 4))
+      const m = Number(ds.slice(5, 7)) - 1
+      if (!monthsMap[y]) monthsMap[y] = new Set()
+      monthsMap[y].add(m)
+    }
+    const years = Object.keys(monthsMap)
+      .map(n => Number(n))
+      .sort((a, b) => a - b)
+    const monthsByYear = {}
+    for (const y of years) {
+      monthsByYear[y] = Array.from(monthsMap[y]).sort((a, b) => a - b)
+    }
+    return { years, monthsByYear }
+  })
+
+  watchEffect(() => {
+    availablePeriods.value = computedAvailablePeriods.value
+  })
+
   const loadAvailablePeriods = async () => {
     try {
       const { onAuthReady } = useAuth()
       const user = await onAuthReady()
-      if (!user) { availablePeriods.value = { years: [], monthsByYear: {} }; return availablePeriods.value }
+      if (!user) {
+        availablePeriods.value = { years: [], monthsByYear: {} }
+        return availablePeriods.value
+      }
+      if (items.value.length > 0) {
+        return computedAvailablePeriods.value
+      }
       const all = await fetchTransactions({})
       const monthsMap = {}
       for (const it of all) {
@@ -150,10 +267,12 @@ export const useTransactionsStore = defineStore('transactions', () => {
         if (!monthsMap[y]) monthsMap[y] = new Set()
         monthsMap[y].add(m)
       }
-      const years = Object.keys(monthsMap).map(n => Number(n)).sort((a,b)=>a-b)
+      const years = Object.keys(monthsMap)
+        .map(n => Number(n))
+        .sort((a, b) => a - b)
       const monthsByYear = {}
       for (const y of years) {
-        monthsByYear[y] = Array.from(monthsMap[y]).sort((a,b)=>a-b)
+        monthsByYear[y] = Array.from(monthsMap[y]).sort((a, b) => a - b)
       }
       availablePeriods.value = { years, monthsByYear }
       return availablePeriods.value
@@ -165,5 +284,31 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   onUnmounted(() => dispose())
 
-  return { items, status, error, selected, filters, orderBy, unsubscribe, init, dispose, reload, add, edit, remove, setFilters, setOrder, hasItems, byId, totals, availablePeriods, loadAvailablePeriods }
+  return {
+    items,
+    status,
+    error,
+    selected,
+    filters,
+    orderBy,
+    unsubscribe,
+    init,
+    dispose,
+    reload,
+    add,
+    edit,
+    remove,
+    setFilters,
+    setOrder,
+    hasItems,
+    byId,
+    totals,
+    availablePeriods,
+    loadAvailablePeriods,
+    itemsById,
+    incomeItems,
+    expenseItems,
+    transferItems,
+    computedAvailablePeriods
+  }
 })

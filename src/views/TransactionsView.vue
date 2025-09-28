@@ -5,8 +5,6 @@ import { useAccountsStore } from '@/stores/accounts.js'
 import { useDebtsStore } from '@/stores/debts.js'
 import { useTransfersStore } from '@/stores/transfers.js'
 import { useGoalsStore } from '@/stores/goals.js'
-import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
-import FCTransferModal from '@/components/FCTransferModal.vue'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 import { t } from '@/i18n/index.js'
@@ -15,7 +13,11 @@ import { useMonthlyRange } from '@/composables/useMonthlyRange.js'
 import { useUserPrefs } from '@/composables/useUserPrefs.js'
 import { useAuthStore } from '@/stores/auth.js'
 
-const TransactionsModalComponent = defineAsyncComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
+const TransactionsModalComponent = defineAsyncComponent(/* webpackChunkName: "transactionsModalComponent" */() => import('@/components/transactions/TransactionsModalComponent.vue'))
+const VirtualTransactionsTable = defineAsyncComponent(/* webpackChunkName: "virtualTransactionsTable" */() => import('@/components/transactions/VirtualTransactionsTable.vue'))
+const FCConfirmModal = defineAsyncComponent(/* webpackChunkName: "fCConfirmModal" */() => import('@/components/global/FCConfirmModal.vue'))
+const FCTransferModal = defineAsyncComponent(/* webpackChunkName: "fCTransferModal" */() => import('@/components/FCTransferModal.vue'))
+
 const tx = useTransactionsStore()
 const acc = useAccountsStore()
 const deb = useDebtsStore()
@@ -42,19 +44,61 @@ const searchText = ref('')
 const minAmount = ref('')
 
 const { labels: monthLabels, daysInMonth } = useMonthlyRange()
+
 const availableYears = computed(() => tx.availablePeriods.years || [])
 const selectedYear = ref(new Date().getFullYear())
-const availableMonths = computed(() => (tx.availablePeriods.monthsByYear && tx.availablePeriods.monthsByYear[selectedYear.value]) || [])
+const availableMonths = computed(
+  () =>
+    (tx.availablePeriods.monthsByYear &&
+      tx.availablePeriods.monthsByYear[selectedYear.value]) ||
+    []
+)
 const selectedMonth = ref(new Date().getMonth())
 
 const rows = computed(() => tx.items)
-const filteredRows = computed(() => { let list = rows.value; if (searchText.value) { const q = searchText.value.toLowerCase(); list = list.filter(it => String(it.note || it.description || '').toLowerCase().includes(q)) } if (minAmount.value) { const min = Number(minAmount.value); if (!isNaN(min) && min > 0) list = list.filter(it => Number(it.amount || 0) >= min) } return list })
+const filteredRows = computed(() => {
+  let list = rows.value
+
+  if (searchText.value) {
+    const q = searchText.value.toLowerCase()
+    list = list.filter(it =>
+      String(it.note || it.description || '').toLowerCase().includes(q)
+    )
+  }
+
+  if (minAmount.value) {
+    const min = Number(minAmount.value)
+    if (!isNaN(min) && min > 0)
+      list = list.filter(it => Number(it.amount || 0) >= min)
+  }
+
+  return list
+})
+
+const useVirtualScrolling = computed(() => filteredRows.value.length > 50)
+const virtualScrollHeight = computed(() => {
+  const viewportHeight = window.innerHeight
+  return Math.min(600, Math.max(400, viewportHeight - 300))
+})
+
+const isDev = computed(() => import.meta.env.DEV)
 const hasItems = computed(() => tx.hasItems)
 const isLoading = computed(() => tx.status === 'loading')
-const accountsOptions = computed(() => acc.items.map(a => ({ label: a.name, value: a.id })))
-const debtsOptions = computed(() => deb.items.map(d => ({ label: d.name, value: d.id })))
-const goalsOptions = computed(() => goals.items.map(g => ({ label: g.name, value: g.id })))
-const accountNameById = computed(() => acc.items.reduce((m, a) => { m[a.id] = a.name; return m }, {}))
+const accountsOptions = computed(() =>
+  acc.items.map(a => ({ label: a.name, value: a.id }))
+)
+const debtsOptions = computed(() =>
+  deb.items.map(d => ({ label: d.name, value: d.id }))
+)
+const goalsOptions = computed(() =>
+  goals.items.map(g => ({ label: g.name, value: g.id }))
+)
+const accountNameById = computed(() =>
+  acc.items.reduce((m, a) => {
+    m[a.id] = a.name
+    return m
+  }, {})
+)
 
 const transfers = computed(() => tr.filtered)
 const hasTransfers = computed(() => tr.hasItems)
@@ -62,67 +106,302 @@ const isLoadingTransfers = computed(() => tr.status === 'loading')
 
 const { getTxFilters, saveTxFilters } = useUserPrefs()
 
-const openAdd = () => { if (!auth.canWrite) return; editing.value = null; modalTitle.value = t('transactions.addTitle'); showModal.value = true }
-const openEdit = (item) => { if (!auth.canWrite) return; editing.value = item; modalTitle.value = t('transactions.editTitle'); showModal.value = true }
-const askRemove = (id) => { if (!auth.canWrite) return; toDeleteId.value = id; confirmOpen.value = true }
-
-const openAddTransfer = () => { if (!auth.canWrite) return; editingTransfer.value = null; transferOpen.value = true }
-const openEditTransfer = (pair) => { if (!auth.canWrite) return; editingTransfer.value = pair; transferOpen.value = true }
-const askRemoveTransfer = (transferId) => { if (!auth.canWrite) return; toDeleteTransferId.value = transferId; confirmOpen.value = true }
-
-const onSave = async (payload) => { if (!auth.canWrite) return; busy.value = true; try { if (editing.value && editing.value.id) { await tx.edit(editing.value.id, payload) } else { await tx.add(payload) } showModal.value = false; editing.value = null } finally { busy.value = false } }
-const onSaveTransfer = async (payload) => { if (!auth.canWrite) return; busy.value = true; try { if (editingTransfer.value && editingTransfer.value.transferId) { await tr.edit(editingTransfer.value.transferId, payload) } else { await tr.add(payload) } transferOpen.value = false; editingTransfer.value = null } finally { busy.value = false } }
-const onConfirmRemove = async () => { if (!auth.canWrite) return; busy.value = true; try { if (toDeleteTransferId.value) { await tr.remove(toDeleteTransferId.value) } else if (toDeleteId.value) { await tx.remove(toDeleteId.value) } } finally { busy.value = false; toDeleteId.value = null; toDeleteTransferId.value = null }
+const openAdd = () => {
+  if (!auth.canWrite) return
+  editing.value = null
+  modalTitle.value = t('transactions.addTitle')
+  showModal.value = true
 }
 
-const applyFilters = () => { const f = {}; if (typeFilter.value) f.type = typeFilter.value; if (from.value) f.from = from.value; if (to.value) f.to = to.value; tx.setFilters(f); const tf = {}; if (accountFilter.value) tf.accountId = accountFilter.value; if (from.value) tf.from = from.value; if (to.value) tf.to = to.value; tr.setFilters(tf) }
-
-const pad2 = (n) => String(n).padStart(2, '0')
-const setMonth = (m) => { selectedMonth.value = m; const y = selectedYear.value; const fromStr = `${y}-${pad2(m + 1)}-01`; const toStr = `${y}-${pad2(m + 1)}-${pad2(daysInMonth(y, m))}`; from.value = fromStr; to.value = toStr; applyFilters() }
-
-const saveFilters = async () => { if (!auth.canWrite) return; const current = { type: typeFilter.value || '', from: from.value || '', to: to.value || '' }; await saveTxFilters(current) }
-const clearFilters = () => { typeFilter.value = ''; from.value = ''; to.value = ''; accountFilter.value=''; searchText.value=''; minAmount.value=''; applyFilters() }
-const loadSavedFilters = async () => { try { const saved = await getTxFilters(); if (saved) { typeFilter.value = saved.type || ''; from.value = saved.from || ''; to.value = saved.to || ''; applyFilters() } } catch {}
+const openEdit = item => {
+  if (!auth.canWrite) return
+  editing.value = item
+  modalTitle.value = t('transactions.editTitle')
+  showModal.value = true
 }
 
-const exportCsv = () => { const headers = [t('transactions.table.date'), t('transactions.table.description'), t('transactions.table.amount'), t('transactions.table.account'), t('transactions.table.type')]; const csvRows = [headers.join(',')]; for (const item of filteredRows.value) { const desc = (item.note || item.description || '').replace(/"/g, '""'); const accName = accountNameById.value[item.accountId] || item.accountId; const isGoal = item.type === 'expense' && (item.goalId || item.goal); const typ = item.type==='income' ? t('transactions.form.income') : item.type==='debtPayment' ? t('transactions.form.debtPayment') : isGoal ? t('transactions.form.goalSaving') : t('transactions.form.expense'); csvRows.push([item.date, `"${desc}"`, item.amount, `"${accName}"`, `"${typ}"`].join(',')) } const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'transactions.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url) }
+const askRemove = id => {
+  if (!auth.canWrite) return
+  toDeleteId.value = id
+  confirmOpen.value = true
+}
 
-// Helper para etiqueta traducida del tipo
-const typeLabel = (it) => { const isGoal = it.type === 'expense' && (it.goalId || it.goal); return it.type==='income' ? t('transactions.form.income') : it.type==='debtPayment' ? t('transactions.form.debtPayment') : isGoal ? t('transactions.form.goalSaving') : t('transactions.form.expense') }
+const openAddTransfer = () => {
+  if (!auth.canWrite) return
+  editingTransfer.value = null
+  transferOpen.value = true
+}
 
-onMounted(async () => { await acc.subscribeMyAccounts(); await deb.subscribeMyDebts(); await tx.init(); await tr.init(); await tx.loadAvailablePeriods(); await goals.init(); if (!availableYears.value.includes(selectedYear.value)) { const lastY = availableYears.value[availableYears.value.length - 1]; if (lastY != null) selectedYear.value = lastY } if (!availableMonths.value.includes(selectedMonth.value)) { const months = availableMonths.value; if (months.length) selectedMonth.value = months[months.length - 1] } setMonth(selectedMonth.value); await loadSavedFilters() })
+const openEditTransfer = pair => {
+  if (!auth.canWrite) return
+  editingTransfer.value = pair
+  transferOpen.value = true
+}
 
-watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.value) && availableMonths.value.length) { selectedMonth.value = availableMonths.value[availableMonths.value.length - 1] } setMonth(selectedMonth.value) })
+const askRemoveTransfer = transferId => {
+  if (!auth.canWrite) return
+  toDeleteTransferId.value = transferId
+  confirmOpen.value = true
+}
+
+const onSave = async payload => {
+  if (!auth.canWrite) return
+  busy.value = true
+  try {
+    if (editing.value && editing.value.id) {
+      await tx.edit(editing.value.id, payload)
+    } else {
+      await tx.add(payload)
+    }
+    showModal.value = false
+    editing.value = null
+  } finally {
+    busy.value = false
+  }
+}
+
+const onSaveTransfer = async payload => {
+  if (!auth.canWrite) return
+  busy.value = true
+  try {
+    if (editingTransfer.value && editingTransfer.value.transferId) {
+      await tr.edit(editingTransfer.value.transferId, payload)
+    } else {
+      await tr.add(payload)
+    }
+    transferOpen.value = false
+    editingTransfer.value = null
+  } finally {
+    busy.value = false
+  }
+}
+
+const onConfirmRemove = async () => {
+  if (!auth.canWrite) return
+  busy.value = true
+  try {
+    if (toDeleteTransferId.value) {
+      await tr.remove(toDeleteTransferId.value)
+    } else if (toDeleteId.value) {
+      await tx.remove(toDeleteId.value)
+    }
+  } finally {
+    busy.value = false
+    toDeleteId.value = null
+    toDeleteTransferId.value = null
+  }
+}
+
+const applyFilters = () => {
+  const f = {}
+  if (typeFilter.value) f.type = typeFilter.value
+  if (from.value) f.from = from.value
+  if (to.value) f.to = to.value
+  tx.setFilters(f)
+
+  const tf = {}
+  if (accountFilter.value) tf.accountId = accountFilter.value
+  if (from.value) tf.from = from.value
+  if (to.value) tf.to = to.value
+  tr.setFilters(tf)
+}
+
+const pad2 = n => String(n).padStart(2, '0')
+
+const setMonth = m => {
+  selectedMonth.value = m
+  const y = selectedYear.value
+  const fromStr = `${y}-${pad2(m + 1)}-01`
+  const toStr = `${y}-${pad2(m + 1)}-${pad2(daysInMonth(y, m))}`
+  from.value = fromStr
+  to.value = toStr
+  applyFilters()
+}
+
+const saveFilters = async () => {
+  if (!auth.canWrite) return
+  const current = {
+    type: typeFilter.value || '',
+    from: from.value || '',
+    to: to.value || ''
+  }
+  await saveTxFilters(current)
+}
+
+const clearFilters = () => {
+  typeFilter.value = ''
+  from.value = ''
+  to.value = ''
+  accountFilter.value = ''
+  searchText.value = ''
+  minAmount.value = ''
+  applyFilters()
+}
+
+const loadSavedFilters = async () => {
+  try {
+    const saved = await getTxFilters()
+    if (saved) {
+      typeFilter.value = saved.type || ''
+      from.value = saved.from || ''
+      to.value = saved.to || ''
+      applyFilters()
+    }
+  } catch {}
+}
+
+const exportCsv = () => {
+  const headers = [
+    t('transactions.table.date'),
+    t('transactions.table.description'),
+    t('transactions.table.amount'),
+    t('transactions.table.account'),
+    t('transactions.table.type')
+  ]
+  const csvRows = [headers.join(',')]
+  for (const item of filteredRows.value) {
+    const desc = (item.note || item.description || '').replace(/"/g, '""')
+    const accName = accountNameById.value[item.accountId] || item.accountId
+    const isGoal = item.type === 'expense' && (item.goalId || item.goal)
+    const typ =
+      item.type === 'income'
+        ? t('transactions.form.income')
+        : item.type === 'debtPayment'
+        ? t('transactions.form.debtPayment')
+        : isGoal
+        ? t('transactions.form.goalSaving')
+        : t('transactions.form.expense')
+    csvRows.push(
+      [
+        item.date,
+        `"${desc}"`,
+        item.amount,
+        `"${accName}"`,
+        `"${typ}"`
+      ].join(',')
+    )
+  }
+  const blob = new Blob([csvRows.join('\n')], {
+    type: 'text/csv;charset=utf-8;'
+  })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'transactions.csv'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+const typeLabel = it => {
+  const isGoal = it.type === 'expense' && (it.goalId || it.goal)
+  return it.type === 'income'
+    ? t('transactions.form.income')
+    : it.type === 'debtPayment'
+    ? t('transactions.form.debtPayment')
+    : isGoal
+    ? t('transactions.form.goalSaving')
+    : t('transactions.form.expense')
+}
+
+onMounted(async () => {
+  await acc.subscribeMyAccounts()
+  await deb.subscribeMyDebts()
+  await tx.init()
+  await tr.init()
+  await tx.loadAvailablePeriods()
+  await goals.init()
+
+  if (!availableYears.value.includes(selectedYear.value)) {
+    const lastY = availableYears.value[availableYears.value.length - 1]
+    if (lastY != null) selectedYear.value = lastY
+  }
+
+  if (!availableMonths.value.includes(selectedMonth.value)) {
+    const months = availableMonths.value
+    if (months.length) selectedMonth.value = months[months.length - 1]
+  }
+
+  setMonth(selectedMonth.value)
+  await loadSavedFilters()
+})
+
+watch(selectedYear, () => {
+  if (
+    !availableMonths.value.includes(selectedMonth.value) &&
+    availableMonths.value.length
+  ) {
+    selectedMonth.value = availableMonths.value[availableMonths.value.length - 1]
+  }
+  setMonth(selectedMonth.value)
+})
 </script>
 
 <template>
   <section>
-    <div class="card" style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;justify-content:space-between">
+    <div class="card page-header">
       <h2 class="page-title">{{ t('navigation.transactions') }}</h2>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button v-if="tab==='transactions'" class="button" @click="openAdd" :disabled="busy || isLoading || !auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.addTitle') }}</button>
-        <button v-else class="button" @click="openAddTransfer" :disabled="busy || isLoadingTransfers || !auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('common.transfer') }}</button>
-        <button class="button button-secondary" @click="exportCsv" :title="t('transactions.exportCsv')">{{ t('transactions.exportCsv') }}</button>
+      <div class="toolbar-actions">
+        <button
+          v-if="tab==='transactions'"
+          class="button"
+          @click="openAdd"
+          :disabled="busy || isLoading || !auth.canWrite"
+          :aria-disabled="!auth.canWrite"
+        >
+          {{ t('transactions.addTitle') }}
+        </button>
+        <button
+          v-else
+          class="button"
+          @click="openAddTransfer"
+          :disabled="busy || isLoadingTransfers || !auth.canWrite"
+          :aria-disabled="!auth.canWrite"
+        >
+          {{ t('common.transfer') }}
+        </button>
+        <button
+          class="button button-secondary"
+          @click="exportCsv"
+          :title="t('transactions.exportCsv')"
+        >
+          {{ t('transactions.exportCsv') }}
+        </button>
       </div>
     </div>
 
-    <div class="card" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap; margin-top: .75rem; justify-content:space-between">
-      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+    <div class="card filters-bar mt-075">
+      <div class="filters-group">
         <div>
-          <label style="display:block;margin-bottom:.25rem">{{ t('common.year') }}</label>
+          <label class="form-label">
+            {{ t('common.year') }}
+          </label>
           <select class="input" v-model.number="selectedYear">
-            <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
+            <option v-for="y in availableYears" :key="y" :value="y">
+              {{ y }}
+            </option>
           </select>
         </div>
         <div>
-          <label style="display:block;margin-bottom:.25rem">{{ t('common.month') }}</label>
-          <select class="input" v-model.number="selectedMonth" @change="setMonth(selectedMonth)">
-            <option v-for="m in availableMonths" :key="m" :value="m">{{ monthLabels[m] }}</option>
+          <label class="form-label">
+            {{ t('common.month') }}
+          </label>
+          <select
+            class="input"
+            v-model.number="selectedMonth"
+            @change="setMonth(selectedMonth)"
+          >
+            <option v-for="m in availableMonths" :key="m" :value="m">
+              {{ monthLabels[m] }}
+            </option>
           </select>
         </div>
         <template v-if="tab==='transactions'">
-          <div style="min-width:200px">
-            <label style="display:block;margin-bottom:.25rem">{{ t('common.type') }}</label>
+          <div class="minw-200">
+            <label class="form-label">
+              {{ t('common.type') }}
+            </label>
             <select class="input" v-model="typeFilter" @change="applyFilters">
               <option value="">{{ t('common.all') }}</option>
               <option value="income">{{ t('transactions.form.income') }}</option>
@@ -131,56 +410,156 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
             </select>
           </div>
           <div>
-            <label style="display:block;margin-bottom:.25rem">{{ t('transactions.filters.search') }}</label>
-            <input class="input" type="text" v-model.trim="searchText" placeholder="Ej: arriendo" />
+            <label class="form-label">
+              {{ t('transactions.filters.search') }}
+            </label>
+            <input
+              class="input"
+              type="text"
+              v-model.trim="searchText"
+              placeholder="Ej: arriendo"
+            />
           </div>
           <div>
-            <label style="display:block;margin-bottom:.25rem">{{ t('transactions.filters.amount') }}</label>
-            <input class="input" type="number" min="0" step="0.01" v-model="minAmount" />
+            <label class="form-label">
+              {{ t('transactions.filters.amount') }}
+            </label>
+            <input
+              class="input"
+              type="number"
+              min="0"
+              step="0.01"
+              v-model="minAmount"
+            />
           </div>
           <div>
-            <label style="display:block;margin-bottom:.25rem">{{ t('common.from') }}</label>
-            <input class="input" type="date" v-model="from" @change="applyFilters" />
+            <label class="form-label">
+              {{ t('common.from') }}
+            </label>
+            <input
+              class="input"
+              type="date"
+              v-model="from"
+              @change="applyFilters"
+            />
           </div>
           <div>
-            <label style="display:block;margin-bottom:.25rem">{{ t('common.to') }}</label>
-            <input class="input" type="date" v-model="to" @change="applyFilters" />
+            <label class="form-label">
+              {{ t('common.to') }}
+            </label>
+            <input
+              class="input"
+              type="date"
+              v-model="to"
+              @change="applyFilters"
+            />
           </div>
-          <div style="display:flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap">
-            <button class="button button-secondary" @click="saveFilters" :title="t('transactions.filters.save')" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.filters.save') }}</button>
-            <button class="button button-secondary" @click="clearFilters" :title="t('transactions.filters.clear')">{{ t('transactions.filters.clear') }}</button>
+          <div class="btns-group">
+            <button
+              class="button button-secondary"
+              @click="saveFilters"
+              :title="t('transactions.filters.save')"
+              :disabled="!auth.canWrite"
+              :aria-disabled="!auth.canWrite"
+            >
+              {{ t('transactions.filters.save') }}
+            </button>
+            <button
+              class="button button-secondary"
+              @click="clearFilters"
+              :title="t('transactions.filters.clear')"
+            >
+              {{ t('transactions.filters.clear') }}
+            </button>
           </div>
         </template>
         <template v-else>
-          <div style="min-width:200px">
-            <label style="display:block;margin-bottom:.25rem">{{ t('accounts.title') }}</label>
+          <div class="minw-200">
+            <label class="form-label">
+              {{ t('accounts.title') }}
+            </label>
             <select class="input" v-model="accountFilter" @change="applyFilters">
               <option value="">{{ t('common.all') }}</option>
-              <option v-for="o in accountsOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+              <option
+                v-for="o in accountsOptions"
+                :key="o.value"
+                :value="o.value"
+              >
+                {{ o.label }}
+              </option>
             </select>
           </div>
           <div>
-            <label style="display:block;margin-bottom:.25rem">{{ t('common.from') }}</label>
-            <input class="input" type="date" v-model="from" @change="applyFilters" />
+            <label class="form-label">
+              {{ t('common.from') }}
+            </label>
+            <input
+              class="input"
+              type="date"
+              v-model="from"
+              @change="applyFilters"
+            />
           </div>
           <div>
-            <label style="display:block;margin-bottom:.25rem">{{ t('common.to') }}</label>
-            <input class="input" type="date" v-model="to" @change="applyFilters" />
+            <label class="form-label">
+              {{ t('common.to') }}
+            </label>
+            <input
+              class="input"
+              type="date"
+              v-model="to"
+              @change="applyFilters"
+            />
           </div>
         </template>
       </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="button" :class="tab==='transactions'? '' : 'button-secondary'" @click="tab='transactions'">{{ t('navigation.transactions') }}</button>
-        <button class="button" :class="tab==='transfers'? '' : 'button-secondary'" @click="tab='transfers'">{{ t('transfers.title') }}</button>
+      <div class="toolbar-actions">
+        <button
+          class="button"
+          :class="tab==='transactions'? '' : 'button-secondary'"
+          @click="tab='transactions'"
+        >
+          {{ t('navigation.transactions') }}
+        </button>
+        <button
+          class="button"
+          :class="tab==='transfers'? '' : 'button-secondary'"
+          @click="tab='transfers'"
+        >
+          {{ t('transfers.title') }}
+        </button>
       </div>
     </div>
 
     <div v-if="tab==='transactions'">
-      <div v-if="isLoading" class="card" style="margin-top:1rem">{{ t('common.loading') }}</div>
-      <div v-else-if="!hasItems" class="card" style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
-        <span>{{ t('transactions.empty') }}</span>
-        <button class="button" @click="openAdd" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite">{{ t('transactions.addTitle') }}</button>
+      <div v-if="isLoading" class="card mt-1">
+        {{ t('common.loading') }}
       </div>
+      <div
+        v-else-if="!hasItems"
+        class="card mt-1 empty-state"
+      >
+        <span>{{ t('transactions.empty') }}</span>
+        <button
+          class="button"
+          @click="openAdd"
+          :disabled="!auth.canWrite"
+          :aria-disabled="!auth.canWrite"
+        >
+          {{ t('transactions.addTitle') }}
+        </button>
+      </div>
+      <VirtualTransactionsTable
+        v-if="useVirtualScrolling"
+        :items="filteredRows"
+        :account-name-by-id="accountNameById"
+        :can-write="auth.canWrite"
+        :container-height="virtualScrollHeight"
+        :show-performance-info="isDev"
+        @edit="openEdit"
+        @delete="askRemove"
+      />
+
       <div v-else class="table-container tx-table-wrap">
         <h3 class="table-mobile-title">{{ t('navigation.transactions') }}</h3>
         <table>
@@ -195,21 +574,49 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
             </tr>
           </thead>
           <tbody>
-            <tr v-for="it in filteredRows" :key="it.id" :class="{
-              'row-income': it.type==='income',
-              'row-expense': it.type==='expense' && !(it.goalId || it.goal),
-              'row-debt': it.type==='debtPayment',
-              'row-goal': it.type==='expense' && (it.goalId || it.goal)
-            }">
-              <td :data-label="t('transactions.table.date')">{{ it.date }}</td>
-              <td :data-label="t('transactions.table.description')">{{ it.note || it.description }}</td>
-              <td :data-label="t('transactions.table.amount')">{{ formatAmount(it.amount, it.currency || 'COP') }}</td>
-              <td :data-label="t('transactions.table.account')">{{ accountNameById[it.accountId] || it.accountId }}</td>
-              <td :data-label="t('transactions.table.type')">{{ typeLabel(it) }}</td>
+            <tr
+              v-for="it in filteredRows"
+              :key="it.id"
+              :class="{
+                'row-income': it.type==='income',
+                'row-expense': it.type==='expense' && !(it.goalId || it.goal),
+                'row-debt': it.type==='debtPayment',
+                'row-goal': it.type==='expense' && (it.goalId || it.goal)
+              }"
+            >
+              <td :data-label="t('transactions.table.date')">
+                {{ it.date }}
+              </td>
+              <td :data-label="t('transactions.table.description')">
+                {{ it.note || it.description }}
+              </td>
+              <td :data-label="t('transactions.table.amount')">
+                {{ formatAmount(it.amount, it.currency || 'COP') }}
+              </td>
+              <td :data-label="t('transactions.table.account')">
+                {{ accountNameById[it.accountId] || it.accountId }}
+              </td>
+              <td :data-label="t('transactions.table.type')">
+                {{ typeLabel(it) }}
+              </td>
               <td :data-label="t('transactions.table.actions')">
-                <div style="display:flex;gap:.25rem;justify-content:flex-end">
-                  <button class="button button-edit" @click="openEdit(it)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-edit" v-html="EditIcon"></svg></button>
-                  <button class="button button-delete" @click="askRemove(it.id)" :disabled="!auth.canWrite" :aria-disabled="!auth.canWrite"><svg class="icon-delete" v-html="DeleteIcon"></svg></button>
+                <div class="actions actions-tight">
+                  <button
+                    class="button button-edit"
+                    @click="openEdit(it)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                  >
+                    <svg class="icon-edit" v-html="EditIcon"></svg>
+                  </button>
+                  <button
+                    class="button button-delete"
+                    @click="askRemove(it.id)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                  >
+                    <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -219,10 +626,17 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
     </div>
 
     <div v-else>
-      <div v-if="isLoadingTransfers" class="card" style="margin-top:1rem">{{ t('common.loading') }}</div>
-      <div v-else-if="!hasTransfers" class="card" style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
+      <div v-if="isLoadingTransfers" class="card mt-1">
+        {{ t('common.loading') }}
+      </div>
+      <div
+        v-else-if="!hasTransfers"
+        class="card mt-1 empty-state"
+      >
         <span>{{ t('transfers.empty') }}</span>
-        <button class="button" @click="openAddTransfer">{{ t('common.transfer') }}</button>
+        <button class="button" @click="openAddTransfer">
+          {{ t('common.transfer') }}
+        </button>
       </div>
       <div v-else class="table-container">
         <table>
@@ -236,22 +650,51 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
             </tr>
           </thead>
           <tbody>
-            <tr v-for="pair in transfers" :key="pair.transferId" class="row-transfer">
-              <td :data-label="t('transactions.table.date')">{{ pair.out.date }}</td>
-              <td :data-label="t('transactions.table.description')">{{ t('common.transfer') }} · {{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }} · {{ pair.out.note }}</td>
-              <td :data-label="t('transactions.table.account')">{{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }} → {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }}</td>
+            <tr
+              v-for="pair in transfers"
+              :key="pair.transferId"
+              class="row-transfer"
+            >
+              <td :data-label="t('transactions.table.date')">
+                {{ pair.out.date }}
+              </td>
+              <td :data-label="t('transactions.table.description')">
+                {{ t('common.transfer') }} ·
+                {{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }}
+                →
+                {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }}
+                ·
+                {{ pair.out.note }}
+              </td>
+              <td :data-label="t('transactions.table.account')">
+                {{ accountNameById[pair.out.fromAccountId] || pair.out.fromAccountId }}
+                →
+                {{ accountNameById[pair.out.toAccountId] || pair.out.toAccountId }}
+              </td>
               <td :data-label="t('transactions.table.amount')">
-                <div style="display:flex;flex-direction:column;gap:.25rem">
-                  <span>-{{ formatAmount(pair.out.amountFrom, pair.out.currencyFrom) }}</span>
-                  <span>+{{ formatAmount(pair.inn.amountTo, pair.inn.currencyTo) }}</span>
+                <div class="amount-col">
+                  <span>
+                    -{{ formatAmount(pair.out.amountFrom, pair.out.currencyFrom) }}
+                  </span>
+                  <span>
+                    +{{ formatAmount(pair.inn.amountTo, pair.inn.currencyTo) }}
+                  </span>
                 </div>
               </td>
               <td :data-label="t('transactions.table.actions')">
                 <div class="actions">
-                  <button class="button button-edit" @click="openEditTransfer(pair)" :disabled="busy">
+                  <button
+                    class="button button-edit"
+                    @click="openEditTransfer(pair)"
+                    :disabled="busy"
+                  >
                     <svg class="icon-edit" v-html="EditIcon"></svg>
                   </button>
-                  <button class="button button-delete" @click="askRemoveTransfer(pair.transferId)" :disabled="busy">
+                  <button
+                    class="button button-delete"
+                    @click="askRemoveTransfer(pair.transferId)"
+                    :disabled="busy"
+                  >
                     <svg class="icon-delete" v-html="DeleteIcon"></svg>
                   </button>
                 </div>
@@ -294,87 +737,195 @@ watch(selectedYear, () => { if (!availableMonths.value.includes(selectedMonth.va
 </template>
 
 <style scoped>
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--shadow-elev-1);
-}
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow-elev-1);
+  }
 
-.table-container::-webkit-scrollbar {
-  height: 8px;
-}
+  .table-container::-webkit-scrollbar {
+    height: 8px;
+  }
 
-.table-container::-webkit-scrollbar-thumb {
-  background-color: var(--secondary-color);
-  border-radius: 4px;
-}
+  .table-container::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-color);
+    border-radius: 4px;
+  }
 
-.badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
-.badge-rec { background: var(--recurring-badge-color); color: var(--white) }
+  table {
+    margin-top: 2rem;
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--shadow-elev-1);
+  }
 
-table {
-  margin-top: 2rem;
-  width: 100%;
-  border-collapse: collapse;
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px var(--shadow-elev-1);
-}
+  th,
+  td {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid var(--secondary-color);
+  }
 
-th, td {
-  padding: 1rem 1.2rem;
-  text-align: left;
-  border-bottom: 1px solid var(--secondary-color);
-}
+  th {
+    background-color: var(--secondary-color);
+    color: var(--accent-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+  }
 
-th {
-  background-color: var(--secondary-color);
-  color: var(--accent-color);
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-}
+  tr:last-child td {
+    border-bottom: none;
+  }
 
-tr:last-child td {
-  border-bottom: none;
-}
+  tr:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color));
+  }
 
-tr:hover {
-  background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color));
-}
+  td {
+    font-size: 0.95rem;
+    color: var(--text-color);
+  }
 
-td {
-  font-size: 0.95rem;
-  color: var(--text-color);
-}
+  td:nth-child(4) {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
 
-td:nth-child(4) {
-  font-weight: bold;
-  text-transform: uppercase;
-}
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
 
-.actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
+  .actions-tight {
+    gap: .25rem;
+  }
 
-tr.row-income { box-shadow: inset 6px 0 0 var(--tx-income-color); }
-tr.row-expense { box-shadow: inset 6px 0 0 var(--tx-expense-color); }
-tr.row-debt { box-shadow: inset 6px 0 0 var(--tx-debtPayment-color); }
-tr.row-transfer { box-shadow: inset 6px 0 0 var(--tx-transfer-color); }
-tr.row-goal { box-shadow: inset 6px 0 0 var(--tx-goal-color); }
+  tr.row-income {
+    box-shadow: inset 6px 0 0 var(--tx-income-color);
+  }
+  tr.row-expense {
+    box-shadow: inset 6px 0 0 var(--tx-expense-color);
+  }
+  tr.row-debt {
+    box-shadow: inset 6px 0 0 var(--tx-debtPayment-color);
+  }
+  tr.row-transfer {
+    box-shadow: inset 6px 0 0 var(--tx-transfer-color);
+  }
+  tr.row-goal {
+    box-shadow: inset 6px 0 0 var(--tx-goal-color);
+  }
 
-.table-container table { width:100%; border-collapse:collapse }
-.table-container th, .table-container td { padding:.6rem .75rem; text-align:left }
-.table-container th { background: var(--secondary-color); color: var(--accent-color); font-weight:600; font-size:.75rem; letter-spacing:1px; text-transform:uppercase }
-.button[disabled], .button[aria-disabled="true"] { opacity:.55; cursor:not-allowed }
-.tx-table-wrap { position:relative }
-.table-mobile-title { display:none; margin:0; padding:.75rem .85rem .25rem; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px; color: var(--muted-text-color) }
-@media (max-width: 720px) { .table-mobile-title { display:block } }
-@media (min-width: 721px) { .tx-table-wrap thead th { position:sticky; top:0; background: var(--secondary-color); z-index:5 } }
+  .table-container table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .table-container th,
+  .table-container td {
+    padding: .6rem .75rem;
+    text-align: left;
+  }
+  .table-container th {
+    background: var(--secondary-color);
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: .75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .tx-table-wrap {
+    position: relative;
+  }
+
+  .table-mobile-title {
+    display: none;
+    margin: 0;
+    padding: .75rem .85rem .25rem;
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--muted-text-color);
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+  .page-title {
+    margin: 0;
+  }
+  .toolbar-actions {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filters-bar {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .filters-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .btns-group {
+    display: flex;
+    gap: .5rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .minw-200 {
+    min-width: 200px;
+  }
+  .amount-col {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+  }
+  .empty-state {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mt-075 {
+    margin-top: .75rem;
+  }
+  .mt-1 {
+    margin-top: 1rem;
+  }
+  .form-label {
+    display: block;
+    margin-bottom: .25rem;
+  }
+
+  @media (max-width: 720px) {
+    .table-mobile-title {
+      display: block;
+    }
+  }
+
+  @media (min-width: 721px) {
+    .tx-table-wrap thead th {
+      position: sticky;
+      top: 0;
+      background: var(--secondary-color);
+      z-index: 5;
+    }
+  }
 </style>

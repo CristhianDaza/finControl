@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
 import { useRoutes } from '@/composables/useRoutes.js'
 import { useIsMobile } from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
@@ -8,7 +8,8 @@ import { t } from '@/i18n/index.js'
 
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
 import LogoutIcon from '@/assets/icons/logout.svg?raw'
-import LanguageSwitcher from '@/components/global/LanguageSwitcher.vue'
+
+const LanguageSwitcher = defineAsyncComponent(/* webpackChunkName: "languageSwitcher" */ () => import('@/components/global/LanguageSwitcher.vue'))
 
 const { routes } = useRoutes()
 const { isMobile } = useIsMobile()
@@ -18,18 +19,27 @@ const auth = useAuthStore()
 const router = useRouter()
 const isAuthenticated = computed(() => auth.isAuthenticated)
 
-const handleMainClick = () => { if (!isMenuHidden.value) { isMenuHidden.value = true } }
-const clickHandler = () => { isMenuHidden.value = !isMenuHidden.value }
+const handleMainClick = () => {
+  if (!isMenuHidden.value) {
+    isMenuHidden.value = true
+  }
+}
+
+const clickHandler = () => {
+  isMenuHidden.value = !isMenuHidden.value
+}
 
 const handleLogout = async () => {
   if (!isAuthenticated.value) return
   await auth.logout()
-  await router.push({name: 'login'})
+  await router.push({ name: 'login' })
 }
 
 const appVersion = import.meta.env.VITE_VERSION || '0.0.0'
 
-onMounted(() => { isMenuHidden.value = !!isMobile.value })
+onMounted(() => {
+  isMenuHidden.value = !!isMobile.value
+})
 
 defineExpose({ handleMainClick })
 </script>
@@ -40,7 +50,11 @@ defineExpose({ handleMainClick })
       <div class="sidebar-header">
         <h2>{{ t('layout.brand') }}</h2>
         <div class="header-actions">
-          <svg class="sidebar-icon" v-html="HamburgerIcon" @click="clickHandler"></svg>
+          <svg
+            class="sidebar-icon"
+            v-html="HamburgerIcon"
+            @click="clickHandler"
+          ></svg>
         </div>
       </div>
       <nav>
@@ -51,16 +65,21 @@ defineExpose({ handleMainClick })
           exact-active-class="active"
           @click.native="isMobile ? isMenuHidden = true : null"
         >
-          <span>{{ link.name}}</span><svg class="icon-menu" v-html="link.icon"></svg>
+          <span>{{ link.name }}</span>
+          <svg class="icon-menu" v-html="link.icon"></svg>
         </RouterLink>
       </nav>
     </div>
     <div class="bottom-area">
-      <button v-if="isAuthenticated" class="button button-delete" @click="handleLogout">
+      <button
+        v-if="isAuthenticated"
+        class="button button-delete"
+        @click="handleLogout"
+      >
         <span>{{ t('auth.logout') }}</span>
         <svg class="icon-menu" v-html="LogoutIcon"></svg>
       </button>
-      <div class="bottom-bar" :class="{ 'lang-collapsed' : isMenuHidden }">
+      <div class="bottom-bar" :class="{ 'lang-collapsed': isMenuHidden }">
         <div v-if="isAuthenticated" class="version-container">
           <span class="version-pill">{{ appVersion }}</span>
         </div>

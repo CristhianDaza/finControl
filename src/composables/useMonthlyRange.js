@@ -34,7 +34,8 @@ const monthRange = (year, monthIndex) => {
   return { start, end }
 }
 
-const daysInMonth = (year, monthIndex) => new Date(year, monthIndex + 1, 0).getDate()
+const daysInMonth = (year, monthIndex) =>
+  new Date(year, monthIndex + 1, 0).getDate()
 
 export const useMonthlyRange = () => {
   const currentMonthIndex = toBogotaMonthIndex()

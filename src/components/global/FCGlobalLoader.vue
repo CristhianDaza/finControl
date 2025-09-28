@@ -56,7 +56,7 @@ const activeCount = computed(() => loading.active)
 
 .fc-gl-loader__spinner { --sz: 70px; width: var(--sz); height: var(--sz); position: relative; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--primary-color) 70%, transparent), color-mix(in srgb, var(--secondary-color) 92%, transparent)); backdrop-filter: blur(2px); }
 .fc-gl-loader__spinner::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; background: linear-gradient(135deg, color-mix(in srgb, var(--secondary-color) 55%, transparent), color-mix(in srgb, var(--primary-color) 85%, transparent)); filter: blur(4px); opacity: .55; }
-.fc-gl-loader__spinner .ring { position: absolute; inset: 0; border-radius: 50%; border: 4px solid transparent; animation: fc-gl-spin 1.2s linear infinite; /* quitamos blend para fondos claros */ mix-blend-mode: normal; }
+.fc-gl-loader__spinner .ring { position: absolute; inset: 0; border-radius: 50%; border: 4px solid transparent; animation: fc-gl-spin 1.2s linear infinite;  mix-blend-mode: normal; }
 .fc-gl-loader__spinner .ring:nth-child(1) { border-top-color: var(--accent-color); border-bottom-color: var(--accent-color); filter: drop-shadow(0 0 4px var(--accent-color)); }
 .fc-gl-loader__spinner .ring:nth-child(2) { border-left-color: var(--success-color); border-right-color: var(--success-color); animation-direction: reverse; animation-duration: 1.4s; filter: drop-shadow(0 0 4px var(--success-color)); }
 .fc-gl-loader__spinner .ring:nth-child(3) { border-top-color: var(--debt-color); border-left-color: var(--debt-color); animation-duration: 1.1s; filter: drop-shadow(0 0 4px var(--debt-color)); }

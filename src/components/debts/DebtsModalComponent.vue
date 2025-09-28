@@ -4,8 +4,8 @@ import { t } from '@/i18n/index.js'
 import { useCurrenciesStore } from '@/stores/currencies.js'
 import { useAuthStore } from '@/stores/auth.js'
 
-const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
-const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
+const FcModal = defineAsyncComponent(/* webpackChunkName: "fcModal" */() => import('@/components/global/FcModal.vue'))
+const FcFormField = defineAsyncComponent(/* webpackChunkName: "fcFormField" */() => import('@/components/global/FcFormField.vue'))
 
 const props = defineProps({
   showModalDebts: {
@@ -23,21 +23,35 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['save','update:showModal','cancel'])
+const emit = defineEmits(['save', 'update:showModal', 'cancel'])
 
-const currencies = useCurrenciesStore(); if (currencies.status==='idle') currencies.subscribe()
-const currencyOptions = computed(()=>currencies.codeOptions)
-const hasMultiple = computed(()=>currencyOptions.value.length>1)
+const currencies = useCurrenciesStore()
+if (currencies.status === 'idle') currencies.subscribe()
 
-const model = ref({ id: '', name: '', amount: 0, dueDate: '', currency: 'COP' })
+const currencyOptions = computed(() => currencies.codeOptions)
+const hasMultiple = computed(() => currencyOptions.value.length > 1)
+
+const model = ref({
+  id: '',
+  name: '',
+  amount: 0,
+  dueDate: '',
+  currency: 'COP'
+})
 const showModal = ref(false)
 const isEdit = computed(() => !!model.value.id)
 const auth = useAuthStore()
-const canWrite = computed(()=>auth.canWrite)
+const canWrite = computed(() => auth.canWrite)
 
 const handleAccept = () => {
-  if (!canWrite.value) return;
-  const payload = { id: model.value.id, name: String(model.value.name||'').trim(), amount: Number(model.value.amount||0), dueDate: model.value.dueDate || '', currency: model.value.currency || currencies.defaultCurrency.code }
+  if (!canWrite.value) return
+  const payload = {
+    id: model.value.id,
+    name: String(model.value.name || '').trim(),
+    amount: Number(model.value.amount || 0),
+    dueDate: model.value.dueDate || '',
+    currency: model.value.currency || currencies.defaultCurrency.code
+  }
   emit('save', payload)
   emit('update:showModal', false)
   reset()
@@ -49,12 +63,32 @@ const handleCancel = () => {
   reset()
 }
 
-const reset = () => { model.value = { id: '', name: '', amount: 0, dueDate: '', currency: currencies.defaultCurrency.code } }
+const reset = () => {
+  model.value = {
+    id: '',
+    name: '',
+    amount: 0,
+    dueDate: '',
+    currency: currencies.defaultCurrency.code
+  }
+}
 
-watch(() => props.showModalDebts, v => { showModal.value = v })
-watch(() => props.initial, (val) => {
-  if (val) { model.value = { id: val.id || '', name: val.name || '', amount: Number(val.originalAmount ?? val.amount ?? 0), dueDate: val.dueDate || '', currency: val.currency || currencies.defaultCurrency.code } }
+watch(() => props.showModalDebts, v => {
+  showModal.value = v
+})
+
+watch(() => props.initial, val => {
+  if (val) {
+    model.value = {
+      id: val.id || '',
+      name: val.name || '',
+      amount: Number(val.originalAmount ?? val.amount ?? 0),
+      dueDate: val.dueDate || '',
+      currency: val.currency || currencies.defaultCurrency.code
+    }
+  }
 }, { immediate: true })
+
 watch(showModal, v => emit('update:showModal', v))
 </script>
 

@@ -3,14 +3,20 @@ import { useGlobalLoadingStore } from '@/stores/loading.js'
 export function createLoadingPlugin () {
   return ({ store, pinia }) => {
     if (store.$id === 'globalLoading') return
+
     const loading = useGlobalLoadingStore(pinia)
 
-    const wrapFn = (fn) => {
+    const wrapFn = fn => {
       if (typeof fn !== 'function') return fn
       if (fn.__wrappedWithGlobalLoader) return fn
+
       const wrapped = function (...args) {
         let result
-        try { result = fn.apply(this, args) } catch (e) { throw e }
+        try {
+          result = fn.apply(this, args)
+        } catch (e) {
+          throw e
+        }
         if (result && typeof result.then === 'function') {
           loading._inc()
           return result.finally(() => loading._dec())

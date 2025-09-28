@@ -4,7 +4,7 @@ import EditIcon from '@/assets/icons/edit.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 import { t } from '@/i18n/index.js'
 
-const CategoriesModalComponent = defineAsyncComponent(/* webpackChunkName: "CategoriesModalComponent" */ () => import('@/components/categories/CategoriesModalComponent.vue'))
+const CategoriesModalComponent = defineAsyncComponent(/* webpackChunkName: "categoriesModalComponent" */ () => import('@/components/categories/CategoriesModalComponent.vue'))
 
 const showModal = ref(false)
 
@@ -60,10 +60,18 @@ const closeModal = () => { showModal.value = false }
           <tr>
             <td :data-label="t('categories.table.name')">{{ t('categories.samples.rent') }}</td>
             <td class="actions" :data-label="t('categories.table.actions')">
-              <button class="button button-edit" :aria-label="t('common.edit')" :title="t('common.edit')">
+              <button
+                class="button button-edit"
+                :aria-label="t('common.edit')"
+                :title="t('common.edit')"
+              >
                 <svg class="icon-edit" v-html="EditIcon"></svg>
               </button>
-              <button class="button button-delete" :aria-label="t('common.delete')" :title="t('common.delete')">
+              <button
+                class="button button-delete"
+                :aria-label="t('common.delete')"
+                :title="t('common.delete')"
+              >
                 <svg class="icon-delete" v-html="DeleteIcon"></svg>
               </button>
             </td>

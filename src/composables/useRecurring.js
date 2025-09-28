@@ -1,13 +1,27 @@
 import { auth, db } from '@/services/firebase.js'
-import { collection, doc, onSnapshot, orderBy as fbOrderBy, query, where, serverTimestamp, runTransaction, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  onSnapshot,
+  orderBy as fbOrderBy,
+  query,
+  where,
+  serverTimestamp,
+  runTransaction,
+  getDocs,
+  setDoc,
+  updateDoc,
+  deleteDoc
+} from 'firebase/firestore'
 import { useTransactions } from '@/composables/useTransactions.js'
 import { validateTransactionPayload } from '@/utils/validateTransactionPayload.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { t } from '@/i18n/index.js'
 
-const pad2 = (n) => String(n).padStart(2, '0')
-const toISO = (d) => {
+const pad2 = n => String(n).padStart(2, '0')
+
+const toISO = d => {
   if (typeof d === 'string') return d
   const dd = d instanceof Date ? d : new Date(d)
   const y = dd.getFullYear()
@@ -15,23 +29,27 @@ const toISO = (d) => {
   const day = pad2(dd.getDate())
   return `${y}-${m}-${day}`
 }
+
 const addDays = (iso, days) => {
-  const [y,m,d] = iso.split('-').map(n=>parseInt(n,10))
-  const dt = new Date(y, m-1, d)
+  const [y, m, d] = iso.split('-').map(n => parseInt(n, 10))
+  const dt = new Date(y, m - 1, d)
   dt.setDate(dt.getDate() + days)
   return toISO(dt)
 }
+
 const addMonths = (iso, months) => {
-  const [y,m,d] = iso.split('-').map(n=>parseInt(n,10))
-  const dt = new Date(y, m-1, d)
+  const [y, m, d] = iso.split('-').map(n => parseInt(n, 10))
+  const dt = new Date(y, m - 1, d)
   dt.setMonth(dt.getMonth() + months)
-  const ny = dt.getFullYear(), nm = dt.getMonth() + 1
+  const ny = dt.getFullYear()
+  const nm = dt.getMonth() + 1
   const lastDay = new Date(ny, nm, 0).getDate()
   const day = Math.min(d, lastDay)
   return `${ny}-${pad2(nm)}-${pad2(day)}`
 }
+
 const addYears = (iso, years) => {
-  const [y,m,d] = iso.split('-').map(n=>parseInt(n,10))
+  const [y, m, d] = iso.split('-').map(n => parseInt(n, 10))
   const ny = y + years
   const lastDay = new Date(ny, m, 0).getDate()
   const day = Math.min(d, lastDay)
@@ -40,15 +58,20 @@ const addYears = (iso, years) => {
 
 const nextFrom = (frequency, currentIso) => {
   switch (frequency) {
-    case 'weekly': return addDays(currentIso, 7)
-    case 'biweekly': return addDays(currentIso, 14)
-    case 'monthly': return addMonths(currentIso, 1)
-    case 'yearly': return addYears(currentIso, 1)
-    default: return addMonths(currentIso, 1)
+    case 'weekly':
+      return addDays(currentIso, 7)
+    case 'biweekly':
+      return addDays(currentIso, 14)
+    case 'monthly':
+      return addMonths(currentIso, 1)
+    case 'yearly':
+      return addYears(currentIso, 1)
+    default:
+      return addMonths(currentIso, 1)
   }
 }
 
-const normalizeIsoDate = (val) => {
+const normalizeIsoDate = val => {
   try {
     if (!val) return toISO(new Date())
     if (typeof val === 'string') {
@@ -60,7 +83,9 @@ const normalizeIsoDate = (val) => {
     }
     if (val instanceof Date) return toISO(val)
     return toISO(new Date(val))
-  } catch { return toISO(new Date()) }
+  } catch {
+    return toISO(new Date())
+  }
 }
 
 export const useRecurring = () => {
@@ -101,12 +126,17 @@ export const useRecurring = () => {
   const fetchDueTemplates = async () => {
     const { tplCol } = getUserPaths()
     const today = toISO(new Date())
-    const q = query(tplCol, where('paused', '==', false), where('nextRunAt', '<=', today), fbOrderBy('nextRunAt', 'asc'))
+    const q = query(
+      tplCol,
+      where('paused', '==', false),
+      where('nextRunAt', '<=', today),
+      fbOrderBy('nextRunAt', 'asc')
+    )
     const snap = await getDocs(q)
     return snap.docs.map(d => ({ id: d.id, ...d.data() }))
   }
 
-  const createTemplate = async (payload) => {
+  const createTemplate = async payload => {
     if (gate()) return
     const { uid, tplCol } = getUserPaths()
     const ref = doc(tplCol)
@@ -125,7 +155,7 @@ export const useRecurring = () => {
       nextRunAt: firstRun,
       paused: !!payload.paused,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     }
     await setDoc(ref, data)
     return ref.id
@@ -136,26 +166,47 @@ export const useRecurring = () => {
     const { tplCol } = getUserPaths()
     const ref = doc(tplCol, id)
     const data = { ...patch, updatedAt: serverTimestamp() }
-    if (data.debt && !data.debtId) { data.debtId = data.debt; delete data.debt }
-    if (data.category && !data.categoryId) { data.categoryId = data.category; delete data.category }
-    if (data.firstRunAt && !data.nextRunAt) { data.nextRunAt = normalizeIsoDate(data.firstRunAt); delete data.firstRunAt }
+    if (data.debt && !data.debtId) {
+      data.debtId = data.debt
+      delete data.debt
+    }
+    if (data.category && !data.categoryId) {
+      data.categoryId = data.category
+      delete data.category
+    }
+    if (data.firstRunAt && !data.nextRunAt) {
+      data.nextRunAt = normalizeIsoDate(data.firstRunAt)
+      delete data.firstRunAt
+    }
     if (data.nextRunAt) data.nextRunAt = normalizeIsoDate(data.nextRunAt)
     if (data.type && data.type !== 'debtPayment') data.debtId = null
     if ('debtId' in data && (data.debtId === '' || data.debtId === undefined)) data.debtId = null
-    Object.keys(data).forEach(k => { if (data[k] === undefined) delete data[k] })
-    try { await updateDoc(ref, data) } catch (e) { console.error('[recurring] updateTemplate error', id, data, e); throw e }
+    Object.keys(data).forEach(k => {
+      if (data[k] === undefined) delete data[k]
+    })
+    try {
+      await updateDoc(ref, data)
+    } catch (e) {
+      console.error('[recurring] updateTemplate error', id, data, e)
+      throw e
+    }
   }
 
-  const deleteTemplate = async (id) => {
+  const deleteTemplate = async id => {
     if (gate()) return
     const { tplCol } = getUserPaths()
     await deleteDoc(doc(tplCol, id))
   }
 
-  const maxCatchUpMap = { weekly:104, biweekly:78, monthly:36, yearly:5 }
+  const maxCatchUpMap = {
+    weekly: 104,
+    biweekly: 78,
+    monthly: 36,
+    yearly: 5
+  }
 
   const processDueOnce = async () => {
-    if (gate()) return { processed:0 }
+    if (gate()) return { processed: 0 }
     const { uid, runsColPath, tplCol } = getUserPaths()
     const due = await fetchDueTemplates()
     if (!due.length) return { processed: 0 }
@@ -174,44 +225,117 @@ export const useRecurring = () => {
         let count = 0
         let partial = false
         while (tpl.nextRunAt <= today && count < maxCatch) {
-          const validation = validateTransactionPayload({ type: tpl.type, amount: tpl.amount, accountId: tpl.accountId, date: tpl.nextRunAt })
-            if (!validation.valid) break
+          const validation = validateTransactionPayload({
+            type: tpl.type,
+            amount: tpl.amount,
+            accountId: tpl.accountId,
+            date: tpl.nextRunAt
+          })
+          if (!validation.valid) break
           const periodKey = String(tpl.nextRunAt)
           const lockId = `${tpl.id}__${periodKey}`
           const lockRef = doc(db, ...runsColPath, lockId)
           const nowIso = new Date().toISOString()
-          const locked = await runTransaction(db, async (trx) => {
+          const locked = await runTransaction(db, async trx => {
             const snap = await trx.get(lockRef)
             if (snap.exists()) return false
-            trx.set(lockRef, { ownerId: uid, templateId: tpl.id, periodKey, status: 'pending', clientTime: nowIso, createdAt: serverTimestamp(), retries: 0 })
+            trx.set(lockRef, {
+              ownerId: uid,
+              templateId: tpl.id,
+              periodKey,
+              status: 'pending',
+              clientTime: nowIso,
+              createdAt: serverTimestamp(),
+              retries: 0
+            })
             return true
           })
           if (locked) {
             let txId = null
             try {
-              txId = await createTransaction({ type: tpl.type || 'expense', amount: tpl.amount, accountId: tpl.accountId, categoryId: tpl.categoryId || tpl.category || '', debtId: tpl.debtId || undefined, date: periodKey, note: tpl.note || tpl.name || '', meta: { isRecurring: true, recurringTemplateId: tpl.id, periodKey } })
-              await runTransaction(db, async (trx) => { trx.update(lockRef, { status: 'done', txId, updatedAt: serverTimestamp() }) })
+              txId = await createTransaction({
+                type: tpl.type || 'expense',
+                amount: tpl.amount,
+                accountId: tpl.accountId,
+                categoryId: tpl.categoryId || tpl.category || '',
+                debtId: tpl.debtId || undefined,
+                date: periodKey,
+                note: tpl.note || tpl.name || '',
+                meta: {
+                  isRecurring: true,
+                  recurringTemplateId: tpl.id,
+                  periodKey
+                }
+              })
+              await runTransaction(db, async trx => {
+                trx.update(lockRef, {
+                  status: 'done',
+                  txId,
+                  updatedAt: serverTimestamp()
+                })
+              })
               processed += 1
             } catch (e) {
-              try { await runTransaction(db, async (trx) => { trx.update(lockRef, { status: 'error', errorMessage: String(e?.message||e), updatedAt: serverTimestamp() }) }) } catch {}
+              try {
+                await runTransaction(db, async trx => {
+                  trx.update(lockRef, {
+                    status: 'error',
+                    errorMessage: String(e?.message || e),
+                    updatedAt: serverTimestamp()
+                  })
+                })
+              } catch {}
             }
           }
           const next = nextFrom(tpl.frequency, tpl.nextRunAt)
-          try { await runTransaction(db, async (trx) => { trx.update(doc(tplCol, tpl.id), { lastRunAt: tpl.nextRunAt, nextRunAt: next, updatedAt: serverTimestamp() }) }) } catch {}
+          try {
+            await runTransaction(db, async trx => {
+              trx.update(doc(tplCol, tpl.id), {
+                lastRunAt: tpl.nextRunAt,
+                nextRunAt: next,
+                updatedAt: serverTimestamp()
+              })
+            })
+          } catch {}
           tpl.nextRunAt = next
           count += 1
         }
         if (count >= maxCatch && tpl.nextRunAt <= today) {
           partial = true
-          try { await runTransaction(db, async (trx) => { trx.update(doc(tplCol, tpl.id), { partialCatchUp: true, updatedAt: serverTimestamp() }) }) } catch {}
-          try { info(t('recurring.notifications.partialCatchUp', { name: tpl.name||'' })) } catch {}
+          try {
+            await runTransaction(db, async trx => {
+              trx.update(doc(tplCol, tpl.id), {
+                partialCatchUp: true,
+                updatedAt: serverTimestamp()
+              })
+            })
+          } catch {}
+          try {
+            info(t('recurring.notifications.partialCatchUp', { name: tpl.name || '' }))
+          } catch {}
         } else if (partial && tpl.nextRunAt > today) {
-          try { await runTransaction(db, async (trx) => { trx.update(doc(tplCol, tpl.id), { partialCatchUp: false, updatedAt: serverTimestamp() }) }) } catch {}
+          try {
+            await runTransaction(db, async trx => {
+              trx.update(doc(tplCol, tpl.id), {
+                partialCatchUp: false,
+                updatedAt: serverTimestamp()
+              })
+            })
+          } catch {}
         }
-      } catch (outer) { console.error('[recurring] Error inesperado procesando plantilla', tplOrig?.id, outer) }
+      } catch (outer) {
+        console.error('[recurring] Error inesperado procesando plantilla', tplOrig?.id, outer)
+      }
     }
     return { processed }
   }
 
-  return { subscribeTemplates, fetchDueTemplates, createTemplate, updateTemplate, deleteTemplate, processDueOnce }
+  return {
+    subscribeTemplates,
+    fetchDueTemplates,
+    createTemplate,
+    updateTemplate,
+    deleteTemplate,
+    processDueOnce
+  }
 }

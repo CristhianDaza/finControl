@@ -1,6 +1,6 @@
-import {defineStore} from 'pinia'
-import {auth} from '@/services/firebase.js'
-import {useUserPrefs} from '@/composables/useUserPrefs.js'
+import { defineStore } from 'pinia'
+import { auth } from '@/services/firebase.js'
+import { useUserPrefs } from '@/composables/useUserPrefs.js'
 
 const STORAGE_KEY = 'fincontrol.themeVars'
 
@@ -10,12 +10,11 @@ export const EDITABLE_VARS = [
   { key: '--background-color', label: 'Fondo principal' },
   { key: '--text-color', label: 'Texto principal' },
   { key: '--accent-color', label: 'Color de acento' },
-
   { key: '--tx-expense-color', label: 'Gasto' },
   { key: '--tx-goal-color', label: 'Agregar a la meta' },
   { key: '--tx-debtPayment-color', label: 'Pago de deuda' },
   { key: '--tx-income-color', label: 'Ingreso' },
-  { key: '--tx-transfer-color', label: 'Transferencia' },
+  { key: '--tx-transfer-color', label: 'Transferencia' }
 ]
 
 export const THEME_PRESETS = [
@@ -28,13 +27,13 @@ export const THEME_PRESETS = [
       '--secondary-color': '#0D1117',
       '--background-color': '#0A192F',
       '--text-color': '#E0E1E9',
-      '--accent-color': '#3FA9F5', // azul
+      '--accent-color': '#3FA9F5',
       '--tx-expense-color': '#EF4444',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#8B5CF6',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#3FA9F5',
-    },
+      '--tx-transfer-color': '#3FA9F5'
+    }
   },
   {
     id: 'dark-rose',
@@ -45,13 +44,13 @@ export const THEME_PRESETS = [
       '--secondary-color': '#14141b',
       '--background-color': '#121216',
       '--text-color': '#EAEAF0',
-      '--accent-color': '#FF7AB6', // rosado
+      '--accent-color': '#FF7AB6',
       '--tx-expense-color': '#F43F5E',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#C084FC',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#FB7185',
-    },
+      '--tx-transfer-color': '#FB7185'
+    }
   },
   {
     id: 'dark-forest',
@@ -62,13 +61,13 @@ export const THEME_PRESETS = [
       '--secondary-color': '#122019',
       '--background-color': '#0D1713',
       '--text-color': '#E3EEE8',
-      '--accent-color': '#4ADE80', // verde
+      '--accent-color': '#4ADE80',
       '--tx-expense-color': '#F87171',
       '--tx-goal-color': '#FBBF24',
       '--tx-debtPayment-color': '#34D399',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#2DD4BF',
-    },
+      '--tx-transfer-color': '#2DD4BF'
+    }
   },
   {
     id: 'light-ocean',
@@ -79,13 +78,13 @@ export const THEME_PRESETS = [
       '--secondary-color': '#F1F5F9',
       '--background-color': '#F7FAFC',
       '--text-color': '#111827',
-      '--accent-color': '#2563EB', // azul
+      '--accent-color': '#2563EB',
       '--tx-expense-color': '#DC2626',
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#7C3AED',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#0284C7',
-    },
+      '--tx-transfer-color': '#0284C7'
+    }
   },
   {
     id: 'light-rose',
@@ -96,13 +95,13 @@ export const THEME_PRESETS = [
       '--secondary-color': '#FDF2F8',
       '--background-color': '#FFF7FB',
       '--text-color': '#1F2937',
-      '--accent-color': '#DB2777', // rosado
+      '--accent-color': '#DB2777',
       '--tx-expense-color': '#E11D48',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#EC4899',
-    },
+      '--tx-transfer-color': '#EC4899'
+    }
   },
   {
     id: 'light-slate',
@@ -113,15 +112,14 @@ export const THEME_PRESETS = [
       '--secondary-color': '#F3F4F6',
       '--background-color': '#FAFAFA',
       '--text-color': '#111827',
-      '--accent-color': '#0EA5E9', // cian
+      '--accent-color': '#0EA5E9',
       '--tx-expense-color': '#DC2626',
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#6366F1',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#22D3EE',
-    },
+      '--tx-transfer-color': '#22D3EE'
+    }
   },
-  // Nuevos oscuros
   {
     id: 'dark-amber',
     mode: 'dark',
@@ -131,13 +129,13 @@ export const THEME_PRESETS = [
       '--secondary-color': '#1C170F',
       '--background-color': '#14100B',
       '--text-color': '#F3EEE6',
-      '--accent-color': '#F59E0B', // ámbar
+      '--accent-color': '#F59E0B',
       '--tx-expense-color': '#F87171',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#FBBF24',
-    },
+      '--tx-transfer-color': '#FBBF24'
+    }
   },
   {
     id: 'dark-teal',
@@ -148,15 +146,14 @@ export const THEME_PRESETS = [
       '--secondary-color': '#0F1A20',
       '--background-color': '#0B1418',
       '--text-color': '#E2EEF2',
-      '--accent-color': '#14B8A6', // teal
+      '--accent-color': '#14B8A6',
       '--tx-expense-color': '#F87171',
       '--tx-goal-color': '#FBBF24',
       '--tx-debtPayment-color': '#06B6D4',
       '--tx-income-color': '#22C55E',
-      '--tx-transfer-color': '#14B8A6',
-    },
+      '--tx-transfer-color': '#14B8A6'
+    }
   },
-  // Nuevos claros
   {
     id: 'light-emerald',
     mode: 'light',
@@ -166,13 +163,13 @@ export const THEME_PRESETS = [
       '--secondary-color': '#F0FDF4',
       '--background-color': '#F8FFF9',
       '--text-color': '#111827',
-      '--accent-color': '#10B981', // esmeralda
+      '--accent-color': '#10B981',
       '--tx-expense-color': '#DC2626',
       '--tx-goal-color': '#D97706',
       '--tx-debtPayment-color': '#6366F1',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#34D399',
-    },
+      '--tx-transfer-color': '#34D399'
+    }
   },
   {
     id: 'light-amber',
@@ -183,22 +180,22 @@ export const THEME_PRESETS = [
       '--secondary-color': '#FFFBEB',
       '--background-color': '#FFFDF5',
       '--text-color': '#1F2937',
-      '--accent-color': '#F59E0B', // ámbar
+      '--accent-color': '#F59E0B',
       '--tx-expense-color': '#DC2626',
       '--tx-goal-color': '#F59E0B',
       '--tx-debtPayment-color': '#A78BFA',
       '--tx-income-color': '#16A34A',
-      '--tx-transfer-color': '#FBBF24',
-    },
-  },
+      '--tx-transfer-color': '#FBBF24'
+    }
+  }
 ]
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    themeVars: /** @type {Record<string,string>} */ ({}),
-    initialDefaults: /** @type {Record<string,string>} */ ({}),
+    themeVars: {},
+    initialDefaults: {},
     loaded: false,
-    amountFormat: 'full',
+    amountFormat: 'full'
   }),
   actions: {
     _readCssVar(key) {
@@ -234,14 +231,19 @@ export const useSettingsStore = defineStore('settings', {
         } catch {}
       }
 
-      this.themeVars = {...defaults, ...cached, ...(remote || {})}
+      this.themeVars = { ...defaults, ...cached, ...(remote || {}) }
       this._applyAll(this.themeVars)
       this.loaded = true
 
       if (remote) {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars))
+        } catch {}
       }
-      try { const af = localStorage.getItem('fincontrol.amountFormat'); if (af === 'compact' || af === 'full') this.amountFormat = af } catch {}
+      try {
+        const af = localStorage.getItem('fincontrol.amountFormat')
+        if (af === 'compact' || af === 'full') this.amountFormat = af
+      } catch {}
     },
     setVar(key, value) {
       this.themeVars[key] = value
@@ -250,10 +252,14 @@ export const useSettingsStore = defineStore('settings', {
     setAmountFormat(mode) {
       if (mode !== 'full' && mode !== 'compact') return
       this.amountFormat = mode
-      try { localStorage.setItem('fincontrol.amountFormat', mode) } catch {}
+      try {
+        localStorage.setItem('fincontrol.amountFormat', mode)
+      } catch {}
     },
     async save() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars)) } catch {}
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.themeVars))
+      } catch {}
 
       if (auth.currentUser) {
         try {
@@ -268,7 +274,9 @@ export const useSettingsStore = defineStore('settings', {
       await this.save()
     },
     clearCacheOnLogout() {
-      try { localStorage.removeItem(STORAGE_KEY) } catch {}
+      try {
+        localStorage.removeItem(STORAGE_KEY)
+      } catch {}
       if (Object.keys(this.initialDefaults).length) {
         this.themeVars = { ...this.initialDefaults }
         this._applyAll(this.themeVars)
@@ -278,8 +286,8 @@ export const useSettingsStore = defineStore('settings', {
     applyPreset(id) {
       const preset = THEME_PRESETS.find(p => p.id === id)
       if (!preset) return
-      this.themeVars = {...this.initialDefaults, ...preset.vars}
+      this.themeVars = { ...this.initialDefaults, ...preset.vars }
       this._applyAll(this.themeVars)
-    },
-  },
+    }
+  }
 })
