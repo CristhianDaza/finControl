@@ -417,7 +417,7 @@ watch(selectedYear, () => {
               class="input"
               type="text"
               v-model.trim="searchText"
-              placeholder="Ej: arriendo"
+              :placeholder="t('transactions.form.descriptionPlaceholder')"
             />
           </div>
           <div>
