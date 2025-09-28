@@ -15,9 +15,8 @@ export const useProgressiveCharts = () => {
     isDataProcessing.value = true
     const chunks = []
     
-    for (let i = 0; i < rawData.length; i += chunkSize) {
+    for (let i = 0; i < rawData.length; i += chunkSize)
       chunks.push(rawData.slice(i, i + chunkSize))
-    }
     
     dataChunks.value = chunks
     currentChunkIndex.value = 0
@@ -27,9 +26,8 @@ export const useProgressiveCharts = () => {
       currentChunkIndex.value = 1
     }
     
-    if (chunks.length > 1) {
+    if (chunks.length > 1)
       await processRemainingChunks()
-    }
     
     isDataProcessing.value = false
     return processedData.value
@@ -42,40 +40,35 @@ export const useProgressiveCharts = () => {
           ...item,
           processedAt: Date.now()
         }))
-        
         resolve(processed)
       }
       
-      if (window.requestIdleCallback) {
+      if (window.requestIdleCallback)
         window.requestIdleCallback(processInIdle)
-      } else {
+      else
         setTimeout(() => processInIdle({ timeRemaining: () => 50 }), 0)
-      }
     })
   }
   
   const processRemainingChunks = async () => {
     for (let i = currentChunkIndex.value; i < dataChunks.value.length; i++) {
       await nextTick()
-      
       const chunkData = await processChunk(dataChunks.value[i])
       processedData.value = [...(processedData.value || []), ...chunkData]
       currentChunkIndex.value = i + 1
-      
       await new Promise(resolve => setTimeout(resolve, 10))
     }
   }
   
   const memoizedChartData = computed(() => {
-    if (!processedData.value || processedData.value.length === 0) {
+    if (!processedData.value || processedData.value.length === 0)
       return null
-    }
     
     return {
       labels: processedData.value.map(item => item.label || item.date || item.name),
       datasets: [{
         data: processedData.value.map(item => item.value || item.amount || 0),
-        backgroundColor: processedData.value.map((_, index) => 
+        backgroundColor: processedData.value.map((_, index) =>
           `hsl(${(index * 137.508) % 360}, 70%, 50%)`
         )
       }]
@@ -105,9 +98,8 @@ export const useProgressiveCharts = () => {
   }
   
   watch(isChartVisible, async (visible) => {
-    if (visible && !isChartLoaded.value) {
+    if (visible && !isChartLoaded.value)
       await loadChart()
-    }
   })
   
   const cleanup = () => {
@@ -134,7 +126,6 @@ export const useProgressiveCharts = () => {
     isChartLoaded,
     chartContainer,
     loadChart,
-    
     isDataProcessing,
     processedData,
     memoizedChartData,
@@ -142,7 +133,6 @@ export const useProgressiveCharts = () => {
     processDataInChunks,
     debouncedUpdate,
     cleanup,
-    
     processingProgress: computed(() => {
       if (dataChunks.value.length === 0) return 100
       return Math.round((currentChunkIndex.value / dataChunks.value.length) * 100)

@@ -2,8 +2,8 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 import { auth } from '@/services/firebase.js'
 import { t } from '@/i18n/index.js'
 
-const toFriendlyError = (err) => {
-  const code = (typeof err === 'object' && err && 'code' in err) ? err.code : ''
+const toFriendlyError = err => {
+  const code = typeof err === 'object' && err && 'code' in err ? err.code : ''
   switch (code) {
     case 'auth/invalid-email':
       return t('errors.auth.invalid-email')
@@ -29,8 +29,8 @@ export const useAuth = () => {
   }
 
   const onAuthReady = () => {
-    return new Promise((resolve) => {
-      const unsub = onAuthStateChanged(auth, (user) => {
+    return new Promise(resolve => {
+      const unsub = onAuthStateChanged(auth, user => {
         resolve(user)
         try { unsub() } catch {}
       })

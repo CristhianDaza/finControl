@@ -13,13 +13,13 @@ export const useVirtualScroll = (options = {}) => {
   const containerSize = ref(containerHeight)
   const items = ref([])
   const isScrolling = ref(false)
-  
+
   let scrollTimeout = null
-  
-  const visibleStartIndex = computed(() => {
-    return Math.max(0, Math.floor(scrollTop.value / itemHeight) - overscan)
-  })
-  
+
+  const visibleStartIndex = computed(() =>
+    Math.max(0, Math.floor(scrollTop.value / itemHeight) - overscan)
+  )
+
   const visibleEndIndex = computed(() => {
     const visibleCount = Math.ceil(containerSize.value / itemHeight)
     return Math.min(
@@ -27,35 +27,35 @@ export const useVirtualScroll = (options = {}) => {
       visibleStartIndex.value + visibleCount + overscan * 2
     )
   })
-  
-  const visibleItems = computed(() => {
-    return items.value.slice(visibleStartIndex.value, visibleEndIndex.value + 1)
-  })
-  
-  const totalHeight = computed(() => {
-    return items.value.length * itemHeight
-  })
-  
-  const offsetY = computed(() => {
-    return visibleStartIndex.value * itemHeight
-  })
-  
-  const virtualizedItemsCount = computed(() => {
-    return visibleEndIndex.value - visibleStartIndex.value + 1
-  })
-  
+
+  const visibleItems = computed(() =>
+    items.value.slice(visibleStartIndex.value, visibleEndIndex.value + 1)
+  )
+
+  const totalHeight = computed(() =>
+    items.value.length * itemHeight
+  )
+
+  const offsetY = computed(() =>
+    visibleStartIndex.value * itemHeight
+  )
+
+  const virtualizedItemsCount = computed(() =>
+    visibleEndIndex.value - visibleStartIndex.value + 1
+  )
+
   const renderRatio = computed(() => {
     if (items.value.length === 0) return 0
     return Math.round((virtualizedItemsCount.value / items.value.length) * 100)
   })
 
   let intersectionObserver = null
-  
+
   const setupIntersectionObserver = () => {
     if (!containerRef.value || !window.IntersectionObserver) return
-    
+
     intersectionObserver = new IntersectionObserver(
-      (entries) => {
+      entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             enableScrollTracking()
@@ -66,75 +66,76 @@ export const useVirtualScroll = (options = {}) => {
       },
       { threshold }
     )
-    
+
     intersectionObserver.observe(containerRef.value)
   }
-  
+
   let scrollTrackingEnabled = true
-  
+
   const enableScrollTracking = () => {
     scrollTrackingEnabled = true
   }
-  
+
   const disableScrollTracking = () => {
     scrollTrackingEnabled = false
   }
 
-  const handleScroll = (event) => {
+  const handleScroll = event => {
     if (!scrollTrackingEnabled) return
-    
+
     const target = event.target
     scrollTop.value = target.scrollTop
-    
+
     isScrolling.value = true
     clearTimeout(scrollTimeout)
     scrollTimeout = setTimeout(() => {
       isScrolling.value = false
     }, 150)
-    
+
     if (target.clientHeight !== containerSize.value) {
       containerSize.value = target.clientHeight
     }
   }
 
   let rafId = null
-  const optimizedScrollHandler = (event) => {
+
+  const optimizedScrollHandler = event => {
     if (rafId) return
-    
+
     rafId = requestAnimationFrame(() => {
       handleScroll(event)
       rafId = null
     })
   }
 
-  const setItems = (newItems) => {
+  const setItems = newItems => {
     items.value = newItems || []
   }
-  
+
   const scrollToIndex = (index, behavior = 'smooth') => {
     if (!containerRef.value || index < 0 || index >= items.value.length) return
-    
+
     const targetScrollTop = index * itemHeight
     containerRef.value.scrollTo({
       top: targetScrollTop,
       behavior
     })
   }
-  
+
   const scrollToTop = (behavior = 'smooth') => {
     scrollToIndex(0, behavior)
   }
-  
+
   const scrollToBottom = (behavior = 'smooth') => {
     scrollToIndex(items.value.length - 1, behavior)
   }
 
   let resizeObserver = null
-  
+
   const setupResizeObserver = () => {
     if (!containerRef.value || !window.ResizeObserver) return
-    
-    resizeObserver = new ResizeObserver((entries) => {
+
+    resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         const { height } = entry.contentRect
         if (height !== containerSize.value) {
@@ -142,7 +143,7 @@ export const useVirtualScroll = (options = {}) => {
         }
       }
     })
-    
+
     resizeObserver.observe(containerRef.value)
   }
 
@@ -154,7 +155,7 @@ export const useVirtualScroll = (options = {}) => {
       setupResizeObserver()
     }
   })
-  
+
   onUnmounted(() => {
     clearTimeout(scrollTimeout)
     if (rafId) {
@@ -202,7 +203,7 @@ export const useVirtualTable = (options = {}) => {
     overscan: 3,
     ...options
   })
-  
+
   return {
     ...virtualScroll,
     tableStyle: computed(() => ({
@@ -226,7 +227,7 @@ export const useVirtualGrid = (options = {}) => {
     overscan: 2,
     ...options
   })
-  
+
   return {
     ...virtualScroll,
     gridStyle: computed(() => ({

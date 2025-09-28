@@ -13,7 +13,6 @@ import {
   PointElement
 } from 'chart.js'
 
-// Register Chart.js components only once
 let isRegistered = false
 
 export const useCharts = () => {
@@ -32,13 +31,12 @@ export const useCharts = () => {
         LineElement,
         PointElement
       )
-      
-      // Disable Chart.js default colors to allow custom colors
+
       Chart.defaults.plugins.colors = {
         enabled: false
       }
       Chart.defaults.color = '#E0E1E9'
-      
+
       isRegistered = true
     }
   }

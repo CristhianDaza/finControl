@@ -20,7 +20,7 @@ const ErrorComponent = {
   }
 }
 
-const createAsyncComponent = (loader) => {
+const createAsyncComponent = loader => {
   return defineAsyncComponent({
     loader,
     loadingComponent: LoadingComponent,
@@ -33,62 +33,62 @@ const createAsyncComponent = (loader) => {
 
 export const useLazyComponents = () => {
   const TransactionsModal = createAsyncComponent(
-    () => import(/* webpackChunkName: "modals-transactions" */ '@/components/transactions/TransactionsModalComponent.vue'),
+    () => import(/* webpackChunkName: "transactionsModalComponent" */ '@/components/transactions/TransactionsModalComponent.vue'),
     'modals-transactions'
   )
 
   const AccountsModal = createAsyncComponent(
-    () => import(/* webpackChunkName: "modals-accounts" */ '@/components/accounts/AccountsModalComponent.vue'),
+    () => import(/* webpackChunkName: "accountsModalComponents" */ '@/components/accounts/AccountsModalComponent.vue'),
     'modals-accounts'
   )
 
   const CategoriesModal = createAsyncComponent(
-    () => import(/* webpackChunkName: "modals-categories" */ '@/components/categories/CategoriesModalComponent.vue'),
+    () => import(/* webpackChunkName: "categoriesModalComponent" */ '@/components/categories/CategoriesModalComponent.vue'),
     'modals-categories'
   )
 
   const DebtsModal = createAsyncComponent(
-    () => import(/* webpackChunkName: "modals-debts" */ '@/components/debts/DebtsModalComponent.vue'),
+    () => import(/* webpackChunkName: "debtsModalComponent" */ '@/components/debts/DebtsModalComponent.vue'),
     'modals-debts'
   )
 
   const TransferModal = createAsyncComponent(
-    () => import(/* webpackChunkName: "modals-transfer" */ '@/components/FCTransferModal.vue'),
+    () => import(/* webpackChunkName: "fCTransferModal" */ '@/components/FCTransferModal.vue'),
     'modals-transfer'
   )
 
   const AuthModal = createAsyncComponent(
-    () => import(/* webpackChunkName: "modals-auth" */ '@/components/global/FcAuthModal.vue'),
+    () => import(/* webpackChunkName: "fcAuthModal" */ '@/components/global/FcAuthModal.vue'),
     'modals-auth'
   )
 
   const ConfirmModal = createAsyncComponent(
-    () => import(/* webpackChunkName: "modals-confirm" */ '@/components/global/FCConfirmModal.vue'),
+    () => import(/* webpackChunkName: "fCConfirmModal" */ '@/components/global/FCConfirmModal.vue'),
     'modals-confirm'
   )
 
   const Sidebar = createAsyncComponent(
-    () => import(/* webpackChunkName: "global-sidebar" */ '@/components/global/FcSidebar.vue'),
+    () => import(/* webpackChunkName: "fcSidebar" */ '@/components/global/FcSidebar.vue'),
     'global-sidebar'
   )
 
   const Notify = createAsyncComponent(
-    () => import(/* webpackChunkName: "global-notify" */ '@/components/global/FCNotify.vue'),
+    () => import(/* webpackChunkName: "fCNotify" */ '@/components/global/FCNotify.vue'),
     'global-notify'
   )
 
   const GlobalLoader = createAsyncComponent(
-    () => import(/* webpackChunkName: "global-loader" */ '@/components/global/FCGlobalLoader.vue'),
+    () => import(/* webpackChunkName: "fCGlobalLoader" */ '@/components/global/FCGlobalLoader.vue'),
     'global-loader'
   )
 
-  const preloadComponent = (componentLoader) => {
+  const preloadComponent = componentLoader => {
     return componentLoader()
   }
 
   const preloadModals = () => {
-    preloadComponent(() => import('@/components/transactions/TransactionsModalComponent.vue'))
-    preloadComponent(() => import('@/components/accounts/AccountsModalComponent.vue'))
+    preloadComponent(() => import(/* webpackChunkName: "transactionsModalComponent" */ '@/components/transactions/TransactionsModalComponent.vue'))
+    preloadComponent(() => import(/* webpackChunkName: "accountsModalComponent" */ '@/components/accounts/AccountsModalComponent.vue'))
   }
 
   return {
