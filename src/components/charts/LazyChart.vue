@@ -1,31 +1,5 @@
-<template>
-  <div ref="chartContainer" class="lazy-chart-container">
-    <ChartSkeleton
-      v-if="!isChartVisible || isDataProcessing"
-      :type="chartType"
-      :height="height"
-    />
-
-    <div v-if="isDataProcessing && isChartVisible" class="processing-overlay">
-      <div class="processing-content">
-        <div class="processing-spinner"></div>
-        <p>Processing data... {{ processingProgress }}%</p>
-      </div>
-    </div>
-
-    <div v-show="isChartVisible && !isDataProcessing" class="chart-wrapper">
-      <canvas
-        ref="canvasRef"
-        :aria-label="ariaLabel"
-        role="img"
-        :style="{ height: height + 'px' }"
-      ></canvas>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useProgressiveCharts } from '@/composables/useProgressiveCharts.js'
 import ChartSkeleton from './ChartSkeleton.vue'
 
@@ -70,7 +44,6 @@ const {
   isChartVisible,
   isChartLoaded,
   chartContainer,
-  loadChart,
   isDataProcessing,
   processedData,
   memoizedChartData,
@@ -88,8 +61,8 @@ const createChart = async () => {
     const { createChart: chartFactory } = useCharts()
 
     const finalData = props.enableProgressive && memoizedChartData.value
-      ? memoizedChartData.value
-      : props.chartData
+        ? memoizedChartData.value
+        : props.chartData
 
     chartInstance = chartFactory(canvasRef.value.getContext('2d'), {
       type: props.chartType,
@@ -110,11 +83,9 @@ const createChart = async () => {
 const updateChart = () => {
   if (!chartInstance) return
 
-  const finalData = props.enableProgressive && memoizedChartData.value
-    ? memoizedChartData.value
-    : props.chartData
-
-  chartInstance.data = finalData
+  chartInstance.data = props.enableProgressive && memoizedChartData.value
+      ? memoizedChartData.value
+      : props.chartData
   chartInstance.update('none')
 }
 
@@ -139,7 +110,7 @@ watch(memoizedChartData, () => {
 watch(isChartLoaded, async (loaded) => {
   if (loaded) {
     await nextTick()
-    createChart()
+    await createChart()
   }
 })
 
@@ -163,6 +134,32 @@ onUnmounted(() => {
   cleanup()
 })
 </script>
+
+<template>
+  <div ref="chartContainer" class="lazy-chart-container">
+    <ChartSkeleton
+      v-if="!isChartVisible || isDataProcessing"
+      :type="chartType"
+      :height="height"
+    />
+
+    <div v-if="isDataProcessing && isChartVisible" class="processing-overlay">
+      <div class="processing-content">
+        <div class="processing-spinner"></div>
+        <p>Processing data... {{ processingProgress }}%</p>
+      </div>
+    </div>
+
+    <div v-show="isChartVisible && !isDataProcessing" class="chart-wrapper">
+      <canvas
+        ref="canvasRef"
+        :aria-label="ariaLabel"
+        role="img"
+        :style="{ height: height + 'px' }"
+      ></canvas>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .lazy-chart-container {

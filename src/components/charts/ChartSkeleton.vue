@@ -1,35 +1,3 @@
-<template>
-  <div class="chart-skeleton" :style="{ height: height + 'px' }">
-    <div class="skeleton-header">
-      <div class="skeleton-title"></div>
-    </div>
-    <div class="skeleton-chart">
-      <div class="skeleton-bars" v-if="type === 'bar'">
-        <div 
-          v-for="i in barCount" 
-          :key="i" 
-          class="skeleton-bar"
-          :style="{ height: Math.random() * 60 + 20 + '%' }"
-        ></div>
-      </div>
-      <div class="skeleton-doughnut" v-else-if="type === 'doughnut'">
-        <div class="skeleton-circle"></div>
-      </div>
-      <div class="skeleton-line" v-else-if="type === 'line'">
-        <svg viewBox="0 0 300 150" class="skeleton-svg">
-          <path 
-            d="M 10 100 Q 50 80 100 90 T 200 70 T 290 85" 
-            stroke="currentColor" 
-            fill="none" 
-            stroke-width="2"
-            opacity="0.3"
-          />
-        </svg>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 defineProps({
   type: {
@@ -47,6 +15,38 @@ defineProps({
   }
 })
 </script>
+
+<template>
+  <div class="chart-skeleton" :style="{ height: height + 'px' }">
+    <div class="skeleton-header">
+      <div class="skeleton-title"></div>
+    </div>
+    <div class="skeleton-chart">
+      <div class="skeleton-bars" v-if="type === 'bar'">
+        <div
+          v-for="i in barCount"
+          :key="i"
+          class="skeleton-bar"
+          :style="{ height: Math.random() * 60 + 20 + '%' }"
+        ></div>
+      </div>
+      <div class="skeleton-doughnut" v-else-if="type === 'doughnut'">
+        <div class="skeleton-circle"></div>
+      </div>
+      <div class="skeleton-line" v-else-if="type === 'line'">
+        <svg viewBox="0 0 300 150" class="skeleton-svg">
+          <path
+            d="M 10 100 Q 50 80 100 90 T 200 70 T 290 85"
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            opacity="0.3"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .chart-skeleton {

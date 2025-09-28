@@ -1,82 +1,3 @@
-<template>
-  <div class="virtual-table-container">
-    <div class="table-header">
-      <table>
-        <thead>
-          <tr>
-            <th>{{ t('transactions.table.date') }}</th>
-            <th>{{ t('transactions.table.description') }}</th>
-            <th>{{ t('transactions.table.amount') }}</th>
-            <th>{{ t('transactions.table.account') }}</th>
-            <th>{{ t('transactions.table.type') }}</th>
-            <th>{{ t('transactions.table.actions') }}</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-
-    <div
-      ref="containerRef"
-      class="virtual-table-body"
-      :style="{ height: containerHeight + 'px' }"
-      @scroll="handleScroll"
-    >
-      <div :style="tableStyle">
-        <div :style="visibleRowsStyle">
-          <table>
-            <tbody>
-              <tr
-                v-for="(item, index) in visibleItems"
-                :key="item.id"
-                :class="{
-                  'row-income': item.type==='income',
-                  'row-expense': item.type==='expense' && !(item.goalId || item.goal),
-                  'row-debt': item.type==='debtPayment',
-                  'row-goal': item.type==='expense' && (item.goalId || item.goal)
-                }"
-                :style="{ height: itemHeight + 'px' }"
-              >
-                <td :data-label="t('transactions.table.date')">{{ item.date }}</td>
-                <td :data-label="t('transactions.table.description')">{{ item.note || item.description }}</td>
-                <td :data-label="t('transactions.table.amount')">{{ formatAmount(item.amount, item.currency || 'COP') }}</td>
-                <td :data-label="t('transactions.table.account')">{{ accountNameById[item.accountId] || item.accountId }}</td>
-                <td :data-label="t('transactions.table.type')">{{ getTypeLabel(item) }}</td>
-                <td :data-label="t('transactions.table.actions')">
-                  <div class="actions">
-                    <button
-                      class="button button-edit"
-                      @click="$emit('edit', item)"
-                      :disabled="!canWrite"
-                      :aria-disabled="!canWrite"
-                    >
-                      <svg class="icon-edit" v-html="EditIcon"></svg>
-                    </button>
-                    <button
-                      class="button button-delete"
-                      @click="$emit('delete', item.id)"
-                      :disabled="!canWrite"
-                      :aria-disabled="!canWrite"
-                    >
-                      <svg class="icon-delete" v-html="DeleteIcon"></svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div v-if="showPerformanceInfo" class="performance-info">
-        <small>
-          Rendering {{ virtualizedItemsCount }}/{{ itemsCount }} items ({{ renderRatio }}%)
-          <span v-if="isScrolling" class="scrolling-indicator">📜</span>
-        </small>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { computed, watch } from 'vue'
 import { useVirtualTable } from '@/composables/useVirtualScroll.js'
@@ -117,10 +38,6 @@ const emit = defineEmits(['edit', 'delete'])
 const {
   containerRef,
   visibleItems,
-  visibleStartIndex,
-  visibleEndIndex,
-  totalHeight,
-  offsetY,
   isScrolling,
   virtualizedItemsCount,
   renderRatio,
@@ -135,11 +52,13 @@ const {
   overscan: 5
 })
 
-watch(() => props.items, (newItems) => {
-  setItems(newItems)
-}, { immediate: true })
+watch(
+  () => props.items,
+  newItems => setItems(newItems),
+  { immediate: true }
+)
 
-const getTypeLabel = (item) => {
+const getTypeLabel = item => {
   const isGoal = item.type === 'expense' && (item.goalId || item.goal)
   if (item.type === 'income') return t('transactions.form.income')
   if (item.type === 'debtPayment') return t('transactions.form.debtPayment')
@@ -147,6 +66,95 @@ const getTypeLabel = (item) => {
   return t('transactions.form.expense')
 }
 </script>
+
+<template>
+  <div class="virtual-table-container">
+    <div class="table-header">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ t('transactions.table.date') }}</th>
+            <th>{{ t('transactions.table.description') }}</th>
+            <th>{{ t('transactions.table.amount') }}</th>
+            <th>{{ t('transactions.table.account') }}</th>
+            <th>{{ t('transactions.table.type') }}</th>
+            <th>{{ t('transactions.table.actions') }}</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <div
+      ref="containerRef"
+      class="virtual-table-body"
+      :style="{ height: containerHeight + 'px' }"
+      @scroll="handleScroll"
+    >
+      <div :style="tableStyle">
+        <div :style="visibleRowsStyle">
+          <table>
+            <tbody>
+              <tr
+                v-for="item in visibleItems"
+                :key="item.id"
+                :class="{
+                  'row-income': item.type === 'income',
+                  'row-expense': item.type === 'expense' && !(item.goalId || item.goal),
+                  'row-debt': item.type === 'debtPayment',
+                  'row-goal': item.type === 'expense' && (item.goalId || item.goal)
+                }"
+                :style="{ height: itemHeight + 'px' }"
+              >
+                <td :data-label="t('transactions.table.date')">
+                  {{ item.date }}
+                </td>
+                <td :data-label="t('transactions.table.description')">
+                  {{ item.note || item.description }}
+                </td>
+                <td :data-label="t('transactions.table.amount')">
+                  {{ formatAmount(item.amount, item.currency || 'COP') }}
+                </td>
+                <td :data-label="t('transactions.table.account')">
+                  {{ accountNameById[item.accountId] || item.accountId }}
+                </td>
+                <td :data-label="t('transactions.table.type')">
+                  {{ getTypeLabel(item) }}
+                </td>
+                <td :data-label="t('transactions.table.actions')">
+                  <div class="actions">
+                    <button
+                      class="button button-edit"
+                      @click="$emit('edit', item)"
+                      :disabled="!canWrite"
+                      :aria-disabled="!canWrite"
+                    >
+                      <svg class="icon-edit" v-html="EditIcon"></svg>
+                    </button>
+                    <button
+                      class="button button-delete"
+                      @click="$emit('delete', item.id)"
+                      :disabled="!canWrite"
+                      :aria-disabled="!canWrite"
+                    >
+                      <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div v-if="showPerformanceInfo" class="performance-info">
+        <small>
+          Rendering {{ virtualizedItemsCount }}/{{ itemsCount }} items ({{ renderRatio }}%)
+          <span v-if="isScrolling" class="scrolling-indicator">📜</span>
+        </small>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .virtual-table-container {

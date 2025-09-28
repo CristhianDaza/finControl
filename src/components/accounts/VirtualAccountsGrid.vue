@@ -1,3 +1,60 @@
+<script setup>
+import { watch } from 'vue'
+import { useVirtualGrid } from '@/composables/useVirtualScroll.js'
+import { formatAmount } from '@/utils/formatters.js'
+import { t } from '@/i18n/index.js'
+import EditIcon from '@/assets/icons/edit.svg?raw'
+import DeleteIcon from '@/assets/icons/delete.svg?raw'
+
+const props = defineProps({
+  items: {
+    type: Array,
+    default: () => []
+  },
+  canWrite: {
+    type: Boolean,
+    default: false
+  },
+  containerHeight: {
+    type: Number,
+    default: 600
+  },
+  itemHeight: {
+    type: Number,
+    default: 140
+  },
+  showPerformanceInfo: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['edit', 'delete'])
+
+const {
+  containerRef,
+  visibleItems,
+  isScrolling,
+  virtualizedItemsCount,
+  renderRatio,
+  setItems,
+  handleScroll,
+  gridStyle,
+  visibleCardsStyle,
+  itemsCount
+} = useVirtualGrid({
+  itemHeight: props.itemHeight,
+  containerHeight: props.containerHeight,
+  overscan: 3
+})
+
+watch(
+  () => props.items,
+  newItems => setItems(newItems),
+  { immediate: true }
+)
+</script>
+
 <template>
   <div class="virtual-grid-container">
     <div
@@ -9,7 +66,7 @@
       <div :style="gridStyle">
         <div :style="visibleCardsStyle">
           <div
-            v-for="(item, index) in visibleItems"
+            v-for="item in visibleItems"
             :key="item.id"
             class="account-card"
             :style="{ height: itemHeight + 'px', minHeight: itemHeight + 'px' }"
@@ -53,65 +110,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { computed, watch } from 'vue'
-import { useVirtualGrid } from '@/composables/useVirtualScroll.js'
-import { formatAmount } from '@/utils/formatters.js'
-import { t } from '@/i18n/index.js'
-import EditIcon from '@/assets/icons/edit.svg?raw'
-import DeleteIcon from '@/assets/icons/delete.svg?raw'
-
-const props = defineProps({
-  items: {
-    type: Array,
-    default: () => []
-  },
-  canWrite: {
-    type: Boolean,
-    default: false
-  },
-  containerHeight: {
-    type: Number,
-    default: 600
-  },
-  itemHeight: {
-    type: Number,
-    default: 140
-  },
-  showPerformanceInfo: {
-    type: Boolean,
-    default: false
-  }
-})
-
-const emit = defineEmits(['edit', 'delete'])
-
-const {
-  containerRef,
-  visibleItems,
-  visibleStartIndex,
-  visibleEndIndex,
-  totalHeight,
-  offsetY,
-  isScrolling,
-  virtualizedItemsCount,
-  renderRatio,
-  setItems,
-  handleScroll,
-  gridStyle,
-  visibleCardsStyle,
-  itemsCount
-} = useVirtualGrid({
-  itemHeight: props.itemHeight,
-  containerHeight: props.containerHeight,
-  overscan: 3
-})
-
-watch(() => props.items, (newItems) => {
-  setItems(newItems)
-}, { immediate: true })
-</script>
 
 <style scoped>
 .virtual-grid-container {

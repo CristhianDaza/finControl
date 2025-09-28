@@ -2,8 +2,8 @@
 import { defineAsyncComponent, ref, watch } from 'vue'
 import { t } from '@/i18n/index.js'
 
-const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
-const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
+const FcModal = defineAsyncComponent(/* webpackChunkName: "fcModal" */() => import('@/components/global/FcModal.vue'))
+const FcFormField = defineAsyncComponent(/* webpackChunkName: "fcFormField" */() => import('@/components/global/FcFormField.vue'))
 
 const props = defineProps({
   showModalCategories: {
@@ -18,6 +18,7 @@ const category = ref({
   type: '',
   id: ''
 })
+
 const showModal = ref(false)
 
 const handleAccept = () => {
@@ -39,7 +40,7 @@ const resetCategory = () => {
 
 watch(
   () => props.showModalCategories,
-  (newValue) => {
+  newValue => {
     showModal.value = newValue
   }
 )

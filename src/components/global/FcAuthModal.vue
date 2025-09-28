@@ -1,14 +1,15 @@
 <script setup>
 import { ref, defineAsyncComponent, computed, watch, onUnmounted } from 'vue'
 import { t } from '@/i18n/index.js'
-const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
+
+const FcFormField = defineAsyncComponent(/* webpackChunkName: "fcFormField" */() => import('@/components/global/FcFormField.vue'))
 
 const props = defineProps({
   show: Boolean,
   mode: {
     type: String,
-    default: 'login',
-  },
+    default: 'login'
+  }
 })
 
 const emit = defineEmits(['accept-button', 'cancel-button'])
@@ -22,7 +23,7 @@ const handleAccept = () => {
   emit('accept-button', {
     email: email.value,
     password: password.value,
-    isLogin: isLogin.value,
+    isLogin: isLogin.value
   })
 }
 
@@ -32,13 +33,19 @@ const handleCancel = () => {
   password.value = ''
 }
 
-const setBodyScroll = (lock) => {
+const setBodyScroll = lock => {
   const b = document?.body
   if (!b) return
   if (lock) b.classList.add('no-scroll')
   else b.classList.remove('no-scroll')
 }
-watch(() => props.show, (v) => setBodyScroll(!!v), { immediate: true })
+
+watch(
+  () => props.show,
+  v => setBodyScroll(!!v),
+  { immediate: true }
+)
+
 onUnmounted(() => setBodyScroll(false))
 </script>
 

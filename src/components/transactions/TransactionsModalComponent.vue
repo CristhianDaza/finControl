@@ -1,14 +1,18 @@
 <script setup>
-import {defineAsyncComponent, ref, watch, computed} from 'vue'
+import { defineAsyncComponent, ref, watch, computed } from 'vue'
 import { t } from '@/i18n/index.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { useAuthStore } from '@/stores/auth.js'
 
-const FcModal = defineAsyncComponent(/* webpackChunkName: "FcModal" */() => import('@/components/global/FcModal.vue'))
-const FcFormField = defineAsyncComponent(/* webpackChunkName: "FcFormField" */() => import('@/components/global/FcFormField.vue'))
+const FcModal = defineAsyncComponent(/* webpackChunkName: "fcModal" */() => import('@/components/global/FcModal.vue'))
+const FcFormField = defineAsyncComponent(/* webpackChunkName: "fcFormField" */() => import('@/components/global/FcFormField.vue'))
 
 const props = defineProps({
-  showModalTransaction: { type: Boolean, default: false, attribute: 'show-modal-transaction' },
+  showModalTransaction: {
+    type: Boolean,
+    default: false,
+    attribute: 'show-modal-transaction'
+  },
   initial: { type: Object, default: null },
   title: { type: String, default: () => t('transactions.addTitle') },
   accountsOptions: { type: Array, default: () => [] },
@@ -16,7 +20,11 @@ const props = defineProps({
   goalsOptions: { type: Array, default: () => [] }
 })
 
-const emit = defineEmits(['save','update:showModalTransaction','cancel'])
+const emit = defineEmits([
+  'save',
+  'update:showModalTransaction',
+  'cancel'
+])
 const { error: notifyError } = useNotify()
 const auth = useAuthStore()
 const canWrite = computed(() => auth.canWrite)
@@ -31,14 +39,25 @@ const transaction = ref({
   date: new Date().toISOString().split('T')[0],
   id: ''
 })
+
 const showModal = ref(false)
-const isDebtPayment = computed(() => transaction.value.type === 'debtPayment')
-const isGoalSaving = computed(() => transaction.value.type === 'expense:goal')
+const isDebtPayment = computed(
+  () => transaction.value.type === 'debtPayment'
+)
+const isGoalSaving = computed(
+  () => transaction.value.type === 'expense:goal'
+)
 
 const handleAccept = () => {
   if (!canWrite.value) return
-  if (isDebtPayment.value && !transaction.value.debt) { notifyError(t('transactions.notifications.debtRequired')); return }
-  if (isGoalSaving.value && !transaction.value.goal) { notifyError(t('transactions.notifications.goalRequired')); return }
+  if (isDebtPayment.value && !transaction.value.debt) {
+    notifyError(t('transactions.notifications.debtRequired'))
+    return
+  }
+  if (isGoalSaving.value && !transaction.value.goal) {
+    notifyError(t('transactions.notifications.goalRequired'))
+    return
+  }
   const payload = { ...transaction.value }
   if (payload.type === 'expense:goal') {
     payload.type = 'expense'
@@ -69,18 +88,21 @@ const resetTransaction = () => {
 
 watch(
   () => props.showModalTransaction,
-  (v) => { showModal.value = v }
+  v => { showModal.value = v }
 )
 
 watch(
   () => props.initial,
-  (val) => {
+  val => {
     if (val) {
       transaction.value = {
         id: val.id || '',
         description: val.description || val.note || '',
         amount: Number(val.amount) || 0,
-        type: (val.type === 'expense' && (val.goal || val.goalId)) ? 'expense:goal' : (val.type || ''),
+        type:
+          val.type === 'expense' && (val.goal || val.goalId)
+            ? 'expense:goal'
+            : val.type || '',
         account: val.account || val.accountId || '',
         debt: val.debt || val.debtId || '',
         goal: val.goal || val.goalId || '',
@@ -93,12 +115,12 @@ watch(
 
 watch(
   showModal,
-  (v) => emit('update:showModalTransaction', v)
+  v => emit('update:showModalTransaction', v)
 )
 
 watch(
   () => transaction.value.type,
-  (typ) => {
+  typ => {
     if (typ !== 'expense:goal') transaction.value.goal = ''
     if (typ !== 'debtPayment') transaction.value.debt = ''
   }
@@ -123,6 +145,7 @@ watch(
       :error-message="t('transactions.form.descriptionError')"
       :disabled="!canWrite"
     />
+
     <FcFormField
       v-model="transaction.amount"
       :label="t('transactions.form.amount')"
@@ -134,6 +157,7 @@ watch(
       :error-message="t('transactions.form.amountError')"
       :disabled="!canWrite"
     />
+
     <FcFormField
       v-model="transaction.type"
       :label="t('transactions.form.type')"
@@ -148,6 +172,7 @@ watch(
       :error-message="t('transactions.form.type')"
       :disabled="!canWrite"
     />
+
     <FcFormField
       v-if="isDebtPayment"
       v-model="transaction.debt"
@@ -158,6 +183,7 @@ watch(
       :error-message="t('transactions.form.debtError')"
       :disabled="!canWrite"
     />
+
     <FcFormField
       v-model="transaction.account"
       :label="t('transactions.form.account')"
@@ -167,6 +193,7 @@ watch(
       :error-message="t('transactions.form.accountError')"
       :disabled="!canWrite"
     />
+
     <FcFormField
       v-if="isGoalSaving"
       v-model="transaction.goal"
@@ -176,6 +203,7 @@ watch(
       required
       :disabled="!canWrite"
     />
+
     <FcFormField
       v-model="transaction.date"
       :label="t('transactions.form.date')"
