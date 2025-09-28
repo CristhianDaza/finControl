@@ -9,8 +9,7 @@
     "build:analyze": "vite build --mode analyze",
     "preview": "vite preview",
     "bundle:analyze": "npm run build && npx vite-bundle-analyzer dist",
-    "i18n:scan": "node scripts/i18n-scan.js",
-    "i18n:unused": "node scripts/i18n-unused.js"
+    "i18n:scan": "node scripts/i18n-scan.js"
   },
   "dependencies": {
     "chart.js": "^4.0.0",
