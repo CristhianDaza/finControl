@@ -3,10 +3,6 @@ import { useSettingsStore } from '@/stores/settings.js'
 
 export { formatNumber, formatCurrency, formatDate }
 
-export const formatDateISO = (iso, options) => {
-  try { return formatDate(iso, options) } catch { return '' }
-}
-
 export const formatAmount = (value, currency = 'COP') => {
   const n = Number(value)
   if (isNaN(n)) return ''
