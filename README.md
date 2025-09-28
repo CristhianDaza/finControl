@@ -106,21 +106,21 @@ npm run preview
 Minimal collections:
 
 - `users/{uid}`
-  - `email` (string)
-  - `createdAt` (Timestamp)
-  - `lastActiveAt` (Timestamp)
-  - `isActive` (bool)
-  - `role` ("user" | "admin")
-  - `planExpiresAt` (Timestamp, optional)
+    - `email` (string)
+    - `createdAt` (Timestamp)
+    - `lastActiveAt` (Timestamp)
+    - `isActive` (bool)
+    - `role` ("user" | "admin")
+    - `planExpiresAt` (Timestamp, optional)
 
 - `inviteCodes/{CODE}` (for gated sign‑up)
-  - `status` ("unused" | "used")
-  - `plan` ("monthly" | "semiannual" | "annual")
-  - `expiresAt` (Timestamp)
-  - `graceExpiresAt` (Timestamp)
-  - `usedBy` (uid, optional)
-  - `usedByEmail` (string, optional)
-  - `usedAt` (Timestamp, optional)
+    - `status` ("unused" | "used")
+    - `plan` ("monthly" | "semiannual" | "annual")
+    - `expiresAt` (Timestamp)
+    - `graceExpiresAt` (Timestamp)
+    - `usedBy` (uid, optional)
+    - `usedByEmail` (string, optional)
+    - `usedAt` (Timestamp, optional)
 
 Notes:
 - The `auth` store auto‑creates `users/{uid}` on first login if missing.
@@ -136,10 +136,10 @@ Notes:
 Quick example to create an invitation in Firestore:
 - Doc: `inviteCodes/ABC123`
 - Data:
-  - `status`: "unused"
-  - `plan`: "monthly"
-  - `expiresAt`: future Timestamp
-  - `graceExpiresAt`: future Timestamp
+    - `status`: "unused"
+    - `plan`: "monthly"
+    - `expiresAt`: future Timestamp
+    - `graceExpiresAt`: future Timestamp
 
 
 ## 🌐 i18n (EN/ES)
@@ -197,18 +197,18 @@ Typical steps:
 ## 🛟 Troubleshooting
 
 - Blank screen after login:
-  - Ensure all `VITE_FIREBASE_*` variables are correct.
-  - Add your domain to Firebase Auth Authorized domains.
-  - Check Firestore rules (reads/writes required by the app).
+    - Ensure all `VITE_FIREBASE_*` variables are correct.
+    - Add your domain to Firebase Auth Authorized domains.
+    - Check Firestore rules (reads/writes required by the app).
 
 - Firestore permission errors:
-  - Verify `users/{uid}` exists and rules permit the operation.
+    - Verify `users/{uid}` exists and rules permit the operation.
 
 - Unable to sign up new users:
-  - If sign‑up requires an invitation code, ensure `inviteCodes/{CODE}` exists, is `unused`, and not expired.
+    - If sign‑up requires an invitation code, ensure `inviteCodes/{CODE}` exists, is `unused`, and not expired.
 
 - Dev server port already in use:
-  - Change the port in `vite.config.js` or stop the conflicting process.
+    - Change the port in `vite.config.js` or stop the conflicting process.
 
 
 ## 🧭 Conventions and architecture
