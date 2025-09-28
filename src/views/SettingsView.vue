@@ -156,14 +156,14 @@ const codeInputClass = computed(() =>
       <div style="display:flex;flex-direction:column;gap:.5rem">
         <div>
           <strong>{{ t('settings.accountStatus') }}:</strong>
-          {{ auth.isReadOnly ? 'Inactiva' : 'Activa' }}
+          {{ auth.isReadOnly ? t('settings.accountStatusInactive') : t('settings.accountStatusActive') }}
         </div>
         <div>
           <strong>{{ t('settings.expiresAt') }}:</strong>
           {{ planExpiresAtDisplay }}
         </div>
         <p style="font-size:.75rem;color:var(--muted-text-color)">
-          {{ auth.isReadOnly ? 'Ingresa un nuevo código para activar o extender tu plan.' : 'Puedes ingresar un código adicional para extender tu plan actual.' }}
+          {{ auth.isReadOnly ? t('settings.planInstructions.inactive') : t('settings.planInstructions.active') }}
         </p>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap">
           <button
@@ -726,51 +726,198 @@ const codeInputClass = computed(() =>
 
   .curr-grid {
     display: grid;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .curr-table-wrap {
     width: 100%;
     overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--secondary-color);
+    background: var(--secondary-color);
   }
 
   .curr-table {
-    table-layout: fixed;
-    word-break: break-word;
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    background: transparent;
+  }
+
+  .curr-table th {
+    background: var(--primary-color);
+    color: var(--text-color);
+    font-weight: 600;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--secondary-color);
+    font-size: 0.9rem;
+  }
+
+  .curr-table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--secondary-color) 50%, transparent);
+    vertical-align: middle;
+  }
+
+  .curr-table tbody tr:hover {
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+  }
+
+  .curr-table tbody tr:last-child td {
+    border-bottom: none;
   }
 
   .curr-table th,
   .curr-table td {
+    white-space: nowrap;
+  }
+
+  .curr-table td:nth-child(3) {
     white-space: normal;
+    max-width: 200px;
   }
 
   @media (max-width: 720px) {
+    .curr-table-wrap {
+      border: none;
+      background: transparent;
+    }
+    
+    .curr-table,
+    .curr-table thead,
+    .curr-table tbody,
+    .curr-table th,
+    .curr-table td,
+    .curr-table tr {
+      display: block;
+    }
+
+    .curr-table thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+
+    .curr-table tr {
+      background: var(--secondary-color);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      padding: 1rem;
+      border: 1px solid var(--primary-color);
+    }
+
+    .curr-table tr:hover {
+      background: color-mix(in srgb, var(--secondary-color) 90%, var(--accent-color));
+    }
+
     .curr-table td {
-      padding: .55rem .65rem;
+      border: none;
+      border-bottom: 1px solid var(--primary-color);
+      position: relative;
+      padding: 0.5rem 0 0.5rem 40%;
+      white-space: normal;
+      text-align: left;
+    }
+
+    .curr-table td:last-child {
+      border-bottom: none;
+    }
+
+    .curr-table td:before {
+      content: attr(data-label) ": ";
+      position: absolute;
+      left: 0;
+      width: 35%;
+      padding-right: 0.5rem;
+      white-space: nowrap;
+      font-weight: 600;
+      color: var(--muted-text-color);
+      font-size: 0.8rem;
+    }
+    
+    .curr-table td:nth-child(4) div {
+      justify-content: flex-start;
     }
   }
 
+  .add-form {
+    background: var(--secondary-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid var(--primary-color);
+  }
+
   .add-form .row-inline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    align-items: end;
+    margin-bottom: 1rem;
   }
 
   .add-form .input {
-    background: var(--secondary-color);
-    border: 1px solid var(--primary-color);
+    background: var(--primary-color);
+    border: 2px solid var(--secondary-color);
     color: var(--text-color);
-    padding: .5rem .6rem;
-    border-radius: 6px;
-    width: 140px;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .add-form .input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+  }
+
+  .add-form .input::placeholder {
+    color: var(--muted-text-color);
+    opacity: 0.8;
   }
 
   .add-form .chk {
-    font-size: .75rem;
+    font-size: 0.85rem;
     display: flex;
     align-items: center;
-    gap: .25rem;
+    gap: 0.5rem;
+    background: var(--primary-color);
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    border: 2px solid var(--secondary-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .add-form .chk:hover {
+    background: color-mix(in srgb, var(--primary-color) 85%, var(--accent-color));
+  }
+
+  .add-form .chk input[type="checkbox"] {
+    accent-color: var(--accent-color);
+    margin: 0;
+  }
+
+  .add-form .button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-width: 100px;
+  }
+
+  @media (max-width: 720px) {
+    .add-form .row-inline {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    
+    .add-form .input,
+    .add-form .chk,
+    .add-form .button {
+      width: 100%;
+      box-sizing: border-box;
+    }
   }
 
   .error {
@@ -780,11 +927,15 @@ const codeInputClass = computed(() =>
   }
 
   .badge-green {
-    background: var(--hover-success-color);
+    background: linear-gradient(135deg, var(--hover-success-color), var(--success-color));
     color: var(--white);
-    padding: .15rem .4rem;
-    border-radius: 999px;
-    font-size: .65rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px color-mix(in srgb, var(--success-color) 40%, transparent);
   }
 
   @media (min-width: 720px) {
