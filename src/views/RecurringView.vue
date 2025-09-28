@@ -171,21 +171,20 @@ onMounted(async () => {
     </div>
 
     <div
-      class="card"
-      style="margin-top:1rem;display:flex;flex-direction:column;gap:.5rem"
+      class="card mt-1 flex-col-gap-sm"
     >
       <strong>{{ t('recurring.statusPanel.title') }}</strong>
-      <div style="display:flex;flex-wrap:wrap;gap:1.25rem;font-size:.85rem">
+      <div class="status-meta">
         <div>
-          <span style="font-weight:600">{{ t('recurring.statusPanel.lastRun') }}:</span>
+          <span class="fw-600">{{ t('recurring.statusPanel.lastRun') }}:</span>
           {{ rec.lastRun ? new Date(rec.lastRun).toLocaleString() : t('recurring.statusPanel.never') }}
         </div>
         <div>
-          <span style="font-weight:600">{{ t('recurring.statusPanel.processed') }}:</span>
+          <span class="fw-600">{{ t('recurring.statusPanel.processed') }}:</span>
           {{ rec.lastProcessedCount }}
         </div>
         <div v-if="rec.lastErrorMsg">
-          <span style="font-weight:600">{{ t('recurring.statusPanel.error') }}:</span>
+          <span class="fw-600">{{ t('recurring.statusPanel.error') }}:</span>
           {{ rec.lastErrorMsg }}
         </div>
       </div>
@@ -193,15 +192,13 @@ onMounted(async () => {
 
     <div
       v-if="rec.status==='loading'"
-      class="card"
-      style="margin-top:1rem"
+      class="card mt-1"
     >
       {{ t('common.loading') }}
     </div>
     <div
       v-else-if="!rec.items.length"
-      class="card"
-      style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center"
+      class="card mt-1 row-between"
     >
       <span>{{ t('recurring.empty') }}</span>
       <button
@@ -374,7 +371,7 @@ onMounted(async () => {
           :disabled="!auth.canWrite"
         />
         <div>
-          <label style="display:block;margin-bottom:.25rem">
+          <label class="label-block">
             {{ t('recurring.form.paused') }}
           </label>
           <input
@@ -389,97 +386,124 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-  .table-container {
-    width: 100%;
-    overflow-x: auto;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px var(--shadow-elev-1);
-  }
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow-elev-1);
+}
 
-  .table-container::-webkit-scrollbar {
-    height: 8px;
-  }
-  .table-container::-webkit-scrollbar-thumb {
-    background-color: var(--secondary-color);
-    border-radius: 4px;
-  }
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-color);
+  border-radius: 4px;
+}
 
-  table {
-    margin-top: 2rem;
-    width: 100%;
-    border-collapse: collapse;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px var(--shadow-elev-1);
-  }
+table {
+  margin-top: 2rem;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow-elev-1);
+}
 
-  th,
-  td {
-    padding: 1rem 1.2rem;
-    text-align: left;
-    border-bottom: 1px solid var(--secondary-color);
-  }
+th,
+td {
+  padding: 1rem 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid var(--secondary-color);
+}
 
-  th {
-    background-color: var(--secondary-color);
-    color: var(--accent-color);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-  }
+th {
+  background-color: var(--secondary-color);
+  color: var(--accent-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
 
-  tr:last-child td {
-    border-bottom: none;
-  }
-  tr:hover {
-    background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color));
-  }
+tr:last-child td {
+  border-bottom: none;
+}
+tr:hover {
+  background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color));
+}
 
-  .badge {
-    display: inline-block;
-    padding: .125rem .5rem;
-    border-radius: 999px;
-    font-size: .75rem;
-  }
-  .badge-gray {
-    background: var(--badge-gray-color);
-    color: var(--white);
-  }
-  .badge-green {
-    background: var(--hover-success-color);
-    color: var(--white);
-  }
-  .actions {
-    display: flex;
-    gap: .5rem;
-    justify-content: flex-end;
-  }
+.badge {
+  display: inline-block;
+  padding: .125rem .5rem;
+  border-radius: 999px;
+  font-size: .75rem;
+}
+.badge-gray {
+  background: var(--badge-gray-color);
+  color: var(--white);
+}
+.badge-green {
+  background: var(--hover-success-color);
+  color: var(--white);
+}
+.actions {
+  display: flex;
+  gap: .5rem;
+  justify-content: flex-end;
+}
 
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: .5rem;
-    flex-wrap: wrap;
-  }
-  .page-title {
-    margin: 0;
-  }
-  .page-actions {
-    display: flex;
-    gap: .75rem;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .modal-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
-  }
-  .actions button[disabled] {
-    opacity: .55;
-    cursor: not-allowed;
-  }
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.page-title {
+  margin: 0;
+}
+.page-actions {
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.modal-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.actions button[disabled] {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+.flex-col-gap-sm {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.status-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: .85rem;
+}
+.fw-600 {
+  font-weight: 600;
+}
+.row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.label-block {
+  display: block;
+  margin-bottom: .25rem;
+}
 </style>

@@ -238,14 +238,13 @@ watch(() => transactions.items, () => recompute(), { deep: true })
       </div>
     </div>
 
-    <div v-if="isLoading" class="card" style="margin-top:1rem">
+    <div v-if="isLoading" class="card mt-1">
       {{ t('common.loading') }}
     </div>
 
     <div
       v-else-if="!budgets.items.length"
-      class="card"
-      style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center"
+      class="card mt-1 row-between"
     >
       <span>{{ t('budgets.empty') }}</span>
       <button
@@ -433,7 +432,7 @@ watch(() => transactions.items, () => recompute(), { deep: true })
           :disabled="!auth.canWrite"
         />
         <div>
-          <label style="display:block;margin-bottom:.25rem">
+          <label class="label-block">
             {{ t('budgets.form.carryover') }}
           </label>
           <input type="checkbox" v-model="form.carryover" :disabled="!auth.canWrite" />
@@ -451,39 +450,165 @@ watch(() => transactions.items, () => recompute(), { deep: true })
 </template>
 
 <style scoped>
-.table-container { width:100%; overflow-x:auto; border-radius:12px; box-shadow:0 2px 8px var(--shadow-elev-1) }
-.table-container::-webkit-scrollbar { height:8px }
-.table-container::-webkit-scrollbar-thumb { background-color: var(--secondary-color); border-radius: 4px }
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow-elev-1);
+}
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-color);
+  border-radius: 4px;
+}
 
-table { margin-top: 2rem; width:100%; border-collapse: collapse; background-color: var(--primary-color); color: var(--text-color); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px var(--shadow-elev-1) }
-th, td { padding: 1rem 1.2rem; text-align: left; border-bottom: 1px solid var(--secondary-color) }
-th { background-color: var(--secondary-color); color: var(--accent-color); font-weight: 600; text-transform: uppercase; font-size: .85rem; letter-spacing: 1px }
-tr:last-child td { border-bottom: none }
-tr:hover { background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color)); }
+table {
+  margin-top: 2rem;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow-elev-1);
+}
+th,
+td {
+  padding: 1rem 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid var(--secondary-color);
+}
+th {
+  background-color: var(--secondary-color);
+  color: var(--accent-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: .85rem;
+  letter-spacing: 1px;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+tr:hover {
+  background-color: color-mix(in srgb, var(--primary-color) 88%, var(--text-color));
+}
 
-.badge { display:inline-block; padding:.125rem .5rem; border-radius:999px; font-size:.75rem }
-.badge-gray { background: var(--badge-gray-color); color: var(--white) }
-.badge-blue { background: var(--accent-color); color: var(--background-color) }
-.badge-green { background: var(--hover-success-color); color: var(--white) }
-.badge-yellow { background: var(--warning-color); color: var(--background-color) }
-.badge-red { background: var(--error-color); color: var(--white) }
-.actions { display:flex; gap:.5rem; justify-content:flex-end }
+.badge {
+  display: inline-block;
+  padding: .125rem .5rem;
+  border-radius: 999px;
+  font-size: .75rem;
+}
+.badge-gray {
+  background: var(--badge-gray-color);
+  color: var(--white);
+}
+.badge-blue {
+  background: var(--accent-color);
+  color: var(--background-color);
+}
+.badge-green {
+  background: var(--hover-success-color);
+  color: var(--white);
+}
+.badge-yellow {
+  background: var(--warning-color);
+  color: var(--background-color);
+}
+.badge-red {
+  background: var(--error-color);
+  color: var(--white);
+}
+.actions {
+  display: flex;
+  gap: .5rem;
+  justify-content: flex-end;
+}
 
-.progress-row { display:flex; align-items:center; gap:.5rem; width: 120px }
-.progress-bar { width:140px; height:8px; background: var(--secondary-color); border-radius: 999px; overflow: hidden }
-.progress-fill { height:100%; background: var(--accent-color) }
-.progress-fill.warn { background: var(--warning-color) }
-.progress-fill.over { background: var(--error-color) }
-.progress-text { font-size: .85rem; color: var(--muted-text-color) }
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 120px;
+}
+.progress-bar {
+  width: 140px;
+  height: 8px;
+  background: var(--secondary-color);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent-color);
+}
+.progress-fill.warn {
+  background: var(--warning-color);
+}
+.progress-fill.over {
+  background: var(--error-color);
+}
+.progress-text {
+  font-size: .85rem;
+  color: var(--muted-text-color);
+}
 
-.field { min-width: 160px }
-.field label { display:block; margin-bottom:.25rem; color: var(--muted-text-color) }
+.field {
+  min-width: 160px;
+}
+.field label {
+  display: block;
+  margin-bottom: .25rem;
+  color: var(--muted-text-color);
+}
 
-.page-header { display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap }
-.page-title { margin:0 }
-.page-actions { display:flex; gap:.75rem; align-items:center; flex-wrap:wrap }
-.modal-grid { grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1rem; }
-.section-title { grid-column: 1 / -1; font-weight: 600; color: var(--muted-text-color); margin-top:.5rem }
-.hint { grid-column: 1 / -1; color: var(--muted-text-color) }
-.actions button[disabled]{opacity:.55;cursor:not-allowed}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.page-title {
+  margin: 0;
+}
+.page-actions {
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.modal-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.section-title {
+  grid-column: 1 / -1;
+  font-weight: 600;
+  color: var(--muted-text-color);
+  margin-top: .5rem;
+}
+.hint {
+  grid-column: 1 / -1;
+  color: var(--muted-text-color);
+}
+.actions button[disabled] {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+.row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.label-block {
+  display: block;
+  margin-bottom: .25rem;
+}
 </style>

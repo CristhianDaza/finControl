@@ -489,8 +489,18 @@
     "enterCode": "Enter new code",
     "generateCode": "Generate new code",
     "validateCode": "Validate",
-    "code": { "success": "Code valid. New expiration: {date}", "attempts": "Attempts left: {n}", "blocked": "Blocked until: {date}" },
-    "extendSuccess": "Plan extended"
+    "code": {
+      "success": "Code valid. New expiration: {date}",
+      "attempts": "Attempts left: {n}",
+      "blocked": "Blocked until: {date}"
+    },
+    "extendSuccess": "Plan extended",
+    "accountStatusActive": "Active",
+    "accountStatusInactive": "Inactive",
+    "planInstructions": {
+      "inactive": "Enter a new code to activate or extend your plan.",
+      "active": "You can enter an additional code to extend your current plan."
+    }
   },
   "admin": {
     "title": "Admin Dashboard",

@@ -149,65 +149,65 @@ onMounted(loadAll)
 </template>
 
 <style scoped>
-  .admin-page {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 1rem;
-  }
-  .kpis {
-    display: flex;
-    gap: 1rem;
-    align-items: stretch;
-    flex-wrap: wrap;
-  }
-  .kpi {
-    background: var(--primary-color);
-    padding: 1rem;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    min-width: 140px;
-  }
-  .panel {
-    background: var(--primary-color);
-    padding: 1rem;
-    border-radius: 8px;
-    overflow: auto;
-  }
-  .simple {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .simple th,
-  .simple td {
-    padding: .5rem;
-    border-bottom: 1px solid var(--secondary-color);
-    text-align: left;
-    font-size: .85rem;
-  }
-  .simple th {
-    background: var(--secondary-color);
-    position: sticky;
-    top: 0;
-  }
-  .empty {
-    opacity: .7;
-  }
-  .invite-actions {
-    display: flex;
-    gap: .5rem;
-    margin-bottom: .75rem;
-  }
-  .input.small {
-    max-width: 160px;
-  }
-  .actions {
-    display: flex;
-    gap: .25rem;
-  }
-  .button-small {
-    padding: .25rem .5rem;
-    font-size: .7rem;
-  }
+.admin-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem;
+}
+.kpis {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.kpi {
+  background: var(--primary-color);
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+}
+.panel {
+  background: var(--primary-color);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow: auto;
+}
+.simple {
+  width: 100%;
+  border-collapse: collapse;
+}
+.simple th,
+.simple td {
+  padding: .5rem;
+  border-bottom: 1px solid var(--secondary-color);
+  text-align: left;
+  font-size: .85rem;
+}
+.simple th {
+  background: var(--secondary-color);
+  position: sticky;
+  top: 0;
+}
+.empty {
+  opacity: .7;
+}
+.invite-actions {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+.input.small {
+  max-width: 160px;
+}
+.actions {
+  display: flex;
+  gap: .25rem;
+}
+.button-small {
+  padding: .25rem .5rem;
+  font-size: .7rem;
+}
 </style>

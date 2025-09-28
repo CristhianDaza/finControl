@@ -513,7 +513,13 @@
           "attempts": "Intentos restantes: {n}",
           "blocked": "Bloqueado hasta: {date}"
         },
-        "extendSuccess": "Plan extendido"
+        "extendSuccess": "Plan extendido",
+        "accountStatusActive": "Activa",
+        "accountStatusInactive": "Inactiva",
+        "planInstructions": {
+          "inactive": "Ingresa un nuevo código para activar o extender tu plan.",
+          "active": "Puedes ingresar un código adicional para extender tu plan actual."
+        }
       },
       "admin": {
         "title": "Panel Admin",
