@@ -527,7 +527,17 @@
       "subtitle": "Manage your account security.",
       "changePassword": "Change password",
       "resetSent": "We sent an email to {email} to change your password",
-      "resetError": "We couldn't send the password change email"
+      "resetError": "We couldn't send the password change email",
+      "delete": {
+        "title": "Delete data",
+        "subtitle": "This will permanently delete all your transactions, accounts, debts, goals, budgets and related data.",
+        "action": "Permanently delete data",
+        "confirmTitle": "Confirm deletion",
+        "confirmMessage": "This action will delete ALL your information and cannot be undone. Do you want to continue?",
+        "confirmCta": "Yes, delete everything",
+        "success": "All your data has been deleted",
+        "error": "We couldn't delete your data"
+      }
     }
   },
   "admin": {

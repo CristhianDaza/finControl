@@ -546,7 +546,17 @@
           "subtitle": "Gestiona la seguridad de tu cuenta.",
           "changePassword": "Cambiar contraseña",
           "resetSent": "Enviamos un correo a {email} para cambiar tu contraseña",
-          "resetError": "No pudimos enviar el correo de cambio de contraseña"
+          "resetError": "No pudimos enviar el correo de cambio de contraseña",
+          "delete": {
+            "title": "Eliminar datos",
+            "subtitle": "Esto eliminará permanentemente todas tus transacciones, cuentas, deudas, metas, presupuestos y datos relacionados.",
+            "action": "Eliminar permanentemente los datos",
+            "confirmTitle": "Confirmar eliminación",
+            "confirmMessage": "Esta acción eliminará TODA tu información y no se puede deshacer. ¿Deseas continuar?",
+            "confirmCta": "Sí, eliminar todo",
+            "success": "Se eliminaron todos tus datos",
+            "error": "No pudimos eliminar tus datos"
+          }
         }
       },
       "admin": {
