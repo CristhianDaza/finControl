@@ -474,7 +474,19 @@
               "darkAmber": "Ámbar (oscuro)",
               "darkTeal": "Verde azulado (oscuro)",
               "lightEmerald": "Esmeralda (claro)",
-              "lightAmber": "Ámbar (claro)"
+              "lightAmber": "Ámbar (claro)",
+              "lightGithub": "GitHub (claro)",
+              "darkGithub": "GitHub (oscuro)",
+              "lightAmethyst": "Amatista (claro)",
+              "darkAmethyst": "Amatista (oscuro)",
+              "lightMint": "Menta (claro)",
+              "darkMidnight": "Medianoche (oscuro)",
+              "lightGithubSoft": "GitHub suave (claro)",
+              "lightLavender": "Lavanda (claro)",
+              "lightSandstone": "Arenisca (claro)",
+              "darkAmethystPlus": "Amatista+ (oscuro)",
+              "darkGraphite": "Grafito (oscuro)",
+              "darkCyber": "Ciber (oscuro)"
             }
           }
         },

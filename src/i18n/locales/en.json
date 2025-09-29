@@ -455,7 +455,19 @@
           "darkAmber": "Amber (dark)",
           "darkTeal": "Teal (dark)",
           "lightEmerald": "Emerald (light)",
-          "lightAmber": "Amber (light)"
+          "lightAmber": "Amber (light)",
+          "lightGithub": "GitHub (light)",
+          "darkGithub": "GitHub (dark)",
+          "lightAmethyst": "Amethyst (light)",
+          "darkAmethyst": "Amethyst (dark)",
+          "lightMint": "Mint (light)",
+          "darkMidnight": "Midnight (dark)",
+          "lightGithubSoft": "GitHub Soft (light)",
+          "lightLavender": "Lavender (light)",
+          "lightSandstone": "Sandstone (light)",
+          "darkAmethystPlus": "Amethyst+ (dark)",
+          "darkGraphite": "Graphite (dark)",
+          "darkCyber": "Cyber (dark)"
         }
       }
     },

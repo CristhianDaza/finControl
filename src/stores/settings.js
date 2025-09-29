@@ -187,6 +187,210 @@ export const THEME_PRESETS = [
       '--tx-income-color': '#16A34A',
       '--tx-transfer-color': '#FBBF24'
     }
+  },
+  {
+    id: 'light-github',
+    mode: 'light',
+    nameKey: 'settings.theme.presets.names.lightGithub',
+    vars: {
+      '--primary-color': '#FFFFFF',
+      '--secondary-color': '#F6F8FA',
+      '--background-color': '#F6F8FA',
+      '--text-color': '#24292F',
+      '--accent-color': '#0969DA',
+      '--tx-expense-color': '#D73A49',
+      '--tx-goal-color': '#D97706',
+      '--tx-debtPayment-color': '#6F42C1',
+      '--tx-income-color': '#2DA44E',
+      '--tx-transfer-color': '#0969DA'
+    }
+  },
+  {
+    id: 'dark-github',
+    mode: 'dark',
+    nameKey: 'settings.theme.presets.names.darkGithub',
+    vars: {
+      '--primary-color': '#0D1117',
+      '--secondary-color': '#161B22',
+      '--background-color': '#0B0F14',
+      '--text-color': '#C9D1D9',
+      '--accent-color': '#58A6FF',
+      '--tx-expense-color': '#F85149',
+      '--tx-goal-color': '#F59E0B',
+      '--tx-debtPayment-color': '#A371F7',
+      '--tx-income-color': '#2EA043',
+      '--tx-transfer-color': '#58A6FF'
+    }
+  },
+  {
+    id: 'light-amethyst',
+    mode: 'light',
+    nameKey: 'settings.theme.presets.names.lightAmethyst',
+    vars: {
+      '--primary-color': '#FFFFFF',
+      '--secondary-color': '#F3E5F5',
+      '--background-color': '#FBF5FC',
+      '--text-color': '#1F2937',
+      '--accent-color': '#AB47BC',
+      '--tx-expense-color': '#DC2626',
+      '--tx-goal-color': '#D97706',
+      '--tx-debtPayment-color': '#AB47BC',
+      '--tx-income-color': '#16A34A',
+      '--tx-transfer-color': '#AB47BC'
+    }
+  },
+  {
+    id: 'dark-amethyst',
+    mode: 'dark',
+    nameKey: 'settings.theme.presets.names.darkAmethyst',
+    vars: {
+      '--primary-color': '#1B1320',
+      '--secondary-color': '#140D18',
+      '--background-color': '#100A12',
+      '--text-color': '#EDE7F6',
+      '--accent-color': '#AB47BC',
+      '--tx-expense-color': '#F87171',
+      '--tx-goal-color': '#FBBF24',
+      '--tx-debtPayment-color': '#C084FC',
+      '--tx-income-color': '#22C55E',
+      '--tx-transfer-color': '#AB47BC'
+    }
+  },
+  {
+    id: 'light-mint',
+    mode: 'light',
+    nameKey: 'settings.theme.presets.names.lightMint',
+    vars: {
+      '--primary-color': '#FFFFFF',
+      '--secondary-color': '#ECFDF5',
+      '--background-color': '#F6FFF9',
+      '--text-color': '#111827',
+      '--accent-color': '#10B981',
+      '--tx-expense-color': '#DC2626',
+      '--tx-goal-color': '#D97706',
+      '--tx-debtPayment-color': '#06B6D4',
+      '--tx-income-color': '#16A34A',
+      '--tx-transfer-color': '#34D399'
+    }
+  },
+  {
+    id: 'dark-midnight',
+    mode: 'dark',
+    nameKey: 'settings.theme.presets.names.darkMidnight',
+    vars: {
+      '--primary-color': '#0F172A',
+      '--secondary-color': '#0B1220',
+      '--background-color': '#09111E',
+      '--text-color': '#E5E7EB',
+      '--accent-color': '#3B82F6',
+      '--tx-expense-color': '#F87171',
+      '--tx-goal-color': '#FBBF24',
+      '--tx-debtPayment-color': '#60A5FA',
+      '--tx-income-color': '#22C55E',
+      '--tx-transfer-color': '#38BDF8'
+    }
+  },
+  {
+    id: 'light-github-soft',
+    mode: 'light',
+    nameKey: 'settings.theme.presets.names.lightGithubSoft',
+    vars: {
+      '--primary-color': '#FFFFFF',
+      '--secondary-color': '#EFF2F6',
+      '--background-color': '#FAFBFC',
+      '--text-color': '#24292F',
+      '--accent-color': '#1F6FEB',
+      '--tx-expense-color': '#D73A49',
+      '--tx-goal-color': '#D97706',
+      '--tx-debtPayment-color': '#8250DF',
+      '--tx-income-color': '#2EA043',
+      '--tx-transfer-color': '#1F6FEB'
+    }
+  },
+  {
+    id: 'light-lavender',
+    mode: 'light',
+    nameKey: 'settings.theme.presets.names.lightLavender',
+    vars: {
+      '--primary-color': '#FFFFFF',
+      '--secondary-color': '#F5E9F7',
+      '--background-color': '#FCF7FD',
+      '--text-color': '#1F2937',
+      '--accent-color': '#AB47BC',
+      '--tx-expense-color': '#DC2626',
+      '--tx-goal-color': '#D97706',
+      '--tx-debtPayment-color': '#AB47BC',
+      '--tx-income-color': '#16A34A',
+      '--tx-transfer-color': '#AB47BC'
+    }
+  },
+  {
+    id: 'light-sandstone',
+    mode: 'light',
+    nameKey: 'settings.theme.presets.names.lightSandstone',
+    vars: {
+      '--primary-color': '#FFFFFF',
+      '--secondary-color': '#FAF3E7',
+      '--background-color': '#FFFAF2',
+      '--text-color': '#1F2937',
+      '--accent-color': '#D97706',
+      '--tx-expense-color': '#DC2626',
+      '--tx-goal-color': '#F59E0B',
+      '--tx-debtPayment-color': '#A78BFA',
+      '--tx-income-color': '#16A34A',
+      '--tx-transfer-color': '#D97706'
+    }
+  },
+  {
+    id: 'dark-amethyst-plus',
+    mode: 'dark',
+    nameKey: 'settings.theme.presets.names.darkAmethystPlus',
+    vars: {
+      '--primary-color': '#1A1020',
+      '--secondary-color': '#120A16',
+      '--background-color': '#0E0612',
+      '--text-color': '#F1E7F6',
+      '--accent-color': '#AB47BC',
+      '--tx-expense-color': '#F87171',
+      '--tx-goal-color': '#FBBF24',
+      '--tx-debtPayment-color': '#C084FC',
+      '--tx-income-color': '#22C55E',
+      '--tx-transfer-color': '#AB47BC'
+    }
+  },
+  {
+    id: 'dark-graphite',
+    mode: 'dark',
+    nameKey: 'settings.theme.presets.names.darkGraphite',
+    vars: {
+      '--primary-color': '#0E1116',
+      '--secondary-color': '#151922',
+      '--background-color': '#0B0E13',
+      '--text-color': '#E5E7EB',
+      '--accent-color': '#60A5FA',
+      '--tx-expense-color': '#F87171',
+      '--tx-goal-color': '#FBBF24',
+      '--tx-debtPayment-color': '#60A5FA',
+      '--tx-income-color': '#22C55E',
+      '--tx-transfer-color': '#93C5FD'
+    }
+  },
+  {
+    id: 'dark-cyber',
+    mode: 'dark',
+    nameKey: 'settings.theme.presets.names.darkCyber',
+    vars: {
+      '--primary-color': '#0A0F0C',
+      '--secondary-color': '#0E1511',
+      '--background-color': '#070B09',
+      '--text-color': '#E9FBF0',
+      '--accent-color': '#22D3EE',
+      '--tx-expense-color': '#F87171',
+      '--tx-goal-color': '#FBBF24',
+      '--tx-debtPayment-color': '#22D3EE',
+      '--tx-income-color': '#22C55E',
+      '--tx-transfer-color': '#2DD4BF'
+    }
   }
 ]
 
