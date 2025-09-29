@@ -198,7 +198,7 @@ a:hover .icon-menu {
 }
 
 .active {
-  background: linear-gradient(135deg, var(--accent-color), rgba(var(--accent-color-rgb, 0, 123, 255), 0.8));
+  background-color: var(--accent-color);
   color: var(--white, #ffffff);
   border-color: var(--accent-color);
   box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 0, 123, 255), 0.3);
