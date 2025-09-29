@@ -555,7 +555,10 @@
             "confirmMessage": "Esta acción eliminará TODA tu información y no se puede deshacer. ¿Deseas continuar?",
             "confirmCta": "Sí, eliminar todo",
             "success": "Se eliminaron todos tus datos",
-            "error": "No pudimos eliminar tus datos"
+            "error": "No pudimos eliminar tus datos",
+            "confirmWord": "ELIMINAR",
+            "typeToEnable": "Escribe {word} para habilitar el botón",
+            "inputPlaceholder": "Escribe {word}"
           }
         }
       },

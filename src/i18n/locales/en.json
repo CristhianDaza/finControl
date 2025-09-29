@@ -536,7 +536,10 @@
         "confirmMessage": "This action will delete ALL your information and cannot be undone. Do you want to continue?",
         "confirmCta": "Yes, delete everything",
         "success": "All your data has been deleted",
-        "error": "We couldn't delete your data"
+        "error": "We couldn't delete your data",
+        "confirmWord": "DELETE",
+        "typeToEnable": "Type {word} to enable the button",
+        "inputPlaceholder": "Type {word}"
       }
     }
   },

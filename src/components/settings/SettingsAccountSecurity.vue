@@ -32,8 +32,12 @@ const deleting = ref(false)
 const { deleteAllUserData } = useDataCleanup()
 const canWrite = computed(() => store.canWrite)
 
+const confirmInput = ref('')
+const confirmWord = computed(() => t('settings.account.delete.confirmWord'))
+const isUnlock = computed(() => confirmInput.value.trim() === String(confirmWord.value || ''))
+
 const onRequestDelete = () => {
-  if (!canWrite.value || deleting.value) return
+  if (!canWrite.value || deleting.value || !isUnlock.value) return
   confirmOpen.value = true
 }
 
@@ -43,6 +47,7 @@ const onConfirmDelete = async () => {
   try {
     await deleteAllUserData()
     notify.success(t('settings.account.delete.success'))
+    confirmInput.value = ''
   } catch {
     notify.error(t('settings.account.delete.error'))
   } finally {
@@ -70,10 +75,18 @@ const onConfirmDelete = async () => {
     <div class="danger-zone">
       <h3 class="danger-title">{{ t('settings.account.delete.title') }}</h3>
       <p class="danger-subtitle">{{ t('settings.account.delete.subtitle') }}</p>
+      <div class="form-field">
+        <label>{{ t('settings.account.delete.typeToEnable', { word: confirmWord }) }}</label>
+        <input
+          class="input"
+          v-model="confirmInput"
+          :placeholder="t('settings.account.delete.inputPlaceholder', { word: confirmWord })"
+        />
+      </div>
       <button
         class="button button-danger"
         type="button"
-        :disabled="!canWrite || deleting"
+        :disabled="!canWrite || deleting || !isUnlock"
         :aria-busy="deleting"
         :title="!canWrite ? t('access.readOnly') : ''"
         @click="onRequestDelete"
@@ -130,5 +143,21 @@ const onConfirmDelete = async () => {
 .button-danger[disabled] {
   opacity: .6;
   cursor: not-allowed;
+}
+.form-field {
+  display: grid;
+  gap: .4rem;
+}
+.input {
+  background: var(--secondary-color);
+  border: 1px solid var(--primary-color);
+  padding: .65rem .75rem;
+  border-radius: 8px;
+  color: var(--text-color);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--focus-accent-glow);
 }
 </style>
