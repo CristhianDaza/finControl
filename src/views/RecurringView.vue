@@ -282,40 +282,47 @@ onMounted(async () => {
             </td>
             <td :data-label="t('transactions.table.actions')">
               <div class="actions">
-                <button
-                  class="button button-run"
-                  @click="openRunNow(tpl)"
-                  :disabled="!auth.canWrite"
-                  :aria-disabled="!auth.canWrite"
-                  :title="t('recurring.runNow')"
-                  :aria-label="t('recurring.runNow')"
-                >
-                  <svg class="icon-run" v-html="RunIcon"></svg>
-                </button>
-                <button
-                  class="button button-edit"
-                  @click="openEdit(tpl)"
-                  :disabled="!auth.canWrite"
-                  :aria-disabled="!auth.canWrite"
-                >
-                  <svg class="icon-edit" v-html="EditIcon"></svg>
-                </button>
-                <button
-                  class="button button-pause"
-                  @click="askPauseResume(tpl)"
-                  :disabled="!auth.canWrite"
-                  :aria-disabled="!auth.canWrite"
-                >
-                  <svg class="icon-toggle" v-html="tpl.paused ? PlayIcon : PauseIcon"></svg>
-                </button>
-                <button
-                  class="button button-delete"
-                  @click="remove(tpl.id)"
-                  :disabled="!auth.canWrite"
-                  :aria-disabled="!auth.canWrite"
-                >
-                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
-                </button>
+                <FcTooltip :content="t('recurring.runNow')" placement="top">
+                  <button
+                    class="button button-run"
+                    @click="openRunNow(tpl)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                    :aria-label="t('recurring.runNow')"
+                  >
+                    <svg class="icon-run" v-html="RunIcon"></svg>
+                  </button>
+                </FcTooltip>
+                <FcTooltip :content="t('common.edit')" placement="top">
+                  <button
+                    class="button button-edit"
+                    @click="openEdit(tpl)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                  >
+                    <svg class="icon-edit" v-html="EditIcon"></svg>
+                  </button>
+                </FcTooltip>
+                <FcTooltip :content="t(tpl.paused ? 'common.resume' : 'common.pause')" placement="top">
+                  <button
+                    class="button button-pause"
+                    @click="askPauseResume(tpl)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                  >
+                    <svg class="icon-toggle" v-html="tpl.paused ? PlayIcon : PauseIcon"></svg>
+                  </button>
+                </FcTooltip>
+                <FcTooltip :content="t('common.delete')" placement="top">
+                  <button
+                    class="button button-delete"
+                    @click="remove(tpl.id)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                  >
+                    <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                  </button>
+                </FcTooltip>
               </div>
             </td>
           </tr>

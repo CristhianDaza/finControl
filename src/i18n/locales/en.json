@@ -19,7 +19,9 @@
     "month": "Month",
     "year": "Year",
     "no-note": "No note",
-    "total": "Total"
+    "total": "Total",
+    "pause": "Pause",
+    "resume": "Resume"
   },
   "language": { "switcher": "Language" },
   "notification": { "dismiss": "Dismiss notification" },
@@ -297,12 +299,9 @@
   "recurring": {
     "title": "Recurring Payments",
     "add": "Add Recurring Payment",
-    "edit": "Edit template",
     "empty": "No recurring payment templates",
     "paused": "Paused",
     "active": "Active",
-    "pause": "Pause",
-    "resume": "Resume",
     "badge": "Recurring",
     "runNow": "Run now",
     "statusPanel": {

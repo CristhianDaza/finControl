@@ -8,6 +8,7 @@ import { t } from '@/i18n/index.js'
 import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import PauseIcon from '@/assets/icons/pause.svg?raw'
+import PlayIcon from '@/assets/icons/play.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "fcModal" */() => import('@/components/global/FcModal.vue'))
@@ -219,30 +220,36 @@ onMounted(async () => {
             </td>
             <td :data-label="t('goals.table.actions')">
               <div class="actions">
-                <button
-                  class="button button-edit"
-                  @click="openEdit(g)"
-                  :disabled="!auth.canWrite"
-                  :aria-disabled="!auth.canWrite"
-                >
-                  <svg class="icon-edit" v-html="EditIcon"></svg>
-                </button>
-                <button
-                  class="button button-pause"
-                  @click="askPauseResume(g)"
-                  :disabled="!auth.canWrite"
-                  :aria-disabled="!auth.canWrite"
-                >
-                  <svg class="icon-pause" v-html="PauseIcon"></svg>
-                </button>
-                <button
-                  class="button button-delete"
-                  @click="remove(g.id)"
-                  :disabled="!auth.canWrite"
-                  :aria-disabled="!auth.canWrite"
-                >
-                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
-                </button>
+                <FcTooltip :content="t('common.edit')" placement="top">
+                  <button
+                    class="button button-edit"
+                    @click="openEdit(g)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                  >
+                    <svg class="icon-edit" v-html="EditIcon"></svg>
+                  </button>
+                </FcTooltip>
+                <FcTooltip :content="t(g.paused ? 'goals.resume' : 'goals.pause')" placement="top">
+                  <button
+                    class="button button-pause"
+                    @click="askPauseResume(g)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                  >
+                    <svg class="icon-pause" v-html="g.paused ? PlayIcon : PauseIcon"></svg>
+                  </button>
+                </FcTooltip>
+                <FcTooltip :content="t('common.delete')" placement="top">
+                  <button
+                    class="button button-delete"
+                    @click="remove(g.id)"
+                    :disabled="!auth.canWrite"
+                    :aria-disabled="!auth.canWrite"
+                  >
+                    <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                  </button>
+                </FcTooltip>
               </div>
             </td>
           </tr>

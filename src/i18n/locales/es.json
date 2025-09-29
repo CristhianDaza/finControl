@@ -19,7 +19,9 @@
         "transfer": "Transferir",
         "month": "Mes",
         "year": "Año",
-        "total": "Total"
+        "total": "Total",
+        "pause": "Pausar",
+        "resume": "Reanudar"
       },
       "language": {
         "switcher": "Idioma"
@@ -316,12 +318,9 @@
       "recurring": {
         "title": "Pagos Recurrentes",
         "add": "Agregar Pago recurrente",
-        "edit": "Editar plantilla",
         "empty": "No hay plantillas de pagos recurrentes",
         "paused": "Pausada",
         "active": "Activa",
-        "pause": "Pausar",
-        "resume": "Reanudar",
         "badge": "Recurrente",
         "runNow": "Ejecutar ahora",
         "processDue": "Procesar vencidos",

@@ -155,26 +155,28 @@ onMounted(() => {
           <p class="account-balance">{{ formatAmount(item.balance, item.currency || 'COP') }}</p>
         </div>
         <div class="account-actions">
-          <button
-            class="button button-edit"
-            :aria-label="t('common.edit')"
-            :title="t('common.edit')"
-            @click="openEdit(item)"
-            :disabled="!auth.canWrite"
-            :aria-disabled="!auth.canWrite"
-          >
-            <svg class="icon-edit" v-html="EditIcon"></svg>
-          </button>
-          <button
-            class="button button-delete"
-            :aria-label="t('common.delete')"
-            :title="t('common.delete')"
-            @click="askRemove(item.id)"
-            :disabled="!auth.canWrite"
-            :aria-disabled="!auth.canWrite"
-          >
-            <svg class="icon-delete" v-html="DeleteIcon"></svg>
-          </button>
+          <FcTooltip :content="t('common.edit')" placement="bottom">
+            <button
+              class="button button-edit"
+              :aria-label="t('common.edit')"
+              @click="openEdit(item)"
+              :disabled="!auth.canWrite"
+              :aria-disabled="!auth.canWrite"
+            >
+              <svg class="icon-edit" v-html="EditIcon"></svg>
+            </button>
+          </FcTooltip>
+          <FcTooltip :content="t('common.delete')" placement="bottom">
+            <button
+              class="button button-delete"
+              :aria-label="t('common.delete')"
+              @click="askRemove(item.id)"
+              :disabled="!auth.canWrite"
+              :aria-disabled="!auth.canWrite"
+            >
+              <svg class="icon-delete" v-html="DeleteIcon"></svg>
+            </button>
+          </FcTooltip>
         </div>
       </div>
     </div>

@@ -36,12 +36,6 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/categories',
-      name: 'categories',
-      component: () => import(/* webpackChunkName: "categoriesView" */  '@/views/CategoriesView.vue'),
-      meta: { requiresAuth: true },
-    },
-    {
       path: '/recurring',
       name: 'recurring',
       component: () => import(/* webpackChunkName: "recurringView" */  '@/views/RecurringView.vue'),

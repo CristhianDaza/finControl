@@ -10,6 +10,7 @@ import { createLoadingPlugin } from '@/plugins/loadingPlugin.js'
 import { migrateCurrencies } from '@/utils/migrateCurrencies.js'
 import { auth } from '@/services/firebase.js'
 import { useUserPrefs } from '@/composables/useUserPrefs.js'
+import FcTooltip from '@/components/global/FcTooltip.vue'
 
 const pinia = createPinia()
 pinia.use(createLoadingPlugin())
@@ -17,6 +18,7 @@ const app = createApp(App)
 
 ;(async () => {
   app.use(pinia)
+  app.component('FcTooltip', FcTooltip)
   
   await useSettingsStore(pinia).initTheme()
   await initI18n()
