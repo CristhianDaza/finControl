@@ -225,14 +225,16 @@ input[type="date"]:focus {
 .icon-delete,
 .icon-edit,
 .icon-pause,
-.icon-toggle {
+.icon-toggle,
+.icon-run {
   width: 20px;
   height: 20px;
 }
 
 button.button.button-edit,
 button.button.button-delete,
-button.button.button-pause {
+button.button.button-pause,
+button.button.button-run {
   padding: 0.5rem;
 }
 

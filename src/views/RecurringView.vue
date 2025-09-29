@@ -10,6 +10,7 @@ import EditIcon from '@/assets/icons/edit.svg?raw'
 import PauseIcon from '@/assets/icons/pause.svg?raw'
 import PlayIcon from '@/assets/icons/play.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
+import RunIcon from '@/assets/icons/run.svg?raw'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "fcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "fcFormField" */() => import('@/components/global/FcFormField.vue'))
@@ -282,12 +283,14 @@ onMounted(async () => {
             <td :data-label="t('transactions.table.actions')">
               <div class="actions">
                 <button
-                  class="button"
+                  class="button button-run"
                   @click="openRunNow(tpl)"
                   :disabled="!auth.canWrite"
                   :aria-disabled="!auth.canWrite"
+                  :title="t('recurring.runNow')"
+                  :aria-label="t('recurring.runNow')"
                 >
-                  {{ t('recurring.runNow') }}
+                  <svg class="icon-run" v-html="RunIcon"></svg>
                 </button>
                 <button
                   class="button button-edit"
