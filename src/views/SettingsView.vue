@@ -16,6 +16,7 @@ const SettingsAmountFormat = defineAsyncComponent(/* webpackChunkName: "settings
 const SettingsCurrencies = defineAsyncComponent(/* webpackChunkName: "settingsCurrencies" */() => import('@/components/settings/SettingsCurrencies.vue'))
 const SettingsLanguage = defineAsyncComponent(/* webpackChunkName: "settingsLanguage" */() => import('@/components/settings/SettingsLanguage.vue'))
 const SettingsAccount = defineAsyncComponent(/* webpackChunkName: "settingsAccount" */() => import('@/components/settings/SettingsAccount.vue'))
+const SettingsAccountSecurity = defineAsyncComponent(/* webpackChunkName: "settingsAccountSecurity" */() => import('@/components/settings/SettingsAccountSecurity.vue'))
 
 const settings = useSettingsStore()
 
@@ -31,6 +32,7 @@ onMounted(() => {
 
 const TABS = [
   { id: 'account', labelKey: 'settings.accountStatus' },
+  { id: 'account-security', labelKey: 'settings.account.title' },
   { id: 'language', labelKey: 'settings.language.title' },
   { id: 'currencies', labelKey: 'settings.currencies.title' },
   { id: 'amount', labelKey: 'settings.amountFormat.title' },
@@ -125,6 +127,16 @@ const onTabsKeydown = async (event, idx) => {
       :aria-labelledby="'tab-account'"
     >
       <SettingsAccount />
+    </article>
+
+    <article
+      class="card"
+      v-show="activeTab==='account-security'"
+      role="tabpanel"
+      :id="'panel-account-security'"
+      :aria-labelledby="'tab-account-security'"
+    >
+      <SettingsAccountSecurity />
     </article>
 
     <article

@@ -521,6 +521,13 @@
     "planInstructions": {
       "inactive": "Enter a new code to activate or extend your plan.",
       "active": "You can enter an extra code to extend your current plan."
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "Manage your account security.",
+      "changePassword": "Change password",
+      "resetSent": "We sent an email to {email} to change your password",
+      "resetError": "We couldn't send the password change email"
     }
   },
   "admin": {

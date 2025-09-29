@@ -540,6 +540,13 @@
         "planInstructions": {
           "inactive": "Ingresa un nuevo código para activar o extender tu plan.",
           "active": "Puedes ingresar un código adicional para extender tu plan actual."
+        },
+        "account": {
+          "title": "Cuenta",
+          "subtitle": "Gestiona la seguridad de tu cuenta.",
+          "changePassword": "Cambiar contraseña",
+          "resetSent": "Enviamos un correo a {email} para cambiar tu contraseña",
+          "resetError": "No pudimos enviar el correo de cambio de contraseña"
         }
       },
       "admin": {
