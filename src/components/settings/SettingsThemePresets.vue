@@ -3,9 +3,11 @@ import { computed } from 'vue'
 import { t } from '@/i18n/index.js'
 import { useSettingsStore, THEME_PRESETS } from '@/stores/settings.js'
 import { useAuthStore } from '@/stores/auth.js'
+import { useNotify } from '@/components/global/fcNotify.js'
 
 const settings = useSettingsStore()
 const auth = useAuthStore()
+const { success: notifySuccess } = useNotify()
 
 const lightPresets = computed(() =>
   THEME_PRESETS.filter(p => p.mode === 'light')
@@ -17,6 +19,11 @@ const darkPresets = computed(() =>
 
 const applyPreset = id => {
   if (auth.canWrite) settings.applyPreset(id)
+}
+
+const save = async () => {
+  await settings.save()
+  notifySuccess(t('settings.notifications.saved'))
 }
 </script>
 
@@ -128,6 +135,17 @@ const applyPreset = id => {
     <p class="hint">
       {{ t('settings.theme.presets.hint') }}
     </p>
+
+    <div class="actions">
+      <button
+        class="button"
+        type="button"
+        @click="save"
+        :disabled="!auth.canWrite"
+      >
+        {{ t('common.save') }}
+      </button>
+    </div>
   </article>
 </template>
 
@@ -187,5 +205,15 @@ const applyPreset = id => {
 .hint {
   margin: .75rem 0 0;
   color: var(--muted-text-color);
+}
+.actions {
+  display: flex;
+  gap: .5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  position: sticky;
+  bottom: .5rem;
+  background: color-mix(in oklab, var(--primary-color) 80%, transparent);
+  padding-top: .5rem;
 }
 </style>
