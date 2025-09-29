@@ -480,6 +480,9 @@
       "isDefault": "Default",
       "defaultBadge": "DEF",
       "add": "Add",
+      "search": "Search currency…",
+      "confirmDeleteTitle": "Delete currency",
+      "confirmDeleteMessage": "This action cannot be undone. Do you want to continue?",
       "notifications": {
         "created": "Currency added",
         "deleted": "Currency deleted",

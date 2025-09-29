@@ -1,3 +1,6 @@
+import { collection, getDocs, updateDoc, doc } from 'firebase/firestore'
+import { db } from '@/services/firebase.js'
+
 export const migrateCurrencies = async uid => {
   if (!uid) return
 

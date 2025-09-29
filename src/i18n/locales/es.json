@@ -499,6 +499,9 @@
           "isDefault": "Por defecto",
           "defaultBadge": "DEF",
           "add": "Agregar",
+          "search": "Buscar moneda…",
+          "confirmDeleteTitle": "Eliminar moneda",
+          "confirmDeleteMessage": "Esta acción no se puede deshacer. ¿Deseas continuar?",
           "notifications": {
             "created": "Moneda agregada",
             "deleted": "Moneda eliminada",
