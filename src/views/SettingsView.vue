@@ -21,6 +21,12 @@ const settings = useSettingsStore()
 
 onMounted(() => {
   settings.initTheme()
+  nextTick(() => {
+    const idx = tabIds.indexOf(activeTab.value)
+    if (idx >= 0) {
+      tabRefs.value[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    }
+  })
 })
 
 const TABS = [
@@ -50,6 +56,10 @@ watch(activeTab, value => {
   try {
     localStorage.setItem(LS_KEY, value)
   } catch {}
+  nextTick(() => {
+    const idx = tabIds.indexOf(value)
+    if (idx >= 0) tabRefs.value[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  })
 })
 
 const onTabsKeydown = async (event, idx) => {
@@ -205,38 +215,65 @@ const onTabsKeydown = async (event, idx) => {
   color: var(--muted-text-color);
 }
 
-/* Tabs */
 .tabs {
   display: flex;
   gap: .5rem;
   flex-wrap: nowrap;
   border-bottom: 1px solid var(--secondary-color);
-  padding-bottom: .5rem;
+  padding: .5rem .25rem .75rem;
   position: sticky;
   top: 0;
-  background: color-mix(in oklab, var(--primary-color) 90%, transparent);
+  background: color-mix(in oklab, var(--primary-color) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(6px);
   z-index: 2;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  scroll-snap-type: x proximity;
 }
 .tabs::-webkit-scrollbar { display: none; }
+
+.tabs::before,
+.tabs::after {
+  content: '';
+  position: sticky;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  pointer-events: none;
+  z-index: 3;
+}
+.tabs::before {
+  left: 0;
+  background: linear-gradient(to right, color-mix(in srgb, var(--background-color) 80%, transparent), transparent);
+}
+.tabs::after {
+  margin-left: auto;
+  right: 0;
+  background: linear-gradient(to left, color-mix(in srgb, var(--background-color) 80%, transparent), transparent);
+}
 
 .tab {
   position: relative;
   appearance: none;
-  border: 1px solid var(--secondary-color);
-  background: var(--primary-color);
+  border: 1px solid color-mix(in srgb, var(--secondary-color) 80%, transparent);
+  background: color-mix(in srgb, var(--primary-color) 92%, var(--background-color));
   color: var(--text-color);
   border-radius: 999px;
-  padding: .45rem .9rem;
-  font-size: .92rem;
+  padding: .6rem 1rem;
+  min-height: 42px;
+  font-size: .95rem;
+  line-height: 1;
   cursor: pointer;
-  transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .08s ease;
+  scroll-snap-align: center;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .08s ease, border-color .15s ease;
 }
 
 .tab:hover {
-  background: color-mix(in srgb, var(--accent-color) 8%, var(--primary-color));
+  background: color-mix(in srgb, var(--accent-color) 10%, var(--primary-color));
 }
+
+.tab:active { transform: translateY(1px); }
 
 .tab:focus-visible {
   outline: 2px solid var(--accent-color);
@@ -244,22 +281,22 @@ const onTabsKeydown = async (event, idx) => {
 }
 
 .tab.active {
-  background: var(--accent-color);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-color) 85%, var(--primary-color)), color-mix(in srgb, var(--accent-color) 70%, var(--primary-color)));
   color: var(--white);
   border-color: color-mix(in srgb, var(--accent-color) 60%, var(--secondary-color));
-  box-shadow: 0 2px 6px color-mix(in srgb, var(--accent-color) 35%, transparent);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent-color) 35%, transparent);
 }
 
 .tab.active::after {
   content: '';
   position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: -10px;
+  left: 14px;
+  right: 14px;
+  bottom: -8px;
   height: 3px;
   border-radius: 3px;
   background: currentColor;
-  opacity: .8;
+  opacity: .85;
 }
 
 .card {
@@ -272,11 +309,17 @@ const onTabsKeydown = async (event, idx) => {
 
 .card + .card { margin-top: .25rem; }
 
-.card-title { margin: 0 0 .25rem; font-size: 1.05rem; }
-.card-subtitle { margin: 0 0 1rem; color: var(--muted-text-color); }
+.card-title {
+  margin: 0 0 .25rem;
+  font-size: 1.05rem;
+}
+.card-subtitle {
+  margin: 0 0 1rem;
+  color: var(--muted-text-color);
+}
 
-@media (max-width: 719.98px) {
-  .page-header { margin-bottom: .25rem; }
-  .card { padding: .85rem; }
+@media (max-width: 720px) {
+  .tabs { gap: .4rem; padding: .4rem .2rem .7rem; }
+  .tab { padding: .65rem .9rem; min-height: 44px; font-size: .93rem; }
 }
 </style>

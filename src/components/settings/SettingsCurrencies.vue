@@ -1,10 +1,12 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, defineAsyncComponent } from 'vue'
 import { t } from '@/i18n/index.js'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { useCurrenciesStore } from '@/stores/currencies.js'
 import { useAuthStore } from '@/stores/auth.js'
-import FCConfirmModal from '@/components/global/FCConfirmModal.vue'
+
+const FCConfirmModal = defineAsyncComponent(/* webpackChunkName: "fcConfirmModal" */() => import('@/components/global/FCConfirmModal.vue'))
+const FcFormField = defineAsyncComponent(/* webpackChunkName: "fcFormField" */() => import('@/components/global/FcFormField.vue'))
 
 const { success: notifySuccess, error: notifyError } = useNotify()
 const currencies = useCurrenciesStore()
@@ -131,16 +133,15 @@ const removeCurrency = async () => {
 
     <div class="curr-grid">
       <div class="row-inline" style="margin:0; padding:0">
-        <input
-          class="input"
+        <FcFormField
+          id="curr-search"
           v-model="search"
           :placeholder="t('settings.currencies.search')"
+          autocomplete="off"
         />
       </div>
 
-      <div v-if="currencies.status==='loading'">
-        {{ t('common.loading') }}
-      </div>
+      <div v-if="currencies.status==='loading'">{{ t('common.loading') }}</div>
 
       <div v-else>
         <div v-if="items.length" class="table-container curr-table-wrap">
@@ -207,46 +208,36 @@ const removeCurrency = async () => {
 
         <form class="add-form" @submit.prevent="addCurrency">
           <div class="row-inline">
-            <input
-              class="input text-uppercase"
+            <FcFormField
+              id="cur-code"
               v-model="newCur.code"
               :placeholder="t('settings.currencies.code')"
               maxlength="5"
               :disabled="!auth.canWrite"
+              @update:modelValue="val => newCur.code = (val || '').toString().toUpperCase().slice(0,5)"
+              style="text-transform: uppercase;"
             />
-            <input
-              class="input"
+            <FcFormField
+              id="cur-symbol"
               v-model="newCur.symbol"
               :placeholder="t('settings.currencies.symbol')"
               maxlength="4"
               :disabled="!auth.canWrite"
             />
-            <input
-              class="input"
+            <FcFormField
+              id="cur-name"
               v-model="newCur.name"
               :placeholder="t('settings.currencies.name')"
               maxlength="30"
               :disabled="!auth.canWrite"
             />
             <label class="chk">
-              <input
-                type="checkbox"
-                v-model="newCur.isDefault"
-                :disabled="!auth.canWrite"
-              />
+              <input type="checkbox" v-model="newCur.isDefault" :disabled="!auth.canWrite" />
               {{ t('settings.currencies.isDefault') }}
             </label>
-            <button
-              class="button"
-              type="submit"
-              :disabled="busy || !newCur.code || !auth.canWrite"
-            >
-              {{ t('settings.currencies.add') }}
-            </button>
+            <button class="button" type="submit" :disabled="busy || !newCur.code || !auth.canWrite">{{ t('settings.currencies.add') }}</button>
           </div>
-          <p v-if="errorMsg" class="error">
-            {{ errorMsg }}
-          </p>
+          <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
         </form>
       </div>
     </div>
