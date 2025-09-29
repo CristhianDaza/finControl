@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoutes } from '@/composables/useRoutes.js'
 import { useIsMobile } from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
@@ -8,8 +8,6 @@ import { t } from '@/i18n/index.js'
 
 import HamburgerIcon from '@/assets/icons/hamburger.svg?raw'
 import LogoutIcon from '@/assets/icons/logout.svg?raw'
-
-const LanguageSwitcher = defineAsyncComponent(/* webpackChunkName: "languageSwitcher" */ () => import('@/components/global/LanguageSwitcher.vue'))
 
 const { routes } = useRoutes()
 const { isMobile } = useIsMobile()
@@ -79,11 +77,10 @@ defineExpose({ handleMainClick })
         <span>{{ t('auth.logout') }}</span>
         <svg class="icon-menu" v-html="LogoutIcon"></svg>
       </button>
-      <div class="bottom-bar" :class="{ 'lang-collapsed': isMenuHidden }">
+      <div class="bottom-bar">
         <div v-if="isAuthenticated" class="version-container">
           <span class="version-pill">{{ appVersion }}</span>
         </div>
-        <LanguageSwitcher :collapsed="isMenuHidden" />
       </div>
     </div>
   </aside>
@@ -222,10 +219,6 @@ a:hover .icon-menu {
   align-items:center;
   justify-content: space-between;
   padding-top: 1rem;
-}
-
-.lang-collapsed {
-  justify-content: center;
 }
 
 .version-container {

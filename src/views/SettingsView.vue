@@ -1,18 +1,29 @@
 <script setup>
 import { onMounted, computed, ref } from 'vue'
 import { useSettingsStore, EDITABLE_VARS, THEME_PRESETS } from '@/stores/settings.js'
-import { t } from '@/i18n/index.js'
+import { t, setLocale, localeRef } from '@/i18n/index.js'
 import SettingsIcon from '@/assets/icons/settings.svg?raw'
 import { useNotify } from '@/components/global/fcNotify.js'
 import { useCurrenciesStore } from '@/stores/currencies.js'
 import { useAuthStore } from '@/stores/auth.js'
+import { useUserPrefs } from '@/composables/useUserPrefs.js'
 
 const settings = useSettingsStore()
 const { success: notifySuccess, error: notifyError } = useNotify()
 const auth = useAuthStore()
+const { saveAppPrefs } = useUserPrefs()
 
 onMounted(() => {
   settings.initTheme()
+})
+
+const selectedLang = computed({
+  get: () => localeRef.value,
+  set: async (val) => {
+    await setLocale(val)
+    try { await saveAppPrefs({ language: val }) } catch {}
+    notifySuccess(t('settings.language.saved'))
+  }
 })
 
 const onInput = (key, e) => {
@@ -125,7 +136,7 @@ const applyCode = async () => {
     codeValue.value = ''
     codeError.value = false
   } else {
-    codeMsg.value = res.error || t('errors.codeInvalid')
+    codeMsg.value = res.error || t('errors.generic')
     codeError.value = true
   }
 }
@@ -208,6 +219,18 @@ const codeInputClass = computed(() =>
             </small>
           </div>
         </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2 class="card-title">{{ t('settings.language.title') }}</h2>
+      <p class="card-subtitle">{{ t('settings.language.subtitle') }}</p>
+      <div class="form-field">
+        <label for="app-language">{{ t('settings.language.label') }}</label>
+        <select id="app-language" class="input" v-model="selectedLang">
+          <option value="es">Español (ES)</option>
+          <option value="en">English (EN)</option>
+        </select>
       </div>
     </article>
 

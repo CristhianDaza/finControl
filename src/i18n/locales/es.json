@@ -478,6 +478,12 @@
             }
           }
         },
+        "language": {
+          "title": "Idioma",
+          "subtitle": "Selecciona el idioma de la aplicación.",
+          "label": "Idioma de la interfaz",
+          "saved": "Idioma actualizado"
+        },
         "amountFormat": {
           "title": "Formato de monto",
           "subtitle": "Elige cómo se muestran los valores monetarios en la aplicación.",

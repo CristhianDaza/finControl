@@ -438,10 +438,10 @@
     "sampleSecondary": "Secondary action",
     "theme": {
       "title": "Theme",
-      "subtitle": "Customize the main colors of the app (Changes are applied live). Change the amount format.",
+      "subtitle": "Customize the app's main colors. Changes apply live.",
       "presets": {
         "title": "Preset themes",
-        "subtitle": "Pick one of the accessible themes (light or dark). You can fine-tune colors afterwards.",
+        "subtitle": "Choose one of the accessible themes (light or dark). Then fine-tune colors if you want.",
         "hint": "Tip: press Save to keep your selection on this device and in your account.",
         "light": "Light",
         "dark": "Dark",
@@ -459,9 +459,15 @@
         }
       }
     },
+    "language": {
+      "title": "Language",
+      "subtitle": "Select the application language.",
+      "label": "Interface language",
+      "saved": "Language updated"
+    },
     "amountFormat": {
       "title": "Amount format",
-      "subtitle": "Choose how monetary values are shown across the app.",
+      "subtitle": "Choose how money values are displayed in the app.",
       "full": "Full (with decimals)",
       "compact": "Compact (K / M / B)"
     },
@@ -490,7 +496,7 @@
     "generateCode": "Generate new code",
     "validateCode": "Validate",
     "code": {
-      "success": "Code valid. New expiration: {date}",
+      "success": "Valid code. New expiration: {date}",
       "attempts": "Attempts left: {n}",
       "blocked": "Blocked until: {date}"
     },
@@ -499,11 +505,11 @@
     "accountStatusInactive": "Inactive",
     "planInstructions": {
       "inactive": "Enter a new code to activate or extend your plan.",
-      "active": "You can enter an additional code to extend your current plan."
+      "active": "You can enter an extra code to extend your current plan."
     }
   },
   "admin": {
-    "title": "Admin Dashboard",
+    "title": "Admin Panel",
     "kpis": {
       "total": "Total users",
       "active": "Active users",
@@ -511,22 +517,22 @@
     },
     "filters": {
       "rangeType": "Range type",
-      "createdAt": "Created date",
-      "lastActiveAt": "Last active",
+      "createdAt": "Created at",
+      "lastActiveAt": "Last activity",
       "role": "Role"
     },
     "users": {
       "title": "Users",
       "email": "Email",
       "createdAt": "Created",
-      "lastActiveAt": "Last active",
+      "lastActiveAt": "Last activity",
       "planExpiresAt": "Plan expires",
       "isActive": "Active",
       "role": "Role",
       "empty": "No users"
     },
     "invites": {
-      "title": "Invite Codes",
+      "title": "Codes",
       "create": "Generate code",
       "plan": "Plan",
       "plan_monthly": "Monthly",
@@ -536,7 +542,7 @@
       "status": "Status",
       "createdAt": "Created",
       "expiresAt": "Expires",
-      "usedAt": "Used at",
+      "usedAt": "Used",
       "usedBy": "Used by",
       "actions": "Actions",
       "empty": "No codes",
@@ -547,7 +553,7 @@
       "invalidated": "Code invalidated",
       "copied": "Copied",
       "migrate": "Migrate codes",
-      "migrated": "Migrated: {created} created, {skipped} skipped",
+      "migrated": "Migration: {created} created, {skipped} skipped",
       "status_unused": "Unused",
       "status_used": "Used",
       "status_expired": "Expired"
