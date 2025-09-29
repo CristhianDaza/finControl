@@ -601,22 +601,26 @@ watch(selectedYear, () => {
               </td>
               <td :data-label="t('transactions.table.actions')">
                 <div class="actions actions-tight">
-                  <button
-                    class="button button-edit"
-                    @click="openEdit(it)"
-                    :disabled="!auth.canWrite"
-                    :aria-disabled="!auth.canWrite"
-                  >
-                    <svg class="icon-edit" v-html="EditIcon"></svg>
-                  </button>
-                  <button
-                    class="button button-delete"
-                    @click="askRemove(it.id)"
-                    :disabled="!auth.canWrite"
-                    :aria-disabled="!auth.canWrite"
-                  >
-                    <svg class="icon-delete" v-html="DeleteIcon"></svg>
-                  </button>
+                  <FcTooltip :content="t('common.edit')" placement="top">
+                    <button
+                      class="button button-edit"
+                      @click="openEdit(it)"
+                      :disabled="!auth.canWrite"
+                      :aria-disabled="!auth.canWrite"
+                    >
+                      <svg class="icon-edit" v-html="EditIcon"></svg>
+                    </button>
+                  </FcTooltip>
+                  <FcTooltip :content="t('common.delete')" placement="top">
+                    <button
+                      class="button button-delete"
+                      @click="askRemove(it.id)"
+                      :disabled="!auth.canWrite"
+                      :aria-disabled="!auth.canWrite"
+                    >
+                      <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                    </button>
+                  </FcTooltip>
                 </div>
               </td>
             </tr>
