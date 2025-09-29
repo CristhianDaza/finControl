@@ -124,7 +124,7 @@ const onTabsKeydown = async (event, idx) => {
       v-show="activeTab==='account'"
       role="tabpanel"
       :id="'panel-account'"
-      :aria-labelledby="'tab-account'"
+      aria-labelledby="tab-account"
     >
       <SettingsAccount />
     </article>
@@ -134,7 +134,7 @@ const onTabsKeydown = async (event, idx) => {
       v-show="activeTab==='account-security'"
       role="tabpanel"
       :id="'panel-account-security'"
-      :aria-labelledby="'tab-account-security'"
+      aria-labelledby="tab-account-security"
     >
       <SettingsAccountSecurity />
     </article>
@@ -144,7 +144,7 @@ const onTabsKeydown = async (event, idx) => {
       v-show="activeTab==='language'"
       role="tabpanel"
       :id="'panel-language'"
-      :aria-labelledby="'tab-language'"
+      aria-labelledby="tab-language"
     >
       <SettingsLanguage />
     </article>
@@ -154,7 +154,7 @@ const onTabsKeydown = async (event, idx) => {
       v-show="activeTab==='currencies'"
       role="tabpanel"
       :id="'panel-currencies'"
-      :aria-labelledby="'tab-currencies'"
+      aria-labelledby="tab-currencies"
     >
       <SettingsCurrencies />
     </article>
@@ -164,7 +164,7 @@ const onTabsKeydown = async (event, idx) => {
       v-show="activeTab==='amount'"
       role="tabpanel"
       :id="'panel-amount'"
-      :aria-labelledby="'tab-amount'"
+      aria-labelledby="tab-amount"
     >
       <SettingsAmountFormat />
     </article>
@@ -174,7 +174,7 @@ const onTabsKeydown = async (event, idx) => {
       v-show="activeTab==='presets'"
       role="tabpanel"
       :id="'panel-presets'"
-      :aria-labelledby="'tab-presets'"
+      aria-labelledby="tab-presets"
     >
       <SettingsThemePresets />
     </article>
@@ -184,7 +184,7 @@ const onTabsKeydown = async (event, idx) => {
       v-show="activeTab==='theme'"
       role="tabpanel"
       :id="'panel-theme'"
-      :aria-labelledby="'tab-theme'"
+      aria-labelledby="tab-theme"
     >
       <SettingsThemeVars />
     </article>
