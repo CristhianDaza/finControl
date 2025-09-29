@@ -66,6 +66,10 @@ const importConfirmOpen = ref(false)
 
 const onExport = async () => {
   if (exporting.value) return
+  if (!canWrite.value) {
+    notify.info(t('access.readOnly'))
+    return
+  }
   exporting.value = true
   try {
     const { exportAll } = useDataExport()
@@ -111,6 +115,17 @@ const onPickFile = (e) => {
   reader.readAsText(f)
 }
 
+const importCounts = computed(() => {
+  const collections = importData.value && importData.value.collections
+  if (!collections || typeof collections !== 'object') return { entries: [], total: 0 }
+  const entries = Object.keys(collections).map(name => ({
+    name,
+    count: Array.isArray(collections[name]) ? collections[name].length : 0
+  }))
+  const total = entries.reduce((acc, it) => acc + (it.count || 0), 0)
+  return { entries, total }
+})
+
 const requireWordForReplace = computed(() => importMode.value === 'replace')
 const confirmInputImport = ref('')
 const confirmWordImport = computed(() => t('settings.account.delete.confirmWord'))
@@ -142,8 +157,13 @@ const onConfirmImport = async () => {
 
 <template>
   <article class="card">
-    <h2 class="card-title">{{ t('settings.account.title') }}</h2>
-    <p class="card-subtitle">{{ t('settings.account.subtitle') }}</p>
+    <h2 class="card-title">
+      {{ t('settings.account.title') }}
+    </h2>
+    <p class="card-subtitle">
+      {{ t('settings.account.subtitle') }}
+    </p>
+
     <div class="account-actions">
       <button
         class="button"
@@ -154,47 +174,116 @@ const onConfirmImport = async () => {
       >
         {{ sending ? t('common.loading') : t('settings.account.changePassword') }}
       </button>
-      <small class="muted" v-if="email">{{ email }}</small>
+      <small class="muted" v-if="email">
+        {{ email }}
+      </small>
     </div>
 
     <div class="io-zone">
-      <h3 class="io-title">{{ t('settings.account.io.title') }}</h3>
-      <p class="io-subtitle">{{ t('settings.account.io.subtitle') }}</p>
+      <h3 class="io-title">
+        {{ t('settings.account.io.title') }}
+      </h3>
+      <p class="io-subtitle">
+        {{ t('settings.account.io.subtitle') }}
+      </p>
       <div class="io-actions">
-        <button class="button" type="button" :aria-busy="exporting" :disabled="exporting" @click="onExport">
+        <button
+          class="button"
+          type="button"
+          :aria-busy="exporting"
+          :disabled="exporting || !canWrite"
+          :title="!canWrite ? t('access.readOnly') : ''"
+          @click="onExport"
+        >
           {{ exporting ? t('common.loading') : t('settings.account.io.export') }}
         </button>
-        <label class="file-btn">
-          <input type="file" accept="application/json" @change="onPickFile" />
-          <span>{{ t('settings.account.io.pickFile') }}</span>
+        <label
+          class="file-btn"
+          :title="!canWrite ? t('access.readOnly') : ''"
+        >
+          <input
+            type="file"
+            accept="application/json"
+            @change="onPickFile"
+            :disabled="!canWrite"
+          />
+          <span>
+            {{ t('settings.account.io.pickFile') }}
+          </span>
         </label>
-        <select class="input" v-model="importMode">
-          <option value="merge">{{ t('settings.account.io.mode.merge') }}</option>
-          <option value="replace">{{ t('settings.account.io.mode.replace') }}</option>
+        <select
+          class="input"
+          v-model="importMode"
+          :disabled="!canWrite"
+        >
+          <option value="merge">
+            {{ t('settings.account.io.mode.merge') }}
+          </option>
+          <option value="replace">
+            {{ t('settings.account.io.mode.replace') }}
+          </option>
         </select>
         <input
           v-if="requireWordForReplace"
           class="input input-inline"
           v-model="confirmInputImport"
           :placeholder="t('settings.account.delete.inputPlaceholder', { word: confirmWordImport })"
+          :disabled="!canWrite"
         />
         <button
           class="button button-secondary"
           type="button"
           :aria-busy="importing"
-          :disabled="importing || !importData || !isUnlockImport"
+          :disabled="!canWrite || importing || !importData || !isUnlockImport"
           @click="onRequestImport"
+          :title="!canWrite ? t('access.readOnly') : ''"
         >
           {{ importing ? t('common.loading') : t('settings.account.io.import') }}
         </button>
       </div>
+      <div
+        v-if="importData"
+        class="import-preview"
+      >
+        <h4 class="import-title">
+          {{ t('settings.account.io.preview') }}
+        </h4>
+        <ul class="import-list">
+          <li
+            v-for="it in importCounts.entries"
+            :key="it.name"
+            class="import-item"
+          >
+            <span class="name">
+              {{ it.name }}
+            </span>
+            <span class="count">
+              {{ it.count }}
+            </span>
+          </li>
+        </ul>
+        <div class="import-total">
+          <span class="label">
+            {{ t('common.total') }}
+          </span>
+          <span class="value">
+            {{ importCounts.total }}
+          </span>
+        </div>
+      </div>
     </div>
 
     <div class="danger-zone">
-      <h3 class="danger-title">{{ t('settings.account.delete.title') }}</h3>
-      <p class="danger-subtitle">{{ t('settings.account.delete.subtitle') }}</p>
+      <h3 class="danger-title">
+        {{ t('settings.account.delete.title') }}
+      </h3>
+      <p class="danger-subtitle">
+        {{ t('settings.account.delete.subtitle') }}
+      </p>
       <div class="form-field">
-        <label>{{ t('settings.account.delete.typeToEnable', { word: confirmWord }) }}</label>
+        <label>
+          {{ t('settings.account.delete.typeToEnable', { word: confirmWord }) }}
+        </label>
         <input
           class="input"
           v-model="confirmInput"
@@ -277,6 +366,9 @@ const onConfirmImport = async () => {
   opacity: 0;
   cursor: pointer;
 }
+.file-btn input[type="file"][disabled] {
+  pointer-events: none;
+}
 .file-btn span {
   display: inline-block;
   padding: .65rem 1rem;
@@ -287,6 +379,37 @@ const onConfirmImport = async () => {
 }
 .input-inline {
   max-width: 240px;
+}
+.import-preview {
+  display: grid;
+  gap: .4rem;
+  background: var(--secondary-color);
+  border: 1px dashed var(--primary-color);
+  border-radius: 8px;
+  padding: .5rem .75rem;
+}
+.import-title {
+  margin: 0;
+  font-size: .95rem;
+}
+.import-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: .25rem;
+}
+.import-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: .95rem;
+}
+.import-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
 }
 .danger-zone {
   margin-top: 1rem;

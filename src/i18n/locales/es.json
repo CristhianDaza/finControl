@@ -18,7 +18,8 @@
         "no-note": "Sin nota",
         "transfer": "Transferir",
         "month": "Mes",
-        "year": "Año"
+        "year": "Año",
+        "total": "Total"
       },
       "language": {
         "switcher": "Idioma"
@@ -577,7 +578,8 @@
             "mode": {
               "merge": "Fusionar",
               "replace": "Reemplazar todo"
-            }
+            },
+            "preview": "Vista previa de importación"
           }
         }
       },

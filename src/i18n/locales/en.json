@@ -18,7 +18,8 @@
     "transfer": "Transfer",
     "month": "Month",
     "year": "Year",
-    "no-note": "No note"
+    "no-note": "No note",
+    "total": "Total"
   },
   "language": { "switcher": "Language" },
   "notification": { "dismiss": "Dismiss notification" },
@@ -558,7 +559,8 @@
         "mode": {
           "merge": "Merge",
           "replace": "Replace all"
-        }
+        },
+        "preview": "Import preview"
       }
     }
   },
