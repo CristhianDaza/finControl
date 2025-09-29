@@ -4,7 +4,8 @@ import {
   defineAsyncComponent,
   ref,
   nextTick,
-  watch
+  watch,
+  computed
 } from 'vue'
 import { useSettingsStore } from '@/stores/settings.js'
 import { t } from '@/i18n/index.js'
@@ -51,6 +52,53 @@ try {
 
 const activeTab = ref(initialTab)
 const tabRefs = ref([])
+
+const activeComponent = computed(() => {
+  switch (activeTab.value) {
+    case 'account':
+      return {
+        component: SettingsAccountUnified,
+        panelId: 'panel-account',
+        tabId: 'tab-account'
+      }
+    case 'language':
+      return {
+        component: SettingsLanguage,
+        panelId: 'panel-language',
+        tabId: 'tab-language'
+      }
+    case 'currencies':
+      return {
+        component: SettingsCurrencies,
+        panelId: 'panel-currencies',
+        tabId: 'tab-currencies'
+      }
+    case 'amount':
+      return {
+        component: SettingsAmountFormat,
+        panelId: 'panel-amount',
+        tabId: 'tab-amount'
+      }
+    case 'presets':
+      return {
+        component: SettingsThemePresets,
+        panelId: 'panel-presets',
+        tabId: 'tab-presets'
+      }
+    case 'theme':
+      return {
+        component: SettingsThemeVars,
+        panelId: 'panel-theme',
+        tabId: 'tab-theme'
+      }
+    default:
+      return {
+        component: SettingsAccountUnified,
+        panelId: 'panel-account',
+        tabId: 'tab-account'
+      }
+  }
+})
 
 watch(activeTab, value => {
   try {
@@ -118,63 +166,13 @@ const onTabsKeydown = async (event, idx) => {
     </nav>
 
     <div
+      v-if="activeComponent"
       class="card-content"
-      v-show="activeTab==='account'"
       role="tabpanel"
-      :id="'panel-account'"
-      aria-labelledby="tab-account"
+      :id="activeComponent.panelId"
+      :aria-labelledby="activeComponent.tabId"
     >
-      <SettingsAccountUnified />
-    </div>
-
-    <div
-      class="card-content"
-      v-show="activeTab==='language'"
-      role="tabpanel"
-      :id="'panel-language'"
-      aria-labelledby="tab-language"
-    >
-      <SettingsLanguage />
-    </div>
-
-    <div
-      class="card-content"
-      v-show="activeTab==='currencies'"
-      role="tabpanel"
-      :id="'panel-currencies'"
-      aria-labelledby="tab-currencies"
-    >
-      <SettingsCurrencies />
-    </div>
-
-    <div
-      class="card-content"
-      v-show="activeTab==='amount'"
-      role="tabpanel"
-      :id="'panel-amount'"
-      aria-labelledby="tab-amount"
-    >
-      <SettingsAmountFormat />
-    </div>
-
-    <div
-      class="card-content"
-      v-show="activeTab==='presets'"
-      role="tabpanel"
-      :id="'panel-presets'"
-      aria-labelledby="tab-presets"
-    >
-      <SettingsThemePresets />
-    </div>
-
-    <div
-      class="card-content"
-      v-show="activeTab==='theme'"
-      role="tabpanel"
-      :id="'panel-theme'"
-      aria-labelledby="tab-theme"
-    >
-      <SettingsThemeVars />
+      <component :is="activeComponent.component" />
     </div>
   </section>
 </template>

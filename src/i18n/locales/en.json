@@ -304,6 +304,9 @@
     "active": "Active",
     "badge": "Recurring",
     "runNow": "Run now",
+    "processDue": "Process due",
+    "runNowConfirmMessage": "Run '{name}' now? An immediate transaction will be created.",
+    "runNowConfirmUpdate": "Do you want to update the next execution date based on the current run?",
     "statusPanel": {
       "title": "Status",
       "lastRun": "Last run",
