@@ -265,7 +265,7 @@ input[type="date"]:focus {
   background-color: var(--secondary-color);
   color: var(--text-color);
   border: 1px solid var(--primary-color);
-  box-shadow: 0 4px 12px rgba(13, 17, 23, 0.3);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color), black 30%);
 }
 
 .button-secondary::before {
@@ -277,7 +277,7 @@ input[type="date"]:focus {
   color: var(--accent-color);
   border-color: var(--accent-color);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(63, 169, 245, 0.2);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--hover-secondary-color), black 30%);
 }
 
 .button-run {

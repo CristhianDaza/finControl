@@ -183,7 +183,7 @@ a::before {
 a:hover {
   background: linear-gradient(135deg, var(--secondary-color), rgba(var(--accent-color-rgb, 0, 123, 255), 0.1));
   color: var(--accent-color);
-  border-color: rgba(var(--accent-color-rgb, 0, 123, 255), 0.2);
+  border-color: rgba(var(--secondary-color 0, 123, 255), 0.2);
   transform: translateX(4px);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
@@ -201,7 +201,7 @@ a:hover .icon-menu {
   background-color: var(--accent-color);
   color: var(--white, #ffffff);
   border-color: var(--accent-color);
-  box-shadow: 0 4px 12px rgba(var(--accent-color-rgb, 0, 123, 255), 0.3);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color, rgb(0, 123, 255)) 60%, transparent);
   transform: translateX(2px);
 }
 
@@ -211,7 +211,7 @@ a:hover .icon-menu {
 
 .active:hover {
   transform: translateX(6px);
-  box-shadow: 0 6px 16px rgba(var(--accent-color-rgb, 0, 123, 255), 0.4);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color, rgb(0, 123, 255)) 60%, transparent);
 }
 
 .hidden-menu {
@@ -353,7 +353,6 @@ a:hover .icon-menu {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Estilos específicos para el menú contraído */
 .hidden-menu .logout-button {
   padding: 0.75rem;
   justify-content: center;
@@ -370,7 +369,6 @@ a:hover .icon-menu {
   height: 20px;
 }
 
-/* Mejoras adicionales para accesibilidad y UX */
 a:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
