@@ -324,6 +324,9 @@
         "resume": "Reanudar",
         "badge": "Recurrente",
         "runNow": "Ejecutar ahora",
+        "processDue": "Procesar vencidos",
+        "runNowConfirmMessage": "¿Ejecutar ahora '{name}'? Se creará una transacción inmediata.",
+        "runNowConfirmUpdate": "¿Desea actualizar la próxima fecha de ejecución según la fecha actual de ejecución?",
         "statusPanel": {
           "title": "Estado de ejecución",
           "lastRun": "Última ejecución",

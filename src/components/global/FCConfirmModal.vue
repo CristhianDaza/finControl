@@ -48,6 +48,7 @@ const onKey = e => {
       <div role="dialog" aria-modal="true" class="card modal-card">
         <h2 class="modal-title">{{ title }}</h2>
         <p class="modal-message">{{ message }}</p>
+        <slot></slot>
         <div class="actions">
           <button
             class="button"

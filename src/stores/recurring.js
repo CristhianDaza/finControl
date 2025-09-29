@@ -21,7 +21,8 @@ export const useRecurringStore = defineStore('recurring', () => {
     createTemplate,
     updateTemplate,
     deleteTemplate,
-    processDueOnce
+    processDueOnce,
+    runTemplateNow
   } = useRecurring()
 
   const {
@@ -112,6 +113,19 @@ export const useRecurringStore = defineStore('recurring', () => {
     }
   }
 
+  const runNowTemplate = async (id, options = {}) => {
+    try {
+      const res = await runTemplateNow(id, options)
+      if (res?.processed) {
+        info(t('recurring.notifications.processed', { count: String(res.processed) }))
+      }
+      return res
+    } catch (e) {
+      notifyError(t('errors.generic'))
+      throw e
+    }
+  }
+
   onUnmounted(() => dispose())
 
   return {
@@ -126,6 +140,7 @@ export const useRecurringStore = defineStore('recurring', () => {
     pause,
     resume,
     processDue,
+    runNowTemplate,
     lastRun,
     lastProcessedCount,
     lastErrorMsg,

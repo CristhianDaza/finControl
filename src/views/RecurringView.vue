@@ -8,10 +8,12 @@ import { t } from '@/i18n/index.js'
 import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import PauseIcon from '@/assets/icons/pause.svg?raw'
+import PlayIcon from '@/assets/icons/play.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 
 const FcModal = defineAsyncComponent(/* webpackChunkName: "fcModal" */() => import('@/components/global/FcModal.vue'))
 const FcFormField = defineAsyncComponent(/* webpackChunkName: "fcFormField" */() => import('@/components/global/FcFormField.vue'))
+const FCConfirmModal = defineAsyncComponent(/* webpackChunkName: "fCConfirmModal" */() => import('@/components/global/FCConfirmModal.vue'))
 
 const acc = useAccountsStore()
 const deb = useDebtsStore()
@@ -21,6 +23,10 @@ const auth = useAuthStore()
 const showModal = ref(false)
 const isEditing = ref(false)
 const editingId = ref(null)
+
+const showRunConfirm = ref(false)
+const runUpdateFromNow = ref(false)
+const runTarget = ref(null)
 
 const form = ref({
   name: '',
@@ -129,6 +135,20 @@ const askPauseResume = async tpl => {
     await rec.pause(tpl.id)
 }
 
+const openRunNow = tpl => {
+  if (!auth.canWrite) return
+  runTarget.value = tpl
+  runUpdateFromNow.value = false
+  showRunConfirm.value = true
+}
+
+const confirmRunNow = async () => {
+  if (!auth.canWrite || !runTarget.value) return
+  await rec.runNowTemplate(runTarget.value.id, { updateFromNow: runUpdateFromNow.value })
+  runTarget.value = null
+  runUpdateFromNow.value = false
+}
+
 const remove = async id => {
   if (!auth.canWrite) return
   await rec.remove(id)
@@ -165,7 +185,7 @@ onMounted(async () => {
           :aria-disabled="rec.processing || !auth.canWrite"
           @click="runNow"
         >
-          {{ rec.processing ? t('recurring.statusPanel.processing') : t('recurring.runNow') }}
+          {{ rec.processing ? t('recurring.statusPanel.processing') : t('recurring.processDue') }}
         </button>
       </div>
     </div>
@@ -262,6 +282,14 @@ onMounted(async () => {
             <td :data-label="t('transactions.table.actions')">
               <div class="actions">
                 <button
+                  class="button"
+                  @click="openRunNow(tpl)"
+                  :disabled="!auth.canWrite"
+                  :aria-disabled="!auth.canWrite"
+                >
+                  {{ t('recurring.runNow') }}
+                </button>
+                <button
                   class="button button-edit"
                   @click="openEdit(tpl)"
                   :disabled="!auth.canWrite"
@@ -275,7 +303,7 @@ onMounted(async () => {
                   :disabled="!auth.canWrite"
                   :aria-disabled="!auth.canWrite"
                 >
-                  <svg class="icon-pause" v-html="PauseIcon"></svg>
+                  <svg class="icon-toggle" v-html="tpl.paused ? PlayIcon : PauseIcon"></svg>
                 </button>
                 <button
                   class="button button-delete"
@@ -382,6 +410,21 @@ onMounted(async () => {
         </div>
       </div>
     </FcModal>
+
+    <FCConfirmModal
+      :open="showRunConfirm"
+      :title="t('recurring.runNow')"
+      :message="runTarget ? t('recurring.runNowConfirmMessage', { name: runTarget.name || runTarget.note || '-' }) : ''"
+      @update:open="val => showRunConfirm = val"
+      @confirm="confirmRunNow"
+      @cancel="() => { showRunConfirm = false; runTarget = null; }"
+      :confirm-disabled="!auth.canWrite"
+    >
+      <label class="label-block">
+        <input type="checkbox" v-model="runUpdateFromNow" :disabled="!auth.canWrite" />
+        {{ t('recurring.runNowConfirmUpdate') }}
+      </label>
+    </FCConfirmModal>
   </section>
 </template>
 

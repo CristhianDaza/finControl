@@ -224,7 +224,8 @@ input[type="date"]:focus {
 
 .icon-delete,
 .icon-edit,
-.icon-pause {
+.icon-pause,
+.icon-toggle {
   width: 20px;
   height: 20px;
 }
