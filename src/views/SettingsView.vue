@@ -119,7 +119,7 @@ const onTabsKeydown = async (event, idx) => {
       </button>
     </nav>
 
-    <article
+    <div
       class="card"
       v-show="activeTab==='account'"
       role="tabpanel"
@@ -127,9 +127,9 @@ const onTabsKeydown = async (event, idx) => {
       aria-labelledby="tab-account"
     >
       <SettingsAccount />
-    </article>
+    </div>
 
-    <article
+    <div
       class="card"
       v-show="activeTab==='account-security'"
       role="tabpanel"
@@ -137,9 +137,9 @@ const onTabsKeydown = async (event, idx) => {
       aria-labelledby="tab-account-security"
     >
       <SettingsAccountSecurity />
-    </article>
+    </div>
 
-    <article
+    <div
       class="card"
       v-show="activeTab==='language'"
       role="tabpanel"
@@ -147,9 +147,9 @@ const onTabsKeydown = async (event, idx) => {
       aria-labelledby="tab-language"
     >
       <SettingsLanguage />
-    </article>
+    </div>
 
-    <article
+    <div
       class="card"
       v-show="activeTab==='currencies'"
       role="tabpanel"
@@ -157,9 +157,9 @@ const onTabsKeydown = async (event, idx) => {
       aria-labelledby="tab-currencies"
     >
       <SettingsCurrencies />
-    </article>
+    </div>
 
-    <article
+    <div
       class="card"
       v-show="activeTab==='amount'"
       role="tabpanel"
@@ -167,9 +167,9 @@ const onTabsKeydown = async (event, idx) => {
       aria-labelledby="tab-amount"
     >
       <SettingsAmountFormat />
-    </article>
+    </div>
 
-    <article
+    <div
       class="card"
       v-show="activeTab==='presets'"
       role="tabpanel"
@@ -177,9 +177,9 @@ const onTabsKeydown = async (event, idx) => {
       aria-labelledby="tab-presets"
     >
       <SettingsThemePresets />
-    </article>
+    </div>
 
-    <article
+    <div
       class="card"
       v-show="activeTab==='theme'"
       role="tabpanel"
@@ -187,7 +187,7 @@ const onTabsKeydown = async (event, idx) => {
       aria-labelledby="tab-theme"
     >
       <SettingsThemeVars />
-    </article>
+    </div>
   </section>
 </template>
 
@@ -320,15 +320,6 @@ const onTabsKeydown = async (event, idx) => {
 }
 
 .card + .card { margin-top: .25rem; }
-
-.card-title {
-  margin: 0 0 .25rem;
-  font-size: 1.05rem;
-}
-.card-subtitle {
-  margin: 0 0 1rem;
-  color: var(--muted-text-color);
-}
 
 @media (max-width: 720px) {
   .tabs { gap: .4rem; padding: .4rem .2rem .7rem; }
