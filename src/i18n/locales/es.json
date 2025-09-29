@@ -547,6 +547,10 @@
         "account": {
           "title": "Cuenta",
           "subtitle": "Gestiona la seguridad de tu cuenta.",
+          "unified": {
+            "title": "Cuenta y Seguridad"
+          },
+          "email": "Correo electrónico",
           "changePassword": "Cambiar contraseña",
           "resetSent": "Enviamos un correo a {email} para cambiar tu contraseña",
           "resetError": "No pudimos enviar el correo de cambio de contraseña",

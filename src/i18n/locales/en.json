@@ -525,6 +525,10 @@
     "account": {
       "title": "Account",
       "subtitle": "Manage your account security.",
+      "unified": {
+        "title": "Account & Security"
+      },
+      "email": "Email",
       "changePassword": "Change password",
       "resetSent": "We sent an email to {email} to change your password",
       "resetError": "We couldn't send the password change email",

@@ -15,8 +15,7 @@ const SettingsThemePresets = defineAsyncComponent(/* webpackChunkName: "settings
 const SettingsAmountFormat = defineAsyncComponent(/* webpackChunkName: "settingsAmountFormat" */() => import('@/components/settings/SettingsAmountFormat.vue'))
 const SettingsCurrencies = defineAsyncComponent(/* webpackChunkName: "settingsCurrencies" */() => import('@/components/settings/SettingsCurrencies.vue'))
 const SettingsLanguage = defineAsyncComponent(/* webpackChunkName: "settingsLanguage" */() => import('@/components/settings/SettingsLanguage.vue'))
-const SettingsAccount = defineAsyncComponent(/* webpackChunkName: "settingsAccount" */() => import('@/components/settings/SettingsAccount.vue'))
-const SettingsAccountSecurity = defineAsyncComponent(/* webpackChunkName: "settingsAccountSecurity" */() => import('@/components/settings/SettingsAccountSecurity.vue'))
+const SettingsAccountUnified = defineAsyncComponent(/* webpackChunkName: "settingsAccountUnified" */() => import('@/components/settings/SettingsAccountUnified.vue'))
 
 const settings = useSettingsStore()
 
@@ -31,8 +30,7 @@ onMounted(() => {
 })
 
 const TABS = [
-  { id: 'account', labelKey: 'settings.accountStatus' },
-  { id: 'account-security', labelKey: 'settings.account.title' },
+  { id: 'account', labelKey: 'settings.account.unified.title' },
   { id: 'language', labelKey: 'settings.language.title' },
   { id: 'currencies', labelKey: 'settings.currencies.title' },
   { id: 'amount', labelKey: 'settings.amountFormat.title' },
@@ -94,7 +92,7 @@ const onTabsKeydown = async (event, idx) => {
         <svg class="icon" v-html="SettingsIcon" aria-hidden="true"></svg>
         <div>
           <h1>{{ t('settings.title') }}</h1>
-          <p class="subtitle">{{ t('settings.theme.subtitle') }}</p>
+          <p class="subtitle">{{ t('settings.subtitle') }}</p>
         </div>
       </div>
     </header>
@@ -120,27 +118,17 @@ const onTabsKeydown = async (event, idx) => {
     </nav>
 
     <div
-      class="card"
+      class="card-content"
       v-show="activeTab==='account'"
       role="tabpanel"
       :id="'panel-account'"
       aria-labelledby="tab-account"
     >
-      <SettingsAccount />
+      <SettingsAccountUnified />
     </div>
 
     <div
-      class="card"
-      v-show="activeTab==='account-security'"
-      role="tabpanel"
-      :id="'panel-account-security'"
-      aria-labelledby="tab-account-security"
-    >
-      <SettingsAccountSecurity />
-    </div>
-
-    <div
-      class="card"
+      class="card-content"
       v-show="activeTab==='language'"
       role="tabpanel"
       :id="'panel-language'"
@@ -150,7 +138,7 @@ const onTabsKeydown = async (event, idx) => {
     </div>
 
     <div
-      class="card"
+      class="card-content"
       v-show="activeTab==='currencies'"
       role="tabpanel"
       :id="'panel-currencies'"
@@ -160,7 +148,7 @@ const onTabsKeydown = async (event, idx) => {
     </div>
 
     <div
-      class="card"
+      class="card-content"
       v-show="activeTab==='amount'"
       role="tabpanel"
       :id="'panel-amount'"
@@ -170,7 +158,7 @@ const onTabsKeydown = async (event, idx) => {
     </div>
 
     <div
-      class="card"
+      class="card-content"
       v-show="activeTab==='presets'"
       role="tabpanel"
       :id="'panel-presets'"
@@ -180,7 +168,7 @@ const onTabsKeydown = async (event, idx) => {
     </div>
 
     <div
-      class="card"
+      class="card-content"
       v-show="activeTab==='theme'"
       role="tabpanel"
       :id="'panel-theme'"
@@ -199,130 +187,119 @@ const onTabsKeydown = async (event, idx) => {
   margin: 0 auto;
 }
 
+.settings-content {
+  padding: 0;
+}
+
 .page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .title {
   display: flex;
   align-items: center;
-  gap: .75rem;
+  gap: 1rem;
 }
 
 .title .icon {
-  width: 28px;
-  height: 28px;
+  width: 2rem;
+  height: 2rem;
   color: var(--accent-color);
 }
 
 .title h1 {
   margin: 0;
-  line-height: 1.1;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-color);
 }
 
 .subtitle {
-  margin: .25rem 0 0;
+  margin: 0;
   color: var(--muted-text-color);
+  font-size: 0.95rem;
 }
 
 .tabs {
   display: flex;
-  gap: .5rem;
-  flex-wrap: nowrap;
-  border-bottom: 1px solid var(--secondary-color);
-  padding: .5rem .25rem .75rem;
-  position: sticky;
-  top: 0;
-  background: color-mix(in oklab, var(--primary-color) 88%, transparent);
-  backdrop-filter: saturate(140%) blur(6px);
-  z-index: 2;
+  gap: 0.25rem;
+  background: var(--secondary-color);
+  padding: 0.25rem;
+  border-radius: 12px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  scroll-snap-type: x proximity;
+  -ms-overflow-style: none;
 }
-.tabs::-webkit-scrollbar { display: none; }
 
-.tabs::before,
-.tabs::after {
-  content: '';
-  position: sticky;
-  top: 0;
-  bottom: 0;
-  width: 28px;
-  pointer-events: none;
-  z-index: 3;
-}
-.tabs::before {
-  left: 0;
-  background: linear-gradient(to right, color-mix(in srgb, var(--background-color) 80%, transparent), transparent);
-}
-.tabs::after {
-  margin-left: auto;
-  right: 0;
-  background: linear-gradient(to left, color-mix(in srgb, var(--background-color) 80%, transparent), transparent);
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
-  position: relative;
-  appearance: none;
-  border: 1px solid color-mix(in srgb, var(--secondary-color) 80%, transparent);
-  background: color-mix(in srgb, var(--primary-color) 92%, var(--background-color));
-  color: var(--text-color);
-  border-radius: 999px;
-  padding: .6rem 1rem;
-  min-height: 42px;
-  font-size: .95rem;
-  line-height: 1;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--muted-text-color);
+  font-weight: 500;
+  font-size: 0.95rem;
   cursor: pointer;
-  scroll-snap-align: center;
-  transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .08s ease, border-color .15s ease;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: fit-content;
 }
 
 .tab:hover {
-  background: color-mix(in srgb, var(--accent-color) 10%, var(--primary-color));
-}
-
-.tab:active { transform: translateY(1px); }
-
-.tab:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
+  background: var(--primary-color);
+  color: var(--text-color);
 }
 
 .tab.active {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-color) 85%, var(--primary-color)), color-mix(in srgb, var(--accent-color) 70%, var(--primary-color)));
-  color: var(--white);
-  border-color: color-mix(in srgb, var(--accent-color) 60%, var(--secondary-color));
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent-color) 35%, transparent);
+  background: var(--accent-color);
+  color: var(--white, #ffffff);
+  font-weight: 600;
 }
 
-.tab.active::after {
-  content: '';
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: -8px;
-  height: 3px;
-  border-radius: 3px;
-  background: currentColor;
-  opacity: .85;
+.tab:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-accent-glow);
 }
 
-.card {
+.card-content {
+  background: var(--secondary-color);
   border-radius: 12px;
-  background: var(--primary-color);
-  border: 1px solid var(--secondary-color);
-  box-shadow: 0 4px 14px var(--shadow-elev-1, rgba(0,0,0,.25));
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
-.card + .card { margin-top: .25rem; }
+@media (max-width: 768px) {
+  .settings {
+    max-width: 100%;
+    margin: 0;
+    gap: 0.75rem;
+  }
 
-@media (max-width: 720px) {
-  .tabs { gap: .4rem; padding: .4rem .2rem .7rem; }
-  .tab { padding: .65rem .9rem; min-height: 44px; font-size: .93rem; }
+  .title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .title .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .tabs {
+    padding: 0.125rem;
+  }
+
+  .tab {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
 }
 </style>
