@@ -540,6 +540,25 @@
         "confirmWord": "DELETE",
         "typeToEnable": "Type {word} to enable the button",
         "inputPlaceholder": "Type {word}"
+      },
+      "io": {
+        "title": "Import / Export",
+        "subtitle": "Download a backup or import a JSON backup file.",
+        "export": "Export data",
+        "import": "Import data",
+        "pickFile": "Choose file",
+        "exported": "Export ready",
+        "exportError": "We couldn't export your data",
+        "fileReady": "File loaded",
+        "invalidFile": "Invalid file",
+        "imported": "Import completed",
+        "importError": "We couldn't import your data",
+        "confirmTitle": "Confirm import",
+        "confirmMessage": "The selected data will be imported. This may overwrite existing information depending on the chosen mode.",
+        "mode": {
+          "merge": "Merge",
+          "replace": "Replace all"
+        }
       }
     }
   },

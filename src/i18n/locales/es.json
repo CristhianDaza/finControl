@@ -559,6 +559,25 @@
             "confirmWord": "ELIMINAR",
             "typeToEnable": "Escribe {word} para habilitar el botón",
             "inputPlaceholder": "Escribe {word}"
+          },
+          "io": {
+            "title": "Importar / Exportar",
+            "subtitle": "Descarga una copia de seguridad o importa un archivo JSON respaldado.",
+            "export": "Exportar datos",
+            "import": "Importar datos",
+            "pickFile": "Seleccionar archivo",
+            "exported": "Exportación lista",
+            "exportError": "No pudimos exportar tus datos",
+            "fileReady": "Archivo cargado",
+            "invalidFile": "Archivo inválido",
+            "imported": "Importación completada",
+            "importError": "No pudimos importar tus datos",
+            "confirmTitle": "Confirmar importación",
+            "confirmMessage": "Se importarán los datos seleccionados. Esta acción puede sobrescribir información existente según el modo elegido.",
+            "mode": {
+              "merge": "Fusionar",
+              "replace": "Reemplazar todo"
+            }
           }
         }
       },
