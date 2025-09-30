@@ -8,6 +8,7 @@ import { auth } from '@/services/firebase.js'
 import { useDataCleanup } from '@/composables/useDataCleanup.js'
 import { useDataExport } from '@/composables/useDataExport.js'
 import { useDataImport } from '@/composables/useDataImport.js'
+import { getBackupFilename } from '@/utils/constants.js'
 
 const FCConfirmModal = defineAsyncComponent(/* webpackChunkName: "fCConfirmModal" */() => import('@/components/global/FCConfirmModal.vue'))
 
@@ -93,7 +94,7 @@ const onExport = async () => {
     const a = document.createElement('a')
     const ts = new Date().toISOString().replace(/[:.]/g, '-')
     a.href = URL.createObjectURL(blob)
-    a.download = `fincontrol-backup-${ts}.json`
+    a.download = getBackupFilename(ts)
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
