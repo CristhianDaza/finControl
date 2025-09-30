@@ -18,7 +18,10 @@
     "transfer": "Transfer",
     "month": "Month",
     "year": "Year",
-    "no-note": "No note"
+    "no-note": "No note",
+    "total": "Total",
+    "pause": "Pause",
+    "resume": "Resume"
   },
   "language": { "switcher": "Language" },
   "notification": { "dismiss": "Dismiss notification" },
@@ -296,14 +299,14 @@
   "recurring": {
     "title": "Recurring Payments",
     "add": "Add Recurring Payment",
-    "edit": "Edit template",
     "empty": "No recurring payment templates",
     "paused": "Paused",
     "active": "Active",
-    "pause": "Pause",
-    "resume": "Resume",
     "badge": "Recurring",
     "runNow": "Run now",
+    "processDue": "Process due",
+    "runNowConfirmMessage": "Run '{name}' now? An immediate transaction will be created.",
+    "runNowConfirmUpdate": "Do you want to update the next execution date based on the current run?",
     "statusPanel": {
       "title": "Status",
       "lastRun": "Last run",
@@ -438,10 +441,10 @@
     "sampleSecondary": "Secondary action",
     "theme": {
       "title": "Theme",
-      "subtitle": "Customize the main colors of the app (Changes are applied live). Change the amount format.",
+      "subtitle": "Customize the app's main colors. Changes apply live.",
       "presets": {
         "title": "Preset themes",
-        "subtitle": "Pick one of the accessible themes (light or dark). You can fine-tune colors afterwards.",
+        "subtitle": "Choose one of the accessible themes (light or dark). Then fine-tune colors if you want.",
         "hint": "Tip: press Save to keep your selection on this device and in your account.",
         "light": "Light",
         "dark": "Dark",
@@ -455,13 +458,31 @@
           "darkAmber": "Amber (dark)",
           "darkTeal": "Teal (dark)",
           "lightEmerald": "Emerald (light)",
-          "lightAmber": "Amber (light)"
+          "lightAmber": "Amber (light)",
+          "lightGithub": "GitHub (light)",
+          "darkGithub": "GitHub (dark)",
+          "lightAmethyst": "Amethyst (light)",
+          "darkAmethyst": "Amethyst (dark)",
+          "lightMint": "Mint (light)",
+          "darkMidnight": "Midnight (dark)",
+          "lightGithubSoft": "GitHub Soft (light)",
+          "lightLavender": "Lavender (light)",
+          "lightSandstone": "Sandstone (light)",
+          "darkAmethystPlus": "Amethyst+ (dark)",
+          "darkGraphite": "Graphite (dark)",
+          "darkCyber": "Cyber (dark)"
         }
       }
     },
+    "language": {
+      "title": "Language",
+      "subtitle": "Select the application language.",
+      "label": "Interface language",
+      "saved": "Language updated"
+    },
     "amountFormat": {
       "title": "Amount format",
-      "subtitle": "Choose how monetary values are shown across the app.",
+      "subtitle": "Choose how money values are displayed in the app.",
       "full": "Full (with decimals)",
       "compact": "Compact (K / M / B)"
     },
@@ -474,6 +495,9 @@
       "isDefault": "Default",
       "defaultBadge": "DEF",
       "add": "Add",
+      "search": "Search currency…",
+      "confirmDeleteTitle": "Delete currency",
+      "confirmDeleteMessage": "This action cannot be undone. Do you want to continue?",
       "notifications": {
         "created": "Currency added",
         "deleted": "Currency deleted",
@@ -490,7 +514,7 @@
     "generateCode": "Generate new code",
     "validateCode": "Validate",
     "code": {
-      "success": "Code valid. New expiration: {date}",
+      "success": "Valid code. New expiration: {date}",
       "attempts": "Attempts left: {n}",
       "blocked": "Blocked until: {date}"
     },
@@ -499,11 +523,55 @@
     "accountStatusInactive": "Inactive",
     "planInstructions": {
       "inactive": "Enter a new code to activate or extend your plan.",
-      "active": "You can enter an additional code to extend your current plan."
+      "active": "You can enter an extra code to extend your current plan."
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "Manage your account security.",
+      "unified": {
+        "title": "Account & Security"
+      },
+      "email": "Email",
+      "changePassword": "Change password",
+      "resetSent": "We sent an email to {email} to change your password",
+      "resetError": "We couldn't send the password change email",
+      "delete": {
+        "title": "Delete data",
+        "subtitle": "This will permanently delete all your transactions, accounts, debts, goals, budgets and related data.",
+        "action": "Permanently delete data",
+        "confirmTitle": "Confirm deletion",
+        "confirmMessage": "This action will delete ALL your information and cannot be undone. Do you want to continue?",
+        "confirmCta": "Yes, delete everything",
+        "success": "All your data has been deleted",
+        "error": "We couldn't delete your data",
+        "confirmWord": "DELETE",
+        "typeToEnable": "Type {word} to enable the button",
+        "inputPlaceholder": "Type {word}"
+      },
+      "io": {
+        "title": "Import / Export",
+        "subtitle": "Download a backup or import a JSON backup file.",
+        "export": "Export data",
+        "import": "Import data",
+        "pickFile": "Choose file",
+        "exported": "Export ready",
+        "exportError": "We couldn't export your data",
+        "fileReady": "File loaded",
+        "invalidFile": "Invalid file",
+        "imported": "Import completed",
+        "importError": "We couldn't import your data",
+        "confirmTitle": "Confirm import",
+        "confirmMessage": "The selected data will be imported. This may overwrite existing information depending on the chosen mode.",
+        "mode": {
+          "merge": "Merge",
+          "replace": "Replace all"
+        },
+        "preview": "Import preview"
+      }
     }
   },
   "admin": {
-    "title": "Admin Dashboard",
+    "title": "Admin Panel",
     "kpis": {
       "total": "Total users",
       "active": "Active users",
@@ -511,22 +579,22 @@
     },
     "filters": {
       "rangeType": "Range type",
-      "createdAt": "Created date",
-      "lastActiveAt": "Last active",
+      "createdAt": "Created at",
+      "lastActiveAt": "Last activity",
       "role": "Role"
     },
     "users": {
       "title": "Users",
       "email": "Email",
       "createdAt": "Created",
-      "lastActiveAt": "Last active",
+      "lastActiveAt": "Last activity",
       "planExpiresAt": "Plan expires",
       "isActive": "Active",
       "role": "Role",
       "empty": "No users"
     },
     "invites": {
-      "title": "Invite Codes",
+      "title": "Codes",
       "create": "Generate code",
       "plan": "Plan",
       "plan_monthly": "Monthly",
@@ -536,7 +604,7 @@
       "status": "Status",
       "createdAt": "Created",
       "expiresAt": "Expires",
-      "usedAt": "Used at",
+      "usedAt": "Used",
       "usedBy": "Used by",
       "actions": "Actions",
       "empty": "No codes",
@@ -547,7 +615,7 @@
       "invalidated": "Code invalidated",
       "copied": "Copied",
       "migrate": "Migrate codes",
-      "migrated": "Migrated: {created} created, {skipped} skipped",
+      "migrated": "Migration: {created} created, {skipped} skipped",
       "status_unused": "Unused",
       "status_used": "Used",
       "status_expired": "Expired"

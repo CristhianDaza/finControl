@@ -1,575 +1,643 @@
 {
-      "common": {
-        "loading": "Cargando…",
-        "empty": "Aún no tienes cuentas",
-        "retry": "Reintentar",
-        "cancel": "Cancelar",
-        "save": "Guardar",
-        "delete": "Eliminar",
-        "edit": "Editar",
-        "add": "Agregar",
-        "type": "Tipo",
-        "from": "Desde",
-        "to": "Hasta",
-        "close": "Cerrar",
-        "all": "Todos",
-        "confirm": "Confirmar",
-        "select-option": "Selecciona una opción",
-        "no-note": "Sin nota",
-        "transfer": "Transferir",
-        "month": "Mes",
-        "year": "Año"
-      },
-      "language": {
-        "switcher": "Idioma"
-      },
-      "notification": {
-        "dismiss": "Cerrar notificación"
-      },
-      "navigation": {
-        "dashboard": "Dashboard",
-        "transactions": "Transacciones",
-        "debts": "Deudas",
-        "accounts": "Cuentas",
-        "categories": "Categorías",
-        "recurring": "Pagos Recurrentes",
-        "goals": "Metas de Ahorro",
-        "budgets": "Presupuestos",
-        "settings": "Configuración",
-        "admin": "Admin"
-      },
-      "auth": {
-        "logout": "Cerrar sesión",
-        "signIn": "Iniciar sesión",
-        "signUp": "Crear cuenta",
-        "login": {
-          "title": "Iniciar sesión",
-          "description": "Accede con tu correo y contraseña.",
-          "email": "Correo electrónico",
-          "email-placeholder": "ejemplo@correo.com",
-          "password": "Contraseña",
-          "password-placeholder": "Tu contraseña",
-          "submit": "Iniciar sesión",
-          "submitting": "Ingresando…"
-        },
-        "show-password": "Mostrar contraseña",
-        "hide-password": "Ocultar contraseña",
-        "logoutConfirm": "¿Estás seguro que deseas cerrar sesión?",
-        "signup": {
-          "title": "Crear cuenta",
-          "description": "Crea tu cuenta con un código de invitación.",
-          "email": "Correo",
-          "password": "Contraseña",
-          "confirmPassword": "Confirmar contraseña",
-          "code": "Código de invitación",
-          "code-placeholder": "Tu código",
-          "submit": "Registrarse",
-          "submitting": "Creando cuenta…",
-          "toggleLogin": "¿Ya tienes cuenta? Inicia sesión",
-          "toggleSignup": "¿Nuevo? Crear cuenta",
-          "success": "Cuenta creada"
-        }
-      },
-      "access": {
-        "readOnly": "Tu cuenta está en modo solo lectura. Activa para continuar.",
-        "inactiveNotice": "Tu usuario no está activo o tu plan ha vencido. Algunas acciones están deshabilitadas.",
-        "activateNow": "Activar ahora",
-        "inactiveTitle": "Cuenta inactiva",
-        "expiredTitle": "Plan vencido"
-      },
-      "validation": {
-        "invalid-field": "Campo inválido",
-        "email-invalid": "Ingresa un correo válido",
-        "password-required": "La contraseña es requerida",
-        "required": "Campo requerido",
-        "positive_amount": "El monto debe ser mayor que cero",
-        "code-required": "El código es obligatorio"
-      },
-      "errors": {
-        "auth": {
-          "invalid-email": "El correo no es válido.",
-          "user-not-found": "Usuario no encontrado.",
-          "wrong-password": "Contraseña incorrecta.",
-          "invalid-credential": "Credenciales incorrectas.",
-          "too-many-requests": "Demasiados intentos. Intenta más tarde.",
-          "generic": "No pudimos iniciar sesión. Intenta de nuevo."
-        },
-        "generic": "Ocurrió un error",
-        "insufficient_funds": "Fondos insuficientes",
-        "signup": {
-          "password_mismatch": "Las contraseñas no coinciden"
-        },
-        "invite": {
-          "not_found": "Código no encontrado",
-          "used": "Código ya usado",
-          "expired": "Código expirado",
-          "invalid": "Código inválido",
-          "blocked": "Demasiados intentos. Intenta nuevamente después de {date}"
-        },
-        "codeInvalid": "Código inválido"
-      },
-      "currency": {
-        "default": "COP",
-        "invalid": "Moneda inválida",
-        "errors": {
-          "duplicate": "Código de moneda duplicado",
-          "invalid": "Código inválido (usa 3-5 letras)",
-          "cannotDeleteDefault": "No puedes eliminar la moneda por defecto"
-        }
-      },
-      "accounts": {
-        "title": "Cuentas",
-        "addButton": "Agregar Cuenta",
-        "editTitle": "Editar Cuenta",
-        "addTitle": "Agregar Cuenta",
-        "form": {
-          "name": "Nombre de la Cuenta",
-          "namePlaceholder": "Ej: Ahorros, Efectivo, Tarjeta",
-          "nameError": "El nombre es obligatorio y debe tener un máximo de 40 caracteres",
-          "balance": "Saldo Inicial",
-          "balanceError": "El saldo es obligatorio y debe ser un número positivo",
-          "currency": "Moneda"
-        },
-        "notifications": {
-          "created": "Cuenta creada",
-          "updated": "Cuenta actualizada",
-          "deleted": "Cuenta eliminada",
-          "deleteBlocked": "No se puede eliminar la cuenta porque tiene transacciones asociadas."
-        },
-        "confirmDelete": {
-          "title": "Eliminar cuenta",
-          "message": "No puedes eliminar una cuenta con transacciones. Puedes mover o eliminar las transacciones antes de eliminar la cuenta.",
-          "cta": "Ver transacciones"
-        }
-      },
-      "debts": {
-        "title": "Deudas",
-        "addButton": "Agregar Deuda",
-        "addTitle": "Agregar Deuda",
-        "editTitle": "Editar Deuda",
-        "form": {
-          "name": "Nombre de la deuda",
-          "namePlaceholder": "Ej: Crédito celular, Préstamo personal",
-          "nameError": "El nombre es obligatorio y debe tener un máximo de 40 caracteres",
-          "amount": "Monto inicial",
-          "amountError": "El monto es obligatorio y no puede ser negativo",
-          "dueDate": "Fecha de vencimiento",
-          "dueDateError": "Fecha inválida"
-        },
-        "card": {
-          "total": "Deuda total",
-          "remaining": "Saldo restante",
-          "status": "Estado",
-          "paid": "Pagada",
-          "active": "Activa",
-          "payments": "Pagos",
-          "emptyPayments": "Aún no hay pagos"
-        },
-        "notifications": {
-          "created": "Deuda creada",
-          "updated": "Deuda actualizada",
-          "deleted": "Deuda eliminada",
-          "deleteBlocked": "No se puede eliminar la deuda porque tiene pagos registrados."
-        },
-        "confirmDelete": {
-          "title": "Eliminar deuda",
-          "message": "No puedes eliminar una deuda con pagos. Gestiona o elimina los pagos primero.",
-          "cta": "Ver pagos"
-        }
-      },
-      "transactions": {
-        "addTitle": "Agregar Transacción",
-        "editTitle": "Editar Transacción",
-        "empty": "No hay transacciones",
-        "form": {
-          "description": "Descripción",
-          "descriptionPlaceholder": "Ej: Pago de arriendo",
-          "descriptionError": "La descripción es obligatoria y debe ser corta",
-          "amount": "Monto",
-          "amountError": "Ingresa un valor mayor a 0",
-          "type": "Tipo",
-          "income": "Ingreso",
-          "expense": "Gasto",
-          "debtPayment": "Pago de deuda",
-          "debt": "Deuda",
-          "debtError": "Selecciona una deuda válida",
-          "account": "Cuenta",
-          "accountError": "Selecciona una cuenta válida",
-          "date": "Fecha",
-          "dateError": "La fecha es obligatoria",
-          "goalSaving": "Agregar a la meta"
-        },
-        "notifications": {
-          "created": "Transacción creada",
-          "updated": "Transacción actualizada",
-          "deleted": "Transacción eliminada",
-          "balanceNegative": "La operación dejaría la cuenta con saldo negativo",
-          "accountNotFound": "Cuenta no encontrada",
-          "unauthorized": "Operación no autorizada",
-          "debtRemainingNegative": "El pago excede el saldo de la deuda",
-          "debtRequired": "Debes seleccionar una deuda",
-          "debtNotFound": "Deuda no encontrada",
-          "goalRequired": "Debes seleccionar una meta",
-          "invalidAmount": "Monto inválido",
-          "invalidType": "Tipo de transacción inválido",
-          "accountRequired": "Cuenta requerida",
-          "invalidDate": "Fecha inválida"
-        },
-        "confirmDelete": {
-          "title": "Eliminar transacción",
-          "message": "Esta acción no se puede deshacer. ¿Deseas continuar?"
-        },
-        "table": {
-          "date": "Fecha",
-          "description": "Descripción",
-          "amount": "Monto",
-          "account": "Cuenta",
-          "type": "Tipo",
-          "actions": "Acciones"
-        },
-        "filters": {
-          "save": "Guardar filtro",
-          "clear": "Limpiar",
-          "search": "Buscar por nombre",
-          "amount": "Monto mínimo"
-        },
-        "exportCsv": "Exportar CSV"
-      },
-      "dashboard": {
-        "kpis": {
-          "totalBalance": "Saldo Total",
-          "incomeMonth": "Ingresos del mes",
-          "expenseMonth": "Egresos del mes",
-          "netMonth": "Neto del mes",
-          "txCount": "Transacciones del mes"
-        },
-        "filter": {
-          "ariaLabel": "Seleccionar mes"
-        },
-        "charts": {
-          "daily": "Ingresos vs Egresos (diario)",
-          "breakdown": "Distribución por tipo",
-          "net": "Acumulado neto"
-        },
-        "list": {
-          "title": "Transacciones del mes",
-          "empty": "Sin transacciones este mes",
-          "seeMore": "Ver más"
-        },
-        "budgets": {
-          "title": "Presupuestos (mes)",
-          "empty": "Sin presupuestos",
-          "prev": "Mes anterior: {pct}%"
-        },
-        "amountFormat": {
-          "showCompact": "Ver compacto",
-          "showFull": "Ver completo",
-          "compactLabel": "Compacto",
-          "fullLabel": "Completo"
-        }
-      },
-      "categories": {
-        "addButton": "Agregar Categoría",
-        "incomeTitle": "Categorías de Ingresos",
-        "expenseTitle": "Categorías de Egresos",
-        "table": {
-          "name": "Nombre",
-          "actions": "Acciones"
-        },
-        "samples": {
-          "salary": "Sueldo",
-          "rent": "Alquiler"
-        },
-        "form": {
-          "name": "Nombre de la categoría",
-          "namePlaceholder": "Ej: Alimentación",
-          "nameError": "El nombre es obligatorio y no puede exceder los 100 caracteres.",
-          "type": "Tipo",
-          "income": "Ingreso",
-          "expense": "Egreso",
-          "typeError": "Selecciona un tipo de categoría."
-        }
-      },
-      "layout": {
-        "brand": "FinControl"
-      },
-      "transfers": {
-        "title": "Transferencias",
-        "new": "Nueva transferencia",
-        "edit": "Editar transferencia",
-        "from": "Desde",
-        "to": "Hacia",
-        "amount": "Monto",
-        "rate": "Tasa",
-        "date": "Fecha",
-        "note": "Nota",
-        "created": "Transferencia creada",
-        "updated": "Transferencia actualizada",
-        "deleted": "Transferencia eliminada",
-        "invalid_accounts": "Las cuentas deben ser distintas",
-        "insufficient_funds": "Fondos insuficientes en la cuenta origen",
-        "confirm_delete_title": "Eliminar transferencia",
-        "confirm_delete_message": "Esta acción moverá el dinero de vuelta. ¿Deseas continuar?",
-        "empty": "No hay transferencias"
-      },
-      "recurring": {
-        "title": "Pagos Recurrentes",
-        "add": "Agregar Pago recurrente",
-        "edit": "Editar plantilla",
-        "empty": "No hay plantillas de pagos recurrentes",
-        "paused": "Pausada",
-        "active": "Activa",
-        "pause": "Pausar",
-        "resume": "Reanudar",
-        "badge": "Recurrente",
-        "runNow": "Ejecutar ahora",
-        "statusPanel": {
-          "title": "Estado de ejecución",
-          "lastRun": "Última ejecución",
-          "never": "Nunca",
-          "processing": "Procesando…",
-          "processed": "Plantillas procesadas",
-          "error": "Último error"
-        },
-        "table": {
-          "name": "Nombre",
-          "next": "Próxima ejecución",
-          "amount": "Monto",
-          "account": "Cuenta",
-          "type": "Tipo",
-          "frequency": "Frecuencia",
-          "status": "Estado"
-        },
-        "form": {
-          "name": "Nombre",
-          "category": "Categoría",
-          "frequency": "Frecuencia",
-          "nextRunAt": "Fecha de pago",
-          "paused": "Pausada"
-        },
-        "frequency": {
-          "monthly": "Mensual",
-          "biweekly": "Quincenal",
-          "weekly": "Semanal",
-          "yearly": "Anual"
-        },
-        "notifications": {
-          "created": "Plantilla creada",
-          "updated": "Plantilla actualizada",
-          "deleted": "Plantilla eliminada",
-          "processed": "Se generaron {count} pago(s) recurrente(s)",
-          "partialCatchUp": "Catch-up parcial en '{name}'. Revisa límites."
-        }
-      },
-      "goals": {
-        "title": "Metas de Ahorro",
-        "add": "Agregar meta",
-        "edit": "Editar meta",
-        "empty": "No hay metas de ahorro",
-        "completed": "Completada",
-        "paused": "Pausada",
-        "active": "Activa",
-        "resume": "Reanudar",
-        "pause": "Pausar",
-        "table": {
-          "name": "Nombre",
-          "account": "Cuenta",
-          "target": "Monto objetivo",
-          "progress": "Progreso",
-          "dueDate": "Fecha límite",
-          "status": "Estado",
-          "actions": "Acciones"
-        },
-        "form": {
-          "name": "Nombre",
-          "targetAmount": "Monto objetivo",
-          "dueDate": "Fecha límite (opcional)",
-          "account": "Cuenta asociada",
-          "note": "Notas",
-          "goal": "Meta (opcional)"
-        },
-        "notifications": {
-          "created": "Meta creada",
-          "updated": "Meta actualizada",
-          "deleted": "Meta eliminada"
-        }
-      },
-      "budgets": {
-        "title": "Presupuestos",
-        "add": "Agregar presupuesto",
-        "edit": "Editar presupuesto",
-        "empty": "No hay presupuestos",
-        "table": {
-          "name": "Nombre",
-          "period": "Periodo",
-          "target": "Objetivo",
-          "spent": "Gastado",
-          "remaining": "Restante",
-          "progress": "Progreso",
-          "alerts": "Alertas",
-          "actions": "Acciones"
-        },
-        "form": {
-          "name": "Nombre",
-          "targetAmount": "Monto objetivo",
-          "currency": "Moneda",
-          "periodType": "Periodo",
-          "monthly": "Mensual",
-          "custom": "Rango personalizado",
-          "from": "Desde",
-          "to": "Hasta",
-          "categories": "Ámbito (categorías)",
-          "excludeAccounts": "Excluir cuentas",
-          "threshold": "Umbral de alerta (%)",
-          "carryover": "Carryover (trasladar sobrante/déficit)",
-          "rates": "Tasas de conversión (ej: USD=4000, EUR=4500)",
-          "noteRates": "Se usa para convertir transacciones a la moneda del presupuesto"
-        },
-        "alerts": {
-          "ok": "Dentro del objetivo",
-          "warn": "> 80% consumido",
-          "over": "≥ 100% consumido"
-        },
-        "notifications": {
-          "created": "Presupuesto creado",
-          "updated": "Presupuesto actualizado",
-          "deleted": "Presupuesto eliminado",
-          "closed": "Periodo cerrado"
-        },
-        "closePeriod": "Cerrar periodo",
-        "periodMonthly": "{year} {month}",
-        "periodCustom": "{from} a {to}",
-        "sections": {
-          "general": "General",
-          "period": "Periodo",
-          "scope": "Ámbito",
-          "exclude": "Cuentas excluidas",
-          "alerts": "Alertas y carryover",
-          "conversion": "Conversión"
-        }
-      },
-      "settings": {
-        "title": "Configuración",
-        "reset": "Resetear",
-        "preview": "Vista previa",
-        "previewDesc": "Esta tarjeta y los elementos de la UI reflejan los colores seleccionados.",
-        "samplePrimary": "Acción primaria",
-        "sampleSecondary": "Acción secundaria",
-        "theme": {
-          "title": "Tema",
-          "subtitle": "Personaliza los colores principales de la app. Los cambios se aplican en vivo.",
-          "presets": {
-            "title": "Temas predefinidos",
-            "subtitle": "Elige uno de los temas accesibles (claros u oscuros). Luego puedes ajustar colores finamente si quieres.",
-            "hint": "Tip: recuerda presionar Guardar para mantener tu selección en este dispositivo y en tu cuenta.",
-            "light": "Claros",
-            "dark": "Oscuros",
-            "names": {
-              "darkOcean": "Océano (oscuro)",
-              "darkRose": "Rosa (oscuro)",
-              "darkForest": "Bosque (oscuro)",
-              "lightOcean": "Océano (claro)",
-              "lightRose": "Rosa (claro)",
-              "lightSlate": "Pizarra (claro)",
-              "darkAmber": "Ámbar (oscuro)",
-              "darkTeal": "Verde azulado (oscuro)",
-              "lightEmerald": "Esmeralda (claro)",
-              "lightAmber": "Ámbar (claro)"
-            }
-          }
-        },
-        "amountFormat": {
-          "title": "Formato de monto",
-          "subtitle": "Elige cómo se muestran los valores monetarios en la aplicación.",
-          "full": "Completo (con decimales)",
-          "compact": "Compacto (K / M / B)"
-        },
-        "currencies": {
-          "title": "Monedas",
-          "subtitle": "Gestiona las monedas disponibles y establece una por defecto.",
-          "code": "Código",
-          "symbol": "Símbolo",
-          "name": "Nombre",
-          "isDefault": "Por defecto",
-          "defaultBadge": "DEF",
-          "add": "Agregar",
-          "notifications": {
-            "created": "Moneda agregada",
-            "deleted": "Moneda eliminada",
-            "defaultChanged": "Moneda por defecto actualizada"
-          }
-        },
-        "notifications": {
-          "saved": "Tema guardado",
-          "reset": "Tema reseteado"
-        },
-        "accountStatus": "Estado de la cuenta",
-        "expiresAt": "Vence",
-        "enterCode": "Ingresar nuevo código",
-        "generateCode": "Generar nuevo código",
-        "validateCode": "Validar",
-        "code": {
-          "success": "Código válido. Nuevo vencimiento: {date}",
-          "attempts": "Intentos restantes: {n}",
-          "blocked": "Bloqueado hasta: {date}"
-        },
-        "extendSuccess": "Plan extendido",
-        "accountStatusActive": "Activa",
-        "accountStatusInactive": "Inactiva",
-        "planInstructions": {
-          "inactive": "Ingresa un nuevo código para activar o extender tu plan.",
-          "active": "Puedes ingresar un código adicional para extender tu plan actual."
-        }
-      },
-      "admin": {
-        "title": "Panel Admin",
-        "kpis": {
-          "total": "Usuarios totales",
-          "active": "Usuarios activos",
-          "inactive": "Usuarios inactivos"
-        },
-        "filters": {
-          "rangeType": "Tipo de rango",
-          "createdAt": "Fecha de creación",
-          "lastActiveAt": "Última actividad",
-          "role": "Rol"
-        },
-        "users": {
-          "title": "Usuarios",
-          "email": "Correo",
-          "createdAt": "Creado",
-          "lastActiveAt": "Última actividad",
-          "planExpiresAt": "Vence plan",
-          "isActive": "Activo",
-          "role": "Rol",
-          "empty": "Sin usuarios"
-        },
-        "invites": {
-          "title": "Códigos",
-          "create": "Generar código",
-          "plan": "Plan",
-          "plan_monthly": "Mensual",
-          "plan_semiannual": "Semestral",
-          "plan_annual": "Anual",
-          "code": "Código",
-          "status": "Estado",
-          "createdAt": "Creado",
-          "expiresAt": "Expira",
-          "usedAt": "Usado",
-          "usedBy": "Usado por",
-          "actions": "Acciones",
-          "empty": "Sin códigos",
-          "copy": "Copiar",
-          "invalidate": "Invalidar",
-          "confirmInvalidate": "¿Invalidar código?",
-          "generated": "Código generado",
-          "invalidated": "Código invalidado",
-          "copied": "Copiado",
-          "migrate": "Migrar códigos",
-          "migrated": "Migración: {created} creados, {skipped} omitidos",
-          "status_unused": "Sin usar",
-          "status_used": "Usado",
-          "status_expired": "Expirado"
+  "common": {
+    "loading": "Cargando…",
+    "empty": "Aún no tienes cuentas",
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "type": "Tipo",
+    "from": "Desde",
+    "to": "Hasta",
+    "close": "Cerrar",
+    "all": "Todos",
+    "confirm": "Confirmar",
+    "select-option": "Selecciona una opción",
+    "no-note": "Sin nota",
+    "transfer": "Transferir",
+    "month": "Mes",
+    "year": "Año",
+    "total": "Total",
+    "pause": "Pausar",
+    "resume": "Reanudar"
+  },
+  "language": {
+    "switcher": "Idioma"
+  },
+  "notification": {
+    "dismiss": "Cerrar notificación"
+  },
+  "navigation": {
+    "dashboard": "Tablero",
+    "transactions": "Transacciones",
+    "debts": "Deudas",
+    "accounts": "Cuentas",
+    "categories": "Categorías",
+    "recurring": "Pagos Recurrentes",
+    "goals": "Metas de Ahorro",
+    "budgets": "Presupuestos",
+    "settings": "Configuración",
+    "admin": "Administrador"
+  },
+  "auth": {
+    "logout": "Cerrar sesión",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Accede con tu correo y contraseña.",
+      "email": "Correo electrónico",
+      "email-placeholder": "ejemplo@correo.com",
+      "password": "Contraseña",
+      "password-placeholder": "Tu contraseña",
+      "submit": "Iniciar sesión",
+      "submitting": "Ingresando…"
+    },
+    "show-password": "Mostrar contraseña",
+    "hide-password": "Ocultar contraseña",
+    "logoutConfirm": "¿Estás seguro que deseas cerrar sesión?",
+    "signup": {
+      "title": "Crear cuenta",
+      "description": "Crea tu cuenta con un código de invitación.",
+      "email": "Correo",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "code": "Código de invitación",
+      "code-placeholder": "Tu código",
+      "submit": "Registrarse",
+      "submitting": "Creando cuenta…",
+      "toggleLogin": "¿Ya tienes cuenta? Inicia sesión",
+      "toggleSignup": "¿Nuevo? Crear cuenta",
+      "success": "Cuenta creada"
+    }
+  },
+  "access": {
+    "readOnly": "Tu cuenta está en modo solo lectura. Activa para continuar.",
+    "inactiveNotice": "Tu usuario no está activo o tu plan ha vencido. Algunas acciones están deshabilitadas.",
+    "activateNow": "Activar ahora",
+    "inactiveTitle": "Cuenta inactiva",
+    "expiredTitle": "Plan vencido"
+  },
+  "validation": {
+    "invalid-field": "Campo inválido",
+    "email-invalid": "Ingresa un correo válido",
+    "password-required": "La contraseña es requerida",
+    "required": "Campo requerido",
+    "positive_amount": "El monto debe ser mayor que cero",
+    "code-required": "El código es obligatorio"
+  },
+  "errors": {
+    "auth": {
+      "invalid-email": "El correo no es válido.",
+      "user-not-found": "Usuario no encontrado.",
+      "wrong-password": "Contraseña incorrecta.",
+      "invalid-credential": "Credenciales incorrectas.",
+      "too-many-requests": "Demasiados intentos. Intenta más tarde.",
+      "generic": "No pudimos iniciar sesión. Intenta de nuevo."
+    },
+    "generic": "Ocurrió un error",
+    "insufficient_funds": "Fondos insuficientes",
+    "signup": {
+      "password_mismatch": "Las contraseñas no coinciden"
+    },
+    "invite": {
+      "not_found": "Código no encontrado",
+      "used": "Código ya usado",
+      "expired": "Código expirado",
+      "invalid": "Código inválido",
+      "blocked": "Demasiados intentos. Intenta nuevamente después de {date}"
+    },
+    "codeInvalid": "Código inválido"
+  },
+  "currency": {
+    "default": "COP",
+    "invalid": "Moneda inválida",
+    "errors": {
+      "duplicate": "Código de moneda duplicado",
+      "invalid": "Código inválido (usa 3-5 letras)",
+      "cannotDeleteDefault": "No puedes eliminar la moneda por defecto"
+    }
+  },
+  "accounts": {
+    "title": "Cuentas",
+    "addButton": "Agregar Cuenta",
+    "editTitle": "Editar Cuenta",
+    "addTitle": "Agregar Cuenta",
+    "form": {
+      "name": "Nombre de la Cuenta",
+      "namePlaceholder": "Ej: Ahorros, Efectivo, Tarjeta",
+      "nameError": "El nombre es obligatorio y debe tener un máximo de 40 caracteres",
+      "balance": "Saldo Inicial",
+      "balanceError": "El saldo es obligatorio y debe ser un número positivo",
+      "currency": "Moneda"
+    },
+    "notifications": {
+      "created": "Cuenta creada",
+      "updated": "Cuenta actualizada",
+      "deleted": "Cuenta eliminada",
+      "deleteBlocked": "No se puede eliminar la cuenta porque tiene transacciones asociadas."
+    },
+    "confirmDelete": {
+      "title": "Eliminar cuenta",
+      "message": "No puedes eliminar una cuenta con transacciones. Puedes mover o eliminar las transacciones antes de eliminar la cuenta.",
+      "cta": "Ver transacciones"
+    }
+  },
+  "debts": {
+    "title": "Deudas",
+    "addButton": "Agregar Deuda",
+    "addTitle": "Agregar Deuda",
+    "editTitle": "Editar Deuda",
+    "form": {
+      "name": "Nombre de la deuda",
+      "namePlaceholder": "Ej: Crédito celular, Préstamo personal",
+      "nameError": "El nombre es obligatorio y debe tener un máximo de 40 caracteres",
+      "amount": "Monto inicial",
+      "amountError": "El monto es obligatorio y no puede ser negativo",
+      "dueDate": "Fecha de vencimiento",
+      "dueDateError": "Fecha inválida"
+    },
+    "card": {
+      "total": "Deuda total",
+      "remaining": "Saldo restante",
+      "status": "Estado",
+      "paid": "Pagada",
+      "active": "Activa",
+      "payments": "Pagos",
+      "emptyPayments": "Aún no hay pagos"
+    },
+    "notifications": {
+      "created": "Deuda creada",
+      "updated": "Deuda actualizada",
+      "deleted": "Deuda eliminada",
+      "deleteBlocked": "No se puede eliminar la deuda porque tiene pagos registrados."
+    },
+    "confirmDelete": {
+      "title": "Eliminar deuda",
+      "message": "No puedes eliminar una deuda con pagos. Gestiona o elimina los pagos primero.",
+      "cta": "Ver pagos"
+    }
+  },
+  "transactions": {
+    "addTitle": "Agregar Transacción",
+    "editTitle": "Editar Transacción",
+    "empty": "No hay transacciones",
+    "form": {
+      "description": "Descripción",
+      "descriptionPlaceholder": "Ej: Pago de arriendo",
+      "descriptionError": "La descripción es obligatoria y debe ser corta",
+      "amount": "Monto",
+      "amountError": "Ingresa un valor mayor a 0",
+      "type": "Tipo",
+      "income": "Ingreso",
+      "expense": "Gasto",
+      "debtPayment": "Pago de deuda",
+      "debt": "Deuda",
+      "debtError": "Selecciona una deuda válida",
+      "account": "Cuenta",
+      "accountError": "Selecciona una cuenta válida",
+      "date": "Fecha",
+      "dateError": "La fecha es obligatoria",
+      "goalSaving": "Agregar a la meta"
+    },
+    "notifications": {
+      "created": "Transacción creada",
+      "updated": "Transacción actualizada",
+      "deleted": "Transacción eliminada",
+      "balanceNegative": "La operación dejaría la cuenta con saldo negativo",
+      "accountNotFound": "Cuenta no encontrada",
+      "unauthorized": "Operación no autorizada",
+      "debtRemainingNegative": "El pago excede el saldo de la deuda",
+      "debtRequired": "Debes seleccionar una deuda",
+      "debtNotFound": "Deuda no encontrada",
+      "goalRequired": "Debes seleccionar una meta",
+      "invalidAmount": "Monto inválido",
+      "invalidType": "Tipo de transacción inválido",
+      "accountRequired": "Cuenta requerida",
+      "invalidDate": "Fecha inválida"
+    },
+    "confirmDelete": {
+      "title": "Eliminar transacción",
+      "message": "Esta acción no se puede deshacer. ¿Deseas continuar?"
+    },
+    "table": {
+      "date": "Fecha",
+      "description": "Descripción",
+      "amount": "Monto",
+      "account": "Cuenta",
+      "type": "Tipo",
+      "actions": "Acciones"
+    },
+    "filters": {
+      "save": "Guardar filtro",
+      "clear": "Limpiar",
+      "search": "Buscar por nombre",
+      "amount": "Monto mínimo"
+    },
+    "exportCsv": "Exportar CSV"
+  },
+  "dashboard": {
+    "kpis": {
+      "totalBalance": "Saldo Total",
+      "incomeMonth": "Ingresos del mes",
+      "expenseMonth": "Egresos del mes",
+      "netMonth": "Neto del mes",
+      "txCount": "Transacciones del mes"
+    },
+    "filter": {
+      "ariaLabel": "Seleccionar mes"
+    },
+    "charts": {
+      "daily": "Ingresos vs Egresos (diario)",
+      "breakdown": "Distribución por tipo",
+      "net": "Acumulado neto"
+    },
+    "list": {
+      "title": "Transacciones del mes",
+      "empty": "Sin transacciones este mes",
+      "seeMore": "Ver más"
+    },
+    "budgets": {
+      "title": "Presupuestos (mes)",
+      "empty": "Sin presupuestos",
+      "prev": "Mes anterior: {pct}%"
+    },
+    "amountFormat": {
+      "showCompact": "Ver compacto",
+      "showFull": "Ver completo",
+      "compactLabel": "Compacto",
+      "fullLabel": "Completo"
+    }
+  },
+  "categories": {
+    "addButton": "Agregar Categoría",
+    "incomeTitle": "Categorías de Ingresos",
+    "expenseTitle": "Categorías de Egresos",
+    "table": {
+      "name": "Nombre",
+      "actions": "Acciones"
+    },
+    "samples": {
+      "salary": "Sueldo",
+      "rent": "Alquiler"
+    },
+    "form": {
+      "name": "Nombre de la categoría",
+      "namePlaceholder": "Ej: Alimentación",
+      "nameError": "El nombre es obligatorio y no puede exceder los 100 caracteres.",
+      "type": "Tipo",
+      "income": "Ingreso",
+      "expense": "Egreso",
+      "typeError": "Selecciona un tipo de categoría."
+    }
+  },
+  "layout": {
+    "brand": "FinControl"
+  },
+  "transfers": {
+    "title": "Transferencias",
+    "new": "Nueva transferencia",
+    "edit": "Editar transferencia",
+    "from": "Desde",
+    "to": "Hacia",
+    "amount": "Monto",
+    "rate": "Tasa",
+    "date": "Fecha",
+    "note": "Nota",
+    "created": "Transferencia creada",
+    "updated": "Transferencia actualizada",
+    "deleted": "Transferencia eliminada",
+    "invalid_accounts": "Las cuentas deben ser distintas",
+    "insufficient_funds": "Fondos insuficientes en la cuenta origen",
+    "confirm_delete_title": "Eliminar transferencia",
+    "confirm_delete_message": "Esta acción moverá el dinero de vuelta. ¿Deseas continuar?",
+    "empty": "No hay transferencias"
+  },
+  "recurring": {
+    "title": "Pagos Recurrentes",
+    "add": "Agregar Pago recurrente",
+    "empty": "No hay plantillas de pagos recurrentes",
+    "paused": "Pausada",
+    "active": "Activa",
+    "badge": "Recurrente",
+    "runNow": "Ejecutar ahora",
+    "processDue": "Procesar vencidos",
+    "runNowConfirmMessage": "¿Ejecutar ahora '{name}'? Se creará una transacción inmediata.",
+    "runNowConfirmUpdate": "¿Desea actualizar la próxima fecha de ejecución según la fecha actual?",
+    "statusPanel": {
+      "title": "Estado de ejecución",
+      "lastRun": "Última ejecución",
+      "never": "Nunca",
+      "processing": "Procesando…",
+      "processed": "Plantillas procesadas",
+      "error": "Último error"
+    },
+    "table": {
+      "name": "Nombre",
+      "next": "Próxima ejecución",
+      "amount": "Monto",
+      "account": "Cuenta",
+      "type": "Tipo",
+      "frequency": "Frecuencia",
+      "status": "Estado"
+    },
+    "form": {
+      "name": "Nombre",
+      "category": "Categoría",
+      "frequency": "Frecuencia",
+      "nextRunAt": "Fecha de pago",
+      "paused": "Pausada"
+    },
+    "frequency": {
+      "monthly": "Mensual",
+      "biweekly": "Quincenal",
+      "weekly": "Semanal",
+      "yearly": "Anual"
+    },
+    "notifications": {
+      "created": "Plantilla creada",
+      "updated": "Plantilla actualizada",
+      "deleted": "Plantilla eliminada",
+      "processed": "Se generaron {count} pago(s) recurrente(s)",
+      "partialCatchUp": "Catch-up parcial en '{name}'. Revisa límites."
+    }
+  },
+  "goals": {
+    "title": "Metas de Ahorro",
+    "add": "Agregar meta",
+    "edit": "Editar meta",
+    "empty": "No hay metas de ahorro",
+    "completed": "Completada",
+    "paused": "Pausada",
+    "active": "Activa",
+    "resume": "Reanudar",
+    "pause": "Pausar",
+    "table": {
+      "name": "Nombre",
+      "account": "Cuenta",
+      "target": "Monto objetivo",
+      "progress": "Progreso",
+      "dueDate": "Fecha límite",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "form": {
+      "name": "Nombre",
+      "targetAmount": "Monto objetivo",
+      "dueDate": "Fecha límite (opcional)",
+      "account": "Cuenta asociada",
+      "note": "Notas",
+      "goal": "Meta (opcional)"
+    },
+    "notifications": {
+      "created": "Meta creada",
+      "updated": "Meta actualizada",
+      "deleted": "Meta eliminada"
+    }
+  },
+  "budgets": {
+    "title": "Presupuestos",
+    "add": "Agregar presupuesto",
+    "edit": "Editar presupuesto",
+    "empty": "No hay presupuestos",
+    "table": {
+      "name": "Nombre",
+      "period": "Periodo",
+      "target": "Objetivo",
+      "spent": "Gastado",
+      "remaining": "Restante",
+      "progress": "Progreso",
+      "alerts": "Alertas",
+      "actions": "Acciones"
+    },
+    "form": {
+      "name": "Nombre",
+      "targetAmount": "Monto objetivo",
+      "currency": "Moneda",
+      "periodType": "Periodo",
+      "monthly": "Mensual",
+      "custom": "Rango personalizado",
+      "from": "Desde",
+      "to": "Hasta",
+      "categories": "Ámbito (categorías)",
+      "excludeAccounts": "Excluir cuentas",
+      "threshold": "Umbral de alerta (%)",
+      "carryover": "Carryover (trasladar sobrante/déficit)",
+      "rates": "Tasas de conversión (ej: USD=4000, EUR=4500)",
+      "noteRates": "Se usa para convertir transacciones a la moneda del presupuesto"
+    },
+    "alerts": {
+      "ok": "Dentro del objetivo",
+      "warn": "> 80% consumido",
+      "over": "≥ 100% consumido"
+    },
+    "notifications": {
+      "created": "Presupuesto creado",
+      "updated": "Presupuesto actualizado",
+      "deleted": "Presupuesto eliminado",
+      "closed": "Periodo cerrado"
+    },
+    "closePeriod": "Cerrar periodo",
+    "periodMonthly": "{year} {month}",
+    "periodCustom": "{from} a {to}",
+    "sections": {
+      "general": "General",
+      "period": "Periodo",
+      "scope": "Ámbito",
+      "exclude": "Cuentas excluidas",
+      "alerts": "Alertas y carryover",
+      "conversion": "Conversión"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "reset": "Resetear",
+    "preview": "Vista previa",
+    "previewDesc": "Esta tarjeta y los elementos de la UI reflejan los colores seleccionados.",
+    "samplePrimary": "Acción primaria",
+    "sampleSecondary": "Acción secundaria",
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Personaliza los colores principales de la app. Los cambios se aplican en vivo.",
+      "presets": {
+        "title": "Temas predefinidos",
+        "subtitle": "Elige uno de los temas accesibles (claros u oscuros). Luego puedes ajustar colores finamente si quieres.",
+        "hint": "Tip: recuerda presionar Guardar para mantener tu selección en este dispositivo y en tu cuenta.",
+        "light": "Claros",
+        "dark": "Oscuros",
+        "names": {
+          "darkOcean": "Océano (oscuro)",
+          "darkRose": "Rosa (oscuro)",
+          "darkForest": "Bosque (oscuro)",
+          "lightOcean": "Océano (claro)",
+          "lightRose": "Rosa (claro)",
+          "lightSlate": "Pizarra (claro)",
+          "darkAmber": "Ámbar (oscuro)",
+          "darkTeal": "Verde azulado (oscuro)",
+          "lightEmerald": "Esmeralda (claro)",
+          "lightAmber": "Ámbar (claro)",
+          "lightGithub": "GitHub (claro)",
+          "darkGithub": "GitHub (oscuro)",
+          "lightAmethyst": "Amatista (claro)",
+          "darkAmethyst": "Amatista (oscuro)",
+          "lightMint": "Menta (claro)",
+          "darkMidnight": "Medianoche (oscuro)",
+          "lightGithubSoft": "GitHub suave (claro)",
+          "lightLavender": "Lavanda (claro)",
+          "lightSandstone": "Arenisca (claro)",
+          "darkAmethystPlus": "Amatista+ (oscuro)",
+          "darkGraphite": "Grafito (oscuro)",
+          "darkCyber": "Ciber (oscuro)"
         }
       }
+    },
+    "language": {
+      "title": "Idioma",
+      "subtitle": "Selecciona el idioma de la aplicación.",
+      "label": "Idioma de la interfaz",
+      "saved": "Idioma actualizado"
+    },
+    "amountFormat": {
+      "title": "Formato de monto",
+      "subtitle": "Elige cómo se muestran los valores monetarios en la aplicación.",
+      "full": "Completo (con decimales)",
+      "compact": "Compacto (K / M / B)"
+    },
+    "currencies": {
+      "title": "Monedas",
+      "subtitle": "Gestiona las monedas disponibles y establece una por defecto.",
+      "code": "Código",
+      "symbol": "Símbolo",
+      "name": "Nombre",
+      "isDefault": "Por defecto",
+      "defaultBadge": "DEF",
+      "add": "Agregar",
+      "search": "Buscar moneda…",
+      "confirmDeleteTitle": "Eliminar moneda",
+      "confirmDeleteMessage": "Esta acción no se puede deshacer. ¿Deseas continuar?",
+      "notifications": {
+        "created": "Moneda agregada",
+        "deleted": "Moneda eliminada",
+        "defaultChanged": "Moneda por defecto actualizada"
+      }
+    },
+    "notifications": {
+      "saved": "Tema guardado",
+      "reset": "Tema reseteado"
+    },
+    "accountStatus": "Estado de la cuenta",
+    "expiresAt": "Vence",
+    "enterCode": "Ingresar nuevo código",
+    "generateCode": "Generar nuevo código",
+    "validateCode": "Validar",
+    "code": {
+      "success": "Código válido. Nuevo vencimiento: {date}",
+      "attempts": "Intentos restantes: {n}",
+      "blocked": "Bloqueado hasta: {date}"
+    },
+    "extendSuccess": "Plan extendido",
+    "accountStatusActive": "Activa",
+    "accountStatusInactive": "Inactiva",
+    "planInstructions": {
+      "inactive": "Ingresa un nuevo código para activar o extender tu plan.",
+      "active": "Puedes ingresar un código adicional para extender tu plan actual."
+    },
+    "account": {
+      "title": "Cuenta",
+      "subtitle": "Gestiona la seguridad de tu cuenta.",
+      "unified": {
+        "title": "Cuenta y Seguridad"
+      },
+      "email": "Correo electrónico",
+      "changePassword": "Cambiar contraseña",
+      "resetSent": "Enviamos un correo a {email} para cambiar tu contraseña",
+      "resetError": "No pudimos enviar el correo de cambio de contraseña",
+      "delete": {
+        "title": "Eliminar datos",
+        "subtitle": "Esto eliminará permanentemente todas tus transacciones, cuentas, deudas, metas, presupuestos y datos relacionados.",
+        "action": "Eliminar permanentemente los datos",
+        "confirmTitle": "Confirmar eliminación",
+        "confirmMessage": "Esta acción eliminará TODA tu información y no se puede deshacer. ¿Deseas continuar?",
+        "confirmCta": "Sí, eliminar todo",
+        "success": "Se eliminaron todos tus datos",
+        "error": "No pudimos eliminar tus datos",
+        "confirmWord": "ELIMINAR",
+        "typeToEnable": "Escribe {word} para habilitar el botón",
+        "inputPlaceholder": "Escribe {word}"
+      },
+      "io": {
+        "title": "Importar / Exportar",
+        "subtitle": "Descarga una copia de seguridad o importa un archivo JSON respaldado.",
+        "export": "Exportar datos",
+        "import": "Importar datos",
+        "pickFile": "Seleccionar archivo",
+        "exported": "Exportación lista",
+        "exportError": "No pudimos exportar tus datos",
+        "fileReady": "Archivo cargado",
+        "invalidFile": "Archivo inválido",
+        "imported": "Importación completada",
+        "importError": "No pudimos importar tus datos",
+        "confirmTitle": "Confirmar importación",
+        "confirmMessage": "Se importarán los datos seleccionados. Esta acción puede sobrescribir información existente según el modo elegido.",
+        "mode": {
+          "merge": "Fusionar",
+          "replace": "Reemplazar todo"
+        },
+        "preview": "Vista previa de importación"
+      }
     }
+  },
+  "admin": {
+    "title": "Panel Administrador",
+    "kpis": {
+      "total": "Usuarios totales",
+      "active": "Usuarios activos",
+      "inactive": "Usuarios inactivos"
+    },
+    "filters": {
+      "rangeType": "Tipo de rango",
+      "createdAt": "Fecha de creación",
+      "lastActiveAt": "Última actividad",
+      "role": "Rol"
+    },
+    "users": {
+      "title": "Usuarios",
+      "email": "Correo",
+      "createdAt": "Creado",
+      "lastActiveAt": "Última actividad",
+      "planExpiresAt": "Vence plan",
+      "isActive": "Activo",
+      "role": "Rol",
+      "empty": "Sin usuarios"
+    },
+    "invites": {
+      "title": "Códigos",
+      "create": "Generar código",
+      "plan": "Plan",
+      "plan_monthly": "Mensual",
+      "plan_semiannual": "Semestral",
+      "plan_annual": "Anual",
+      "code": "Código",
+      "status": "Estado",
+      "createdAt": "Creado",
+      "expiresAt": "Expira",
+      "usedAt": "Usado",
+      "usedBy": "Usado por",
+      "actions": "Acciones",
+      "empty": "Sin códigos",
+      "copy": "Copiar",
+      "invalidate": "Invalidar",
+      "confirmInvalidate": "¿Invalidar código?",
+      "generated": "Código generado",
+      "invalidated": "Código invalidado",
+      "copied": "Copiado",
+      "migrate": "Migrar códigos",
+      "migrated": "Migración: {created} creados, {skipped} omitidos",
+      "status_unused": "Sin usar",
+      "status_used": "Usado",
+      "status_expired": "Expirado"
+    }
+  }
+}

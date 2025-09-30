@@ -72,18 +72,43 @@ body {
 
 .button {
   background-color: var(--accent-color);
-  color: var(--background-color);
-  border: none;
+  color: var(--white);
+  border: 1px solid var(--accent-color);
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 6px var(--shadow-accent);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color), black 20%);
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent-color), black 10%), transparent);
+  transition: left 0.6s ease;
 }
 
 .button:hover {
-  background-color: color-mix(in srgb, var(--accent-color) 85%, var(--black));
+  background-color: color-mix(in srgb, var(--accent-color), black 30%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(63, 169, 245, 0.4);
+}
+
+.button:hover::before {
+  left: 100%;
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(63, 169, 245, 0.3);
 }
 
 input[type="text"],
@@ -187,52 +212,148 @@ input[type="date"]:focus {
 
 .button-delete {
   background-color: var(--error-color);
-  color: var(--text-color);
+  color: var(--white);
+  border: 1px solid var(--error-color);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.button-delete::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 }
 
 .button-delete:hover {
-  background-color: color-mix(in srgb, var(--error-color) 85%, var(--black));
+  background-color: var(--hover-error-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
 }
 
 .button-pause {
   background-color: var(--hover-prrimary-color);
-  color: var(--text-color);
+  color: var(--white);
+  border: 1px solid var(--hover-prrimary-color);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+}
+
+.button-pause::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 }
 
 .button-pause:hover {
-  background-color: color-mix(in srgb, var(--hover-prrimary-color) 85%, var(--black));
+  background-color: color-mix(in srgb, var(--hover-prrimary-color), black 30%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
 }
 
 .button-edit {
   background-color: var(--info-color);
-  color: var(--text-color);
+  color: var(--white);
+  border: 1px solid var(--info-color);
+  box-shadow: 0 4px 12px rgba(17, 86, 126, 0.3);
+}
+
+.button-edit::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 }
 
 .button-edit:hover {
-  background-color: color-mix(in srgb, var(--info-color) 85%, var(--black));
+  background-color: var(--hover-info-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(17, 86, 126, 0.4);
 }
 
 .button-secondary {
   background-color: var(--secondary-color);
   color: var(--text-color);
-  box-shadow: 0 2px 6px var(--shadow-elev-1);
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color), black 30%);
+}
+
+.button-secondary::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
 .button-secondary:hover {
-  background-color: color-mix(in srgb, var(--secondary-color) 85%, var(--text-color));
+  background-color: var(--hover-secondary-color);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--hover-secondary-color), black 30%);
+}
+
+.button-run {
+  background-color: var(--success-color);
+  color: var(--white);
+  border: 1px solid var(--success-color);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.button-run::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.button-run:hover {
+  background-color: var(--hover-success-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
 }
 
 .icon-delete,
 .icon-edit,
-.icon-pause {
+.icon-pause,
+.icon-toggle,
+.icon-run {
   width: 20px;
   height: 20px;
 }
 
+.button[disabled],
+.button[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--muted-text-color);
+  color: var(--background-color);
+  border-color: var(--muted-text-color);
+  box-shadow: none;
+  transform: none;
+}
+
+.button[disabled]:hover,
+.button[aria-disabled="true"]:hover {
+  background-color: var(--muted-text-color);
+  transform: none;
+  box-shadow: none;
+}
+
+.button[disabled]::before,
+.button[aria-disabled="true"]::before {
+  display: none;
+}
+
 button.button.button-edit,
 button.button.button-delete,
-button.button.button-pause {
-  padding: 0.5rem;
+button.button.button-pause,
+button.button.button-run {
+  padding: 0.6rem;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+button.button.button-edit svg,
+button.button.button-delete svg,
+button.button.button-pause svg,
+button.button.button-run svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.button.button-edit:hover svg,
+button.button.button-delete:hover svg,
+button.button.button-pause:hover svg,
+button.button.button-run:hover svg {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .fade-enter-active,
@@ -257,12 +378,6 @@ video {
   max-width: 100%;
   height: auto;
   display: block;
-}
-
-.button[disabled],
-.button[aria-disabled="true"] {
-  opacity: .55;
-  cursor: not-allowed;
 }
 
 @media (max-width: 720px) {

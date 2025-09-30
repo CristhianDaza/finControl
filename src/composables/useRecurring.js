@@ -11,7 +11,8 @@ import {
   getDocs,
   setDoc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  getDoc
 } from 'firebase/firestore'
 import { useTransactions } from '@/composables/useTransactions.js'
 import { validateTransactionPayload } from '@/utils/validateTransactionPayload.js'
@@ -68,6 +69,21 @@ const nextFrom = (frequency, currentIso) => {
       return addYears(currentIso, 1)
     default:
       return addMonths(currentIso, 1)
+  }
+}
+
+const manualNextFrom = (frequency, baseIso) => {
+  switch (frequency) {
+    case 'weekly':
+      return addDays(baseIso, 7)
+    case 'biweekly':
+      return addDays(baseIso, 15)
+    case 'monthly':
+      return addMonths(baseIso, 1)
+    case 'yearly':
+      return addYears(baseIso, 1)
+    default:
+      return addMonths(baseIso, 1)
   }
 }
 
@@ -330,12 +346,62 @@ export const useRecurring = () => {
     return { processed }
   }
 
+  const runTemplateNow = async (id, opts = {}) => {
+    if (gate()) return { processed: 0 }
+    const { tplCol } = getUserPaths()
+    const ref = doc(tplCol, id)
+    const snap = await getDoc(ref)
+    if (!snap.exists()) throw new Error('TemplateNotFound')
+    const tpl = { id: snap.id, ...snap.data() }
+    if (!tpl.accountId) throw new Error('AccountRequired')
+    if (!(Number(tpl.amount) > 0)) throw new Error('InvalidAmount')
+    if (tpl.type === 'debtPayment' && !tpl.debtId) throw new Error('DebtRequired')
+
+    const todayIso = toISO(new Date())
+    const validation = validateTransactionPayload({
+      type: tpl.type,
+      amount: tpl.amount,
+      accountId: tpl.accountId,
+      date: todayIso
+    })
+    if (!validation.valid) throw new Error('InvalidPayload')
+
+    const { createTransaction } = useTransactions()
+    const txId = await createTransaction({
+      type: tpl.type || 'expense',
+      amount: tpl.amount,
+      accountId: tpl.accountId,
+      categoryId: tpl.categoryId || tpl.category || '',
+      debtId: tpl.debtId || undefined,
+      date: todayIso,
+      note: tpl.note || tpl.name || '',
+      meta: {
+        isRecurring: true,
+        recurringTemplateId: tpl.id,
+        periodKey: todayIso,
+        manualRun: true
+      }
+    })
+
+    const base = opts.updateFromNow ? todayIso : (tpl.nextRunAt || todayIso)
+    const next = manualNextFrom(tpl.frequency || 'monthly', base)
+
+    await updateTemplate(id, {
+      lastRunAt: todayIso,
+      nextRunAt: next
+    })
+
+    return { processed: 1, txId, nextRunAt: next }
+  }
+
   return {
     subscribeTemplates,
     fetchDueTemplates,
     createTemplate,
     updateTemplate,
     deleteTemplate,
-    processDueOnce
+    processDueOnce,
+    runTemplateNow
   }
 }
+

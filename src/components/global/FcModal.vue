@@ -45,13 +45,13 @@ const accept = () => {
           </div>
           <footer class="modal-footer">
             <button
-              class="btn cancel"
+              class="button button-secondary"
               @click="cancel"
             >
               {{ t('common.cancel') }}
             </button>
             <button
-              class="btn accept"
+              class="button"
               :disabled="acceptDisabled"
               :aria-disabled="acceptDisabled"
               @click="accept"
@@ -123,40 +123,8 @@ const accept = () => {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
-  padding-top: 0.5rem;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
   flex: 0 0 auto;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.cancel {
-  background-color: var(--secondary-color);
-  color: var(--text-color);
-}
-
-.cancel:hover {
-  background-color: var(--hover-secondary-color);
-}
-
-.accept {
-  background-color: var(--accent-color);
-  color: var(--background-color);
-}
-
-.accept:hover {
-  background-color: var(--hover-accent-color);
-}
-
-.btn[disabled], .btn[aria-disabled="true"] {
-  opacity: .55;
-  cursor: not-allowed;
 }
 </style>

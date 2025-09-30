@@ -48,6 +48,7 @@ const onKey = e => {
       <div role="dialog" aria-modal="true" class="card modal-card">
         <h2 class="modal-title">{{ title }}</h2>
         <p class="modal-message">{{ message }}</p>
+        <slot></slot>
         <div class="actions">
           <button
             class="button"
@@ -93,16 +94,5 @@ const onKey = e => {
 
 .modal-message {
   margin: 0 0 1rem 0;
-}
-
-.actions {
-  display: flex;
-  gap: .75rem;
-  justify-content: flex-end;
-}
-
-.button[disabled] {
-  opacity: .55;
-  cursor: not-allowed;
 }
 </style>

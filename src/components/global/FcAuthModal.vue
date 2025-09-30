@@ -88,7 +88,7 @@ onUnmounted(() => setBodyScroll(false))
             <button class="button" type="button" @click="handleAccept">
               {{ isLogin ? t('auth.login.submit') : t('auth.logout') }}
             </button>
-            <button class="button button-outline" type="button" @click="handleCancel">{{ t('common.cancel') }}</button>
+            <button class="button button-secondary" type="button" @click="handleCancel">{{ t('common.cancel') }}</button>
           </div>
         </div>
       </form>
@@ -144,22 +144,6 @@ onUnmounted(() => setBodyScroll(false))
   gap: 1rem;
   justify-content: center;
   margin-top: 1rem;
-}
-
-.button {
-  background-color: var(--accent-color);
-  color: var(--background-color);
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.button-outline {
-  background-color: transparent;
-  border: 1px solid var(--accent-color);
-  color: var(--accent-color);
 }
 
 .no-scroll {

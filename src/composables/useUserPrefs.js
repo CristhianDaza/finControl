@@ -48,5 +48,26 @@ export const useUserPrefs = () => {
     await setDoc(ref, { ...vars }, { merge: true })
   }
 
-  return { getTxFilters, saveTxFilters, getThemeVars, saveThemeVars }
+  const getAppPrefs = async () => {
+    const uid = getUid()
+    const ref = doc(db, 'users', uid, 'preferences', 'appPrefs')
+    const snap = await getDoc(ref)
+    return snap.exists() ? snap.data() : null
+  }
+
+  const saveAppPrefs = async prefs => {
+    if (gate()) return
+    const uid = getUid()
+    const ref = doc(db, 'users', uid, 'preferences', 'appPrefs')
+    await setDoc(ref, { ...prefs }, { merge: true })
+  }
+
+  return {
+    getTxFilters,
+    saveTxFilters,
+    getThemeVars,
+    saveThemeVars,
+    getAppPrefs,
+    saveAppPrefs
+  }
 }

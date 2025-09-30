@@ -8,6 +8,7 @@ import { t } from '@/i18n/index.js'
 import { formatAmount } from '@/utils/formatters.js'
 import EditIcon from '@/assets/icons/edit.svg?raw'
 import PauseIcon from '@/assets/icons/pause.svg?raw'
+import PlayIcon from '@/assets/icons/play.svg?raw'
 import DeleteIcon from '@/assets/icons/delete.svg?raw'
 import { useCurrenciesStore } from '@/stores/currencies.js'
 import { useAuthStore } from '@/stores/auth.js'
@@ -194,6 +195,12 @@ const closePeriod = async b => {
   await recompute()
 }
 
+const toggleActive = async b => {
+  if (!auth.canWrite) return
+  await budgets.edit(b.id, { active: !(b.active !== false) })
+  await recompute()
+}
+
 onMounted(async () => {
   await accounts.subscribeMyAccounts()
   await budgets.init()
@@ -310,30 +317,36 @@ watch(() => transactions.items, () => recompute(), { deep: true })
           </td>
           <td :data-label="t('budgets.table.actions')">
             <div class="actions">
-              <button
-                class="button button-edit"
-                @click="openEdit(b)"
-                :disabled="!auth.canWrite"
-                :aria-disabled="!auth.canWrite"
-              >
-                <svg class="icon-edit" v-html="EditIcon"></svg>
-              </button>
-              <button
-                class="button button-pause"
-                @click="closePeriod(b)"
-                :disabled="!auth.canWrite || !b.carryover"
-                :aria-disabled="!auth.canWrite || !b.carryover"
-              >
-                <svg class="icon-pause" v-html="PauseIcon"></svg>
-              </button>
-              <button
-                class="button button-delete"
-                @click="remove(b.id)"
-                :disabled="!auth.canWrite"
-                :aria-disabled="!auth.canWrite"
-              >
-                <svg class="icon-delete" v-html="DeleteIcon"></svg>
-              </button>
+              <FcTooltip :content="t('common.edit')" placement="top">
+                <button
+                  class="button button-edit"
+                  @click="openEdit(b)"
+                  :disabled="!auth.canWrite"
+                  :aria-disabled="!auth.canWrite"
+                >
+                  <svg class="icon-edit" v-html="EditIcon"></svg>
+                </button>
+              </FcTooltip>
+              <FcTooltip :content="t(b.active ? 'common.pause' : 'common.resume')" placement="top">
+                <button
+                  class="button button-pause"
+                  @click="toggleActive(b)"
+                  :disabled="!auth.canWrite"
+                  :aria-disabled="!auth.canWrite"
+                >
+                  <svg class="icon-toggle" v-html="b.active ? PauseIcon : PlayIcon"></svg>
+                </button>
+              </FcTooltip>
+              <FcTooltip :content="t('common.delete')" placement="top">
+                <button
+                  class="button button-delete"
+                  @click="remove(b.id)"
+                  :disabled="!auth.canWrite"
+                  :aria-disabled="!auth.canWrite"
+                >
+                  <svg class="icon-delete" v-html="DeleteIcon"></svg>
+                </button>
+              </FcTooltip>
             </div>
           </td>
         </tr>
