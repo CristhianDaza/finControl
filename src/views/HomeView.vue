@@ -140,7 +140,6 @@ const expenseSum = computed(() =>
     .reduce((a, b) => a + Number(b.amount || 0), 0)
 )
 
-const netSum = computed(() => incomeSum.value - expenseSum.value)
 const txCount = computed(() => monthTx.value.length)
 
 const pageSize = ref(10)
@@ -217,12 +216,10 @@ watch(
 
 const barChartData = ref({})
 const doughnutChartData = ref({})
-const lineChartData = ref({})
 const goalsChartData = ref({})
 
 const barChartOptions = ref({})
 const doughnutChartOptions = ref({})
-const lineChartOptions = ref({})
 const goalsChartOptions = ref({})
 
 const buildDailySeries = (items, y, m) => {
@@ -263,17 +260,6 @@ const buildBreakdown = items => {
   return { labels, data }
 }
 
-const buildNetLine = daily => {
-  const len = daily.labels.length
-  const net = new Array(len).fill(0)
-  let acc = 0
-  for (let i = 0; i < len; i++) {
-    acc += daily.income[i] - daily.expense[i]
-    net[i] = acc
-  }
-  return { labels: daily.labels, net }
-}
-
 const updateCharts = async () => {
   await nextTick()
   const colorText = '#E0E1E9'
@@ -292,7 +278,6 @@ const updateCharts = async () => {
   const items = monthTx.value
   const daily = buildDailySeries(items, y, m)
   const breakdown = buildBreakdown(items)
-  const net = buildNetLine(daily)
   const goalsData = buildGoalsProgress()
 
   barChartData.value = {
@@ -460,98 +445,6 @@ const updateCharts = async () => {
     radius: '90%'
   }
 
-  lineChartData.value = {
-    labels: net.labels,
-    datasets: [
-      {
-        label: t('dashboard.charts.net'),
-        data: net.net,
-        fill: {
-          target: 'origin',
-          above: 'rgba(16, 185, 129, 0.1)',
-          below: 'rgba(239, 68, 68, 0.1)'
-        },
-        borderColor: colorAccent,
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        tension: 0.4,
-        pointRadius: 4,
-        pointBackgroundColor: colorAccent,
-        pointBorderColor: '#ffffff',
-        pointBorderWidth: 2,
-        pointHoverRadius: 6,
-        pointHoverBackgroundColor: colorAccent,
-        pointHoverBorderColor: '#ffffff',
-        pointHoverBorderWidth: 3,
-        borderWidth: 3,
-        segment: {
-          borderColor: ctx => ctx.p0.parsed.y >= 0 ? colorSuccess : colorError
-        }
-      }
-    ]
-  }
-
-  lineChartOptions.value = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      intersect: false,
-      mode: 'index'
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          color: colorText,
-          font: {
-            size: 13,
-            weight: '600'
-          }
-        }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(17, 24, 39, 0.95)',
-        titleColor: colorText,
-        bodyColor: colorText,
-        borderColor: 'rgba(75, 85, 99, 0.3)',
-        borderWidth: 1,
-        cornerRadius: 12,
-        padding: 16,
-        callbacks: {
-          label: ctx => `${formatAmount(ctx.parsed.y)}`
-        }
-      }
-    },
-    scales: {
-      x: {
-        grid: {
-          color: 'rgba(156, 163, 175, 0.1)',
-          borderColor: 'rgba(156, 163, 175, 0.2)'
-        },
-        ticks: {
-          color: colorMuted,
-          font: {
-            size: 12,
-            weight: '500'
-          }
-        }
-      },
-      y: {
-        grid: {
-          color: 'rgba(156, 163, 175, 0.1)',
-          borderColor: 'rgba(156, 163, 175, 0.2)'
-        },
-        ticks: {
-          color: colorMuted,
-          font: {
-            size: 12,
-            weight: '500'
-          },
-          callback: value => formatAmount(value)
-        }
-      }
-    }
-  }
-
   goalsChartData.value = {
     labels: goalsData.labels,
     datasets: [
@@ -626,11 +519,11 @@ const updateCharts = async () => {
             weight: '500'
           }
         }
-      }
-    },
-    elements: {
-      bar: {
-        borderRadius: 8
+      },
+      elements: {
+        bar: {
+          borderRadius: 8
+        }
       }
     }
   }
@@ -715,15 +608,6 @@ onMounted(async () => {
         <h3>{{ t('dashboard.kpis.txCount') }}</h3>
         <p class="amount">{{ txCount }}</p>
       </div>
-      <div class="dashboard-card">
-        <h3>{{ t('dashboard.kpis.netMonth') }}</h3>
-        <p
-          class="amount"
-          :title="formatCurrency(netSum)"
-        >
-          {{ formatAmount(netSum) }}
-        </p>
-      </div>
     </section>
 
     <div v-if="hasError" class="card error-state">
@@ -762,18 +646,6 @@ onMounted(async () => {
           :aria-label="t('dashboard.charts.breakdown')"
           :enable-progressive="true"
           @chart-ready="(chart) => console.log('Doughnut chart ready', chart)"
-        />
-      </div>
-      <div class="card chart-card">
-        <h3>{{ t('dashboard.charts.net') }}</h3>
-        <LazyChart
-          chart-type="line"
-          :chart-data="lineChartData"
-          :chart-options="lineChartOptions"
-          :raw-data="monthTx"
-          :aria-label="t('dashboard.charts.net')"
-          :enable-progressive="true"
-          @chart-ready="(chart) => console.log('Line chart ready', chart)"
         />
       </div>
       <div class="card chart-card">
@@ -1049,15 +921,19 @@ onMounted(async () => {
 
 .dashboard-card .amount {
   margin: 0;
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
-  font-weight: 800;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-weight: 700;
   color: var(--text-color);
   background: linear-gradient(135deg, var(--text-color), var(--accent-color));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   letter-spacing: -0.5px;
+  line-height: 1.2;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  display: block;
 }
 
 .dashboard-card.income {
