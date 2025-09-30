@@ -39,6 +39,8 @@ const tooltipRef = ref(null)
 const isMobile = ref(false)
 const actualPlacement = ref(props.placement)
 
+const tooltipId = `fc-tooltip-${Math.random().toString(36).substr(2, 9)}`
+
 const isControlled = computed(() => props.open !== undefined)
 const showTooltip = computed(() => isControlled.value ? props.open : isOpen.value)
 const effectiveTrigger = computed(() => isMobile.value ? 'click' : props.trigger)
@@ -214,6 +216,7 @@ onUnmounted(() => {
       ref="triggerRef"
       class="fc-tooltip-trigger"
       :tabindex="effectiveTrigger === 'focus' ? 0 : undefined"
+      :aria-describedby="showTooltip ? tooltipId : undefined"
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
       @click="handleClick"
@@ -229,11 +232,11 @@ onUnmounted(() => {
         <div
           v-if="showTooltip"
           ref="tooltipRef"
+          :id="tooltipId"
           class="fc-tooltip"
           :class="`fc-tooltip--${actualPlacement}`"
           :style="{ maxWidth: maxWidthStyle }"
           role="tooltip"
-          aria-live="polite"
         >
           <div class="fc-tooltip__content">
             <slot name="content">
