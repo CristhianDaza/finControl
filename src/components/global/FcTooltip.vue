@@ -39,7 +39,6 @@ const tooltipRef = ref(null)
 const isMobile = ref(false)
 const actualPlacement = ref(props.placement)
 
-// Generate unique ID for tooltip to enable aria-describedby
 const tooltipId = `fc-tooltip-${Math.random().toString(36).substr(2, 9)}`
 
 const isControlled = computed(() => props.open !== undefined)
