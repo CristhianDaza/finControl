@@ -132,6 +132,46 @@ const save = async () => {
       </div>
     </section>
 
+    <div class="preview">
+      <h2 class="card-title">
+        {{ t('settings.preview') }}
+      </h2>
+      <p class="card-subtitle">
+        {{ t('settings.previewDesc') }}
+      </p>
+      <div class="badges">
+        <span class="badge badge-expense">
+          {{ t('transactions.form.expense') }}
+        </span>
+        <span class="badge badge-goal">
+          {{ t('transactions.form.goalSaving') }}
+        </span>
+        <span class="badge badge-debt">
+          {{ t('transactions.form.debtPayment') }}
+        </span>
+        <span class="badge badge-income">
+          {{ t('transactions.form.income') }}
+        </span>
+        <span class="badge badge-transfer">
+          {{ t('common.transfer') }}
+        </span>
+      </div>
+      <div class="buttons">
+        <button
+          class="button"
+          :disabled="!auth.canWrite"
+        >
+          {{ t('settings.samplePrimary') }}
+        </button>
+        <button
+          class="button button-secondary"
+          :disabled="!auth.canWrite"
+        >
+          {{ t('settings.sampleSecondary') }}
+        </button>
+      </div>
+    </div>
+
     <p class="hint">
       {{ t('settings.theme.presets.hint') }}
     </p>
@@ -215,5 +255,50 @@ const save = async () => {
   bottom: .5rem;
   background: color-mix(in oklab, var(--primary-color) 80%, transparent);
   padding-top: .5rem;
+}
+.preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--background-color);
+  border: 1px solid var(--secondary-color);
+  box-shadow: 0 2px 8px var(--shadow-elev-1, rgba(0,0,0,.2));
+}
+.preview .badges {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.badge {
+  display: inline-block;
+  padding: .3rem .6rem;
+  border-radius: 999px;
+  font-size: .8rem;
+}
+.preview .buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.badge-expense {
+  background: var(--tx-expense-color);
+  color: var(--white);
+}
+.badge-goal {
+  background: var(--tx-goal-color);
+  color: var(--black);
+}
+.badge-debt {
+  background: var(--tx-debtPayment-color);
+  color: var(--white);
+}
+.badge-income {
+  background: var(--tx-income-color);
+  color: var(--white);
+}
+.badge-transfer {
+  background: var(--tx-transfer-color);
+  color: var(--black);
 }
 </style>
