@@ -276,12 +276,16 @@ const buildNetLine = daily => {
 
 const updateCharts = async () => {
   await nextTick()
-
   const colorText = '#E0E1E9'
   const colorMuted = '#A3A8B8'
-  const colorSuccess = '#22C55E'
+  const colorSuccess = '#10B981'
   const colorError = '#EF4444'
-  const colorAccent = '#3FA9F5'
+  const colorAccent = '#3B82F6'
+  const colorWarning = '#F59E0B'
+  const colorSecondary = '#6366F1'
+  const gradientSuccess = 'linear-gradient(135deg, #10B981, #059669)'
+  const gradientError = 'linear-gradient(135deg, #EF4444, #DC2626)'
+  const gradientAccent = 'linear-gradient(135deg, #3B82F6, #2563EB)'
 
   const y = selectedYear.value
   const m = selectedMonth.value
@@ -297,16 +301,26 @@ const updateCharts = async () => {
       {
         label: t('transactions.form.income'),
         data: daily.income,
-        backgroundColor: colorSuccess,
+        backgroundColor: 'rgba(16, 185, 129, 0.8)',
         borderColor: colorSuccess,
-        borderWidth: 1
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+        hoverBackgroundColor: 'rgba(16, 185, 129, 0.9)',
+        hoverBorderColor: colorSuccess,
+        hoverBorderWidth: 3
       },
       {
         label: t('transactions.form.expense'),
         data: daily.expense,
-        backgroundColor: colorError,
+        backgroundColor: 'rgba(239, 68, 68, 0.8)',
         borderColor: colorError,
-        borderWidth: 1
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+        hoverBackgroundColor: 'rgba(239, 68, 68, 0.9)',
+        hoverBorderColor: colorError,
+        hoverBorderWidth: 3
       }
     ]
   }
@@ -314,34 +328,77 @@ const updateCharts = async () => {
   barChartOptions.value = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    },
     plugins: {
       legend: {
         position: 'top',
         labels: {
           color: colorText,
           usePointStyle: true,
-          padding: 20
+          padding: 20,
+          font: {
+            size: 13,
+            weight: '600'
+          }
         }
       },
       tooltip: {
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        titleColor: colorText,
+        bodyColor: colorText,
+        borderColor: 'rgba(75, 85, 99, 0.3)',
+        borderWidth: 1,
+        cornerRadius: 12,
+        padding: 16,
+        displayColors: true,
         callbacks: {
-          label: ctx => `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}`
+          label: ctx => `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}`,
+          labelColor: function(context) {
+            return {
+              borderColor: context.dataset.borderColor,
+              backgroundColor: context.dataset.backgroundColor,
+              borderWidth: 2,
+              borderRadius: 4
+            }
+          }
         }
       }
     },
     scales: {
       x: {
-        ticks: { color: colorMuted },
-        grid: { color: 'rgba(224, 225, 233, 0.1)' }
+        grid: {
+          color: 'rgba(156, 163, 175, 0.1)',
+          borderColor: 'rgba(156, 163, 175, 0.2)'
+        },
+        ticks: {
+          color: colorMuted,
+          font: {
+            size: 12,
+            weight: '500'
+          }
+        }
       },
       y: {
-        ticks: { color: colorMuted },
-        grid: { color: 'rgba(224, 225, 233, 0.1)' }
+        grid: {
+          color: 'rgba(156, 163, 175, 0.1)',
+          borderColor: 'rgba(156, 163, 175, 0.2)'
+        },
+        ticks: {
+          color: colorMuted,
+          font: {
+            size: 12,
+            weight: '500'
+          },
+          callback: value => formatAmount(value)
+        }
       }
     },
     elements: {
       bar: {
-        borderRadius: 4
+        borderRadius: 6
       }
     }
   }
@@ -351,26 +408,56 @@ const updateCharts = async () => {
     datasets: [
       {
         data: breakdown.data,
-        backgroundColor: [colorSuccess, colorError, colorAccent],
-        borderWidth: 0,
-        hoverBackgroundColor: [colorSuccess, colorError, colorAccent],
-        hoverBorderWidth: 2,
-        hoverBorderColor: '#ffffff'
+        backgroundColor: [
+          'rgba(16, 185, 129, 0.9)',
+          'rgba(239, 68, 68, 0.9)',
+          'rgba(99, 102, 241, 0.9)'
+        ],
+        borderColor: [colorSuccess, colorError, colorSecondary],
+        borderWidth: 3,
+        hoverBackgroundColor: [
+          'rgba(16, 185, 129, 1)',
+          'rgba(239, 68, 68, 1)',
+          'rgba(99, 102, 241, 1)'
+        ],
+        hoverBorderWidth: 4,
+        hoverOffset: 8
       }
     ]
   }
 
   doughnutChartOptions.value = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'bottom', labels: { color: colorText } },
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: colorText,
+          padding: 20,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 13,
+            weight: '600'
+          }
+        }
+      },
       tooltip: {
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        titleColor: colorText,
+        bodyColor: colorText,
+        borderColor: 'rgba(75, 85, 99, 0.3)',
+        borderWidth: 1,
+        cornerRadius: 12,
+        padding: 16,
         callbacks: {
           label: ctx => `${ctx.label}: ${formatAmount(ctx.parsed)}`
         }
       }
     },
-    cutout: '60%'
+    cutout: '65%',
+    radius: '90%'
   }
 
   lineChartData.value = {
@@ -379,31 +466,89 @@ const updateCharts = async () => {
       {
         label: t('dashboard.charts.net'),
         data: net.net,
-        fill: false,
+        fill: {
+          target: 'origin',
+          above: 'rgba(16, 185, 129, 0.1)',
+          below: 'rgba(239, 68, 68, 0.1)'
+        },
         borderColor: colorAccent,
-        backgroundColor: colorAccent,
-        tension: 0.2,
-        pointRadius: 3,
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4,
+        pointRadius: 4,
         pointBackgroundColor: colorAccent,
-        pointBorderColor: colorAccent,
-        borderWidth: 2
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: colorAccent,
+        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderWidth: 3,
+        borderWidth: 3,
+        segment: {
+          borderColor: ctx => ctx.p0.parsed.y >= 0 ? colorSuccess : colorError
+        }
       }
     ]
   }
 
   lineChartOptions.value = {
     responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    },
     plugins: {
-      legend: { position: 'top', labels: { color: colorText } },
+      legend: {
+        position: 'top',
+        labels: {
+          color: colorText,
+          font: {
+            size: 13,
+            weight: '600'
+          }
+        }
+      },
       tooltip: {
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        titleColor: colorText,
+        bodyColor: colorText,
+        borderColor: 'rgba(75, 85, 99, 0.3)',
+        borderWidth: 1,
+        cornerRadius: 12,
+        padding: 16,
         callbacks: {
           label: ctx => `${formatAmount(ctx.parsed.y)}`
         }
       }
     },
     scales: {
-      x: { ticks: { color: colorMuted } },
-      y: { ticks: { color: colorMuted } }
+      x: {
+        grid: {
+          color: 'rgba(156, 163, 175, 0.1)',
+          borderColor: 'rgba(156, 163, 175, 0.2)'
+        },
+        ticks: {
+          color: colorMuted,
+          font: {
+            size: 12,
+            weight: '500'
+          }
+        }
+      },
+      y: {
+        grid: {
+          color: 'rgba(156, 163, 175, 0.1)',
+          borderColor: 'rgba(156, 163, 175, 0.2)'
+        },
+        ticks: {
+          color: colorMuted,
+          font: {
+            size: 12,
+            weight: '500'
+          },
+          callback: value => formatAmount(value)
+        }
+      }
     }
   }
 
@@ -413,32 +558,79 @@ const updateCharts = async () => {
       {
         label: t('goals.table.progress'),
         data: goalsData.data,
-        backgroundColor: colorAccent,
-        borderColor: colorAccent,
-        borderWidth: 1
+        backgroundColor: goalsData.data.map(value =>
+          value >= 100 ? 'rgba(16, 185, 129, 0.9)' :
+          value >= 75 ? 'rgba(59, 130, 246, 0.9)' :
+          value >= 50 ? 'rgba(245, 158, 11, 0.9)' :
+          'rgba(239, 68, 68, 0.9)'
+        ),
+        borderColor: goalsData.data.map(value =>
+          value >= 100 ? colorSuccess :
+          value >= 75 ? colorAccent :
+          value >= 50 ? colorWarning :
+          colorError
+        ),
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false
       }
     ]
   }
 
   goalsChartOptions.value = {
     responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: 'y',
     plugins: {
-      legend: { position: 'top', labels: { color: colorText } },
+      legend: {
+        display: false
+      },
       tooltip: {
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        titleColor: colorText,
+        bodyColor: colorText,
+        borderColor: 'rgba(75, 85, 99, 0.3)',
+        borderWidth: 1,
+        cornerRadius: 12,
+        padding: 16,
         callbacks: {
-          label: ctx => `${ctx.parsed.y}%`
+          label: ctx => `${ctx.parsed.x}%`
         }
       }
     },
     scales: {
-      x: { ticks: { color: colorMuted } },
-      y: {
+      x: {
         beginAtZero: true,
         max: 100,
+        grid: {
+          color: 'rgba(156, 163, 175, 0.1)',
+          borderColor: 'rgba(156, 163, 175, 0.2)'
+        },
         ticks: {
           color: colorMuted,
+          font: {
+            size: 12,
+            weight: '500'
+          },
           callback: v => `${v}%`
         }
+      },
+      y: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          color: colorMuted,
+          font: {
+            size: 12,
+            weight: '500'
+          }
+        }
+      }
+    },
+    elements: {
+      bar: {
+        borderRadius: 8
       }
     }
   }
@@ -746,282 +938,621 @@ onMounted(async () => {
 <style scoped>
 .period-toolbar {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--primary-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.05));
+  border-radius: 16px;
+  box-shadow: 0 4px 20px var(--shadow-soft);
+  border: 1px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
   align-items: flex-end;
   flex-wrap: wrap;
+  backdrop-filter: blur(10px);
 }
+
 .field {
   min-width: 160px;
+  position: relative;
 }
+
 .field label {
   display: block;
-  margin-bottom: .25rem;
+  margin-bottom: .5rem;
   color: var(--muted-text-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.field select.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.2);
+  border-radius: 12px;
+  background: var(--primary-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.field select.input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 4px rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  transform: translateY(-2px);
+}
+
+.field select.input:hover {
+  border-color: rgba(var(--accent-color-rgb, 59, 130, 246), 0.4);
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
+
 .dashboard-card {
-  background-color: var(--primary-color);
-  padding: 1.5rem;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px var(--shadow-soft);
-  border-left: 6px solid var(--accent-color);
-  transition: transform 0.2s ease;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
+  background: linear-gradient(135deg, var(--primary-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.02));
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px var(--shadow-soft),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  border-left: 5px solid var(--accent-color);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-}
-.dashboard-card:hover {
-  transform: translateY(-4px);
-}
-.dashboard-card h3 {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--muted-text-color);
-}
-.dashboard-card .amount {
-  margin-top: .5rem;
-  font-size: clamp(1.1rem, 1.2vw + .8rem, 1.6rem);
-  font-weight: bold;
-  color: var(--text-color);
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  backdrop-filter: blur(10px);
 }
-.amount-format-toggle {
-  display: none;
+
+.dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.3));
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
+
+.dashboard-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow:
+    0 16px 48px var(--shadow-soft),
+    0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-color);
+}
+
+.dashboard-card:hover::before {
+  opacity: 1;
+}
+
+.dashboard-card h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--muted-text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dashboard-card .amount {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 800;
+  color: var(--text-color);
+  background: linear-gradient(135deg, var(--text-color), var(--accent-color));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.5px;
+}
+
 .dashboard-card.income {
-  border-left-color: var(--success-color);
+  border-left-color: #10B981;
+  background: linear-gradient(135deg, var(--primary-color), rgba(16, 185, 129, 0.05));
 }
+
+.dashboard-card.income .amount {
+  background: linear-gradient(135deg, #10B981, #059669);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .dashboard-card.expense {
-  border-left-color: var(--error-color);
+  border-left-color: #EF4444;
+  background: linear-gradient(135deg, var(--primary-color), rgba(239, 68, 68, 0.05));
+}
+
+.dashboard-card.expense .amount {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .charts-grid {
-  margin-top: 1.5rem;
+  margin: 3rem 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-.chart-card h3 {
-  margin-top: 0;
-  color: var(--muted-text-color);
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
 }
 
-.budgets-card {
-  margin-top: 1rem;
+.chart-card {
+  background: linear-gradient(135deg, var(--primary-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.02));
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px var(--shadow-soft),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  min-height: 400px;
 }
-.budgets-ul {
+
+.chart-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 48px var(--shadow-soft),
+    0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: rgba(var(--accent-color-rgb, 59, 130, 246), 0.3);
+}
+
+.chart-card h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-color);
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.chart-card h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.3));
+  border-radius: 2px;
+}
+
+.budgets-card, .goals-card {
+  margin-top: 2rem;
+  background: linear-gradient(135deg, var(--primary-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.02));
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px var(--shadow-soft),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.budgets-card h3, .goals-card h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-color);
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.budgets-card h3::after, .goals-card h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.3));
+  border-radius: 2px;
+}
+
+.budgets-ul, .goals-ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: 1.5rem;
 }
-.budget-item {
+
+.budget-item, .goal-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: .5rem 0;
-  border-bottom: 1px solid var(--primary-color);
-  gap: .75rem;
+  padding: 1.5rem;
+  background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  gap: 1rem;
   flex-wrap: wrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
-.b-left {
+
+.budget-item:hover, .goal-item:hover {
+  transform: translateX(8px);
+  background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.05);
+  border-color: rgba(var(--accent-color-rgb, 59, 130, 246), 0.2);
+  box-shadow: 0 4px 16px var(--shadow-soft);
+}
+
+.b-left, .goal-left {
   display: grid;
-  min-width: 180px;
+  min-width: 200px;
+  gap: 0.5rem;
 }
-.b-name {
+
+.b-name, .goal-name {
   color: var(--text-color);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.1rem;
 }
-.b-period {
+
+.b-period, .goal-note {
   color: var(--muted-text-color);
-  font-size: .9rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
+
 .b-center {
-  flex: 1 1 240px;
+  flex: 1 1 280px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 200px;
+  min-width: 250px;
 }
+
 .b-right {
   text-align: right;
   display: grid;
-  min-width: 140px;
+  gap: 0.5rem;
+  min-width: 160px;
 }
+
+.b-remaining {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.b-prev {
+  font-size: 0.9rem;
+  color: var(--muted-text-color);
+  font-weight: 500;
+}
+
 .progress {
   display: flex;
   align-items: center;
-  gap: .5rem;
+  gap: 1rem;
   width: 100%;
-  max-width: 360px;
-}
-.progress .bar {
-  width: 100%;
-  height: 8px;
-  background: var(--secondary-color);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.progress .fill {
-  height: 100%;
-  background: var(--accent-color);
-}
-.progress .fill.warn {
-  background: var(--warning-color);
-}
-.progress .fill.over {
-  background: var(--error-color);
-}
-.progress .pct {
-  color: var(--muted-text-color);
-  font-size: .85rem;
+  max-width: 400px;
 }
 
-.goals-card {
-  margin-top: 1rem;
+.progress .bar {
+  flex: 1;
+  height: 12px;
+  background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.goals-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: .75rem;
+
+.progress .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.8));
+  border-radius: 20px;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
-.goal-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: .5rem 0;
-  border-bottom: 1px solid var(--primary-color);
-  gap: .75rem;
-  flex-wrap: wrap;
+
+.progress .fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
 }
-.goal-left {
-  display: grid;
-  min-width: 160px;
+
+.progress .fill.warn {
+  background: linear-gradient(90deg, #F59E0B, #D97706);
 }
-.goal-name {
+
+.progress .fill.over {
+  background: linear-gradient(90deg, #EF4444, #DC2626);
+}
+
+.progress .pct {
   color: var(--text-color);
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
+  min-width: 50px;
+  text-align: right;
 }
-.goal-note {
-  color: var(--muted-text-color);
-  font-size: .9rem;
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }
+
 .goal-right {
   display: flex;
   align-items: center;
-  gap: .75rem;
+  gap: 1rem;
   flex-wrap: wrap;
+  min-width: 300px;
+}
+
+.goal-target {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+  background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.2);
 }
 
 .badge {
-  display: inline-block;
-  padding: .125rem .5rem;
-  border-radius: 999px;
-  font-size: .75rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
 }
+
 .badge-green {
-  background: var(--hover-success-color);
-  color: var(--white);
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.badge-rec {
+  background: linear-gradient(135deg, var(--accent-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.8));
+  color: white;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 8px rgba(var(--accent-color-rgb, 59, 130, 246), 0.3);
 }
 
 .tx-list {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
+  background: linear-gradient(135deg, var(--primary-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.02));
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px var(--shadow-soft),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  backdrop-filter: blur(10px);
 }
+
+.tx-list h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-color);
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.tx-list h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-color), rgba(var(--accent-color-rgb, 59, 130, 246), 0.3));
+  border-radius: 2px;
+}
+
 .tx-ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 .tx-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: .75rem 0;
-  border-bottom: 1px solid var(--secondary-color);
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.1);
+  transition: all 0.3s ease;
 }
+
+.tx-item:hover {
+  padding-left: 1rem;
+  background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.03);
+  border-radius: 12px;
+  border-bottom-color: transparent;
+}
+
 .tx-left {
   display: grid;
+  gap: 0.25rem;
 }
+
 .tx-date {
   color: var(--muted-text-color);
-  font-size: .9rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
+
 .tx-note {
   color: var(--text-color);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
 .tx-right {
   text-align: right;
+  display: grid;
+  gap: 0.25rem;
 }
+
 .tx-account {
   color: var(--muted-text-color);
-  font-size: .9rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
+
 .tx-amount {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.1rem;
 }
+
 .tx-amount.inc {
-  color: var(--success-color);
+  color: #10B981;
 }
+
 .tx-amount.exp {
-  color: var(--error-color);
+  color: #EF4444;
 }
+
 .see-more {
-  margin-top: 1rem;
+  margin-top: 2rem;
   text-align: center;
 }
 
-.error-state,
-.loading-state {
-  margin-top: 1rem;
-}
-.badge {
-  display: inline-block;
-  padding: .125rem .5rem;
-  border-radius: 999px;
-  font-size: .75rem;
-}
-.badge-rec {
-  background: var(--recurring-badge-color);
-  color: var(--white);
-  margin-left: .5rem;
+.see-more .button {
+  padding: 1rem 2rem;
+  border-radius: 14px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@media (max-width: 600px) {
-  .budget-item {
+.see-more .button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--shadow-soft);
+}
+
+.error-state, .loading-state {
+  margin-top: 2rem;
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, var(--primary-color), rgba(239, 68, 68, 0.05));
+  border-radius: 16px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--muted-text-color);
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .chart-card {
+    min-height: 350px;
+  }
+
+  .budget-item, .goal-item {
     flex-direction: column;
     align-items: stretch;
+    padding: 1rem;
   }
+
   .b-center {
     order: 3;
+    margin-top: 1rem;
   }
+
   .b-right {
     order: 2;
     text-align: left;
+    margin-top: 0.5rem;
   }
-  .goal-item {
-    flex-direction: column;
-    align-items: stretch;
-  }
+
   .goal-right {
     justify-content: space-between;
+    min-width: auto;
+    margin-top: 1rem;
   }
+
+  .period-toolbar {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
   .field {
-    min-width: 120px;
+    min-width: auto;
+    width: 100%;
+  }
+
+  .tx-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .tx-right {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-card {
+    padding: 1.5rem;
+  }
+
+  .chart-card, .budgets-card, .goals-card, .tx-list {
+    padding: 1.5rem;
+  }
+
+  .dashboard-card .amount {
+    font-size: clamp(1.5rem, 8vw, 2rem);
   }
 }
 </style>

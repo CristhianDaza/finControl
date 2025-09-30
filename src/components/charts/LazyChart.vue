@@ -64,12 +64,46 @@ const createChart = async () => {
         ? memoizedChartData.value
         : props.chartData
 
+    if (!finalData || !finalData.datasets || finalData.datasets.length === 0) {
+      console.warn('No valid data provided for chart creation')
+      return
+    }
+
     chartInstance = chartFactory(canvasRef.value.getContext('2d'), {
       type: props.chartType,
       data: finalData,
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: {
+                size: 12,
+                weight: '500'
+              }
+            }
+          },
+          tooltip: {
+            enabled: true,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: true,
+            padding: 12
+          }
+        },
         ...props.chartOptions
       }
     })
