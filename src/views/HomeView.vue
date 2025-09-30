@@ -11,7 +11,8 @@ import { useRecurringStore } from '@/stores/recurring.js'
 import { formatAmount } from '@/utils/formatters.js'
 import { useSettingsStore } from '@/stores/settings.js'
 import LazyChart from '@/components/charts/LazyChart.vue'
-import HiddenIconUrl from '@/assets/icons/hidden.svg?raw'
+import HiddenSvgRaw from '@/assets/icons/hidden.svg?raw'
+import VisibleSvgRaw from '@/assets/icons/visible.svg?raw'
 
 const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
@@ -22,6 +23,7 @@ const settingsStore = useSettingsStore()
 const recurringStore = useRecurringStore()
 
 const hideAmounts = computed(() => settingsStore.hideAmounts)
+const HiddenIconUrl = computed(() => hideAmounts.value ? VisibleSvgRaw : HiddenSvgRaw)
 const mask = '***'
 const displayAmount = (val, currency = 'COP') => hideAmounts.value ? mask : formatAmount(val, currency)
 const displayTitle = (val, currency = 'COP') => hideAmounts.value ? mask : formatCurrency(val, currency)
