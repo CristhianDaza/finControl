@@ -399,7 +399,8 @@ export const useSettingsStore = defineStore('settings', {
     themeVars: {},
     initialDefaults: {},
     loaded: false,
-    amountFormat: 'full'
+    amountFormat: 'full',
+    hideAmounts: false
   }),
   actions: {
     _readCssVar(key) {
@@ -448,6 +449,22 @@ export const useSettingsStore = defineStore('settings', {
         const af = localStorage.getItem('fincontrol.amountFormat')
         if (af === 'compact' || af === 'full') this.amountFormat = af
       } catch {}
+
+      try {
+        const localHide = localStorage.getItem('fincontrol.hideAmounts')
+        if (localHide === 'true' || localHide === 'false') {
+          this.hideAmounts = localHide === 'true'
+        }
+      } catch {}
+      if (auth.currentUser) {
+        try {
+          const { getAppPrefs } = useUserPrefs()
+          const appPrefs = await getAppPrefs()
+          if (appPrefs && typeof appPrefs.hideAmounts === 'boolean') {
+            this.hideAmounts = appPrefs.hideAmounts
+          }
+        } catch {}
+      }
     },
     setVar(key, value) {
       this.themeVars[key] = value
@@ -459,6 +476,22 @@ export const useSettingsStore = defineStore('settings', {
       try {
         localStorage.setItem('fincontrol.amountFormat', mode)
       } catch {}
+    },
+    async setHideAmounts(v) {
+      const val = !!v
+      this.hideAmounts = val
+      try {
+        localStorage.setItem('fincontrol.hideAmounts', String(val))
+      } catch {}
+      if (auth.currentUser) {
+        try {
+          const { saveAppPrefs } = useUserPrefs()
+          await saveAppPrefs({ hideAmounts: val })
+        } catch {}
+      }
+    },
+    async toggleHideAmounts() {
+      await this.setHideAmounts(!this.hideAmounts)
     },
     async save() {
       try {

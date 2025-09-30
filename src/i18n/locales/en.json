@@ -244,20 +244,25 @@
       "net": "Net cumulative"
     },
     "list": {
-      "title": "This month's transactions",
+      "title": "Transactions this month",
       "empty": "No transactions this month",
       "seeMore": "See more"
     },
     "budgets": {
       "title": "Budgets (month)",
       "empty": "No budgets",
-      "prev": "Prev month: {pct}%"
+      "prev": "Previous month: {pct}%"
     },
     "amountFormat": {
       "showCompact": "Show compact",
       "showFull": "Show full",
       "compactLabel": "Compact",
       "fullLabel": "Full"
+    },
+    "amountPrivacy": {
+      "hide": "Hide values",
+      "show": "Show values",
+      "aria": "Toggle amounts visibility"
     }
   },
   "categories": {

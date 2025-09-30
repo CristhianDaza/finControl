@@ -269,6 +269,11 @@
       "showFull": "Ver completo",
       "compactLabel": "Compacto",
       "fullLabel": "Completo"
+    },
+    "amountPrivacy": {
+      "hide": "Ocultar valores",
+      "show": "Mostrar valores",
+      "aria": "Alternar visibilidad de montos"
     }
   },
   "categories": {

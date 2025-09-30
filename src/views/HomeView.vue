@@ -11,6 +11,7 @@ import { useRecurringStore } from '@/stores/recurring.js'
 import { formatAmount } from '@/utils/formatters.js'
 import { useSettingsStore } from '@/stores/settings.js'
 import LazyChart from '@/components/charts/LazyChart.vue'
+import HiddenIconUrl from '@/assets/icons/hidden.svg?raw'
 
 const accountsStore = useAccountsStore()
 const transactionsStore = useTransactionsStore()
@@ -19,6 +20,11 @@ const goalsStore = useGoalsStore()
 const budgetsStore = useBudgetsStore()
 const settingsStore = useSettingsStore()
 const recurringStore = useRecurringStore()
+
+const hideAmounts = computed(() => settingsStore.hideAmounts)
+const mask = '***'
+const displayAmount = (val, currency = 'COP') => hideAmounts.value ? mask : formatAmount(val, currency)
+const displayTitle = (val, currency = 'COP') => hideAmounts.value ? mask : formatCurrency(val, currency)
 
 const goalsList = computed(() => goalsStore.items || [])
 
@@ -340,7 +346,7 @@ const updateCharts = async () => {
         padding: 16,
         displayColors: true,
         callbacks: {
-          label: ctx => `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}`,
+          label: ctx => hideAmounts.value ? mask : `${ctx.dataset.label}: ${formatAmount(ctx.parsed.y)}`,
           labelColor: function(context) {
             return {
               borderColor: context.dataset.borderColor,
@@ -377,7 +383,7 @@ const updateCharts = async () => {
             size: 12,
             weight: '500'
           },
-          callback: value => formatAmount(value)
+          callback: value => hideAmounts.value ? mask : formatAmount(value)
         }
       }
     },
@@ -437,7 +443,7 @@ const updateCharts = async () => {
         cornerRadius: 12,
         padding: 16,
         callbacks: {
-          label: ctx => `${ctx.label}: ${formatAmount(ctx.parsed)}`
+          label: ctx => hideAmounts.value ? mask : `${ctx.label}: ${formatAmount(ctx.parsed)}`
         }
       }
     },
@@ -533,6 +539,7 @@ watch(monthTx, () => updateCharts())
 watch(() => goalsStore.progressById, () => updateCharts(), { deep: true })
 watch(() => goalsStore.items, () => updateCharts(), { deep: true })
 watch(() => settingsStore.amountFormat, () => updateCharts())
+watch(() => settingsStore.hideAmounts, () => updateCharts())
 
 onMounted(async () => {
   await nextTick()
@@ -573,6 +580,16 @@ onMounted(async () => {
           </option>
         </select>
       </div>
+      <div class="spacer"></div>
+      <FcTooltip :content="t(hideAmounts ? 'dashboard.amountPrivacy.show' : 'dashboard.amountPrivacy.hide')" placement="left">
+        <button
+          class="icon-toggle"
+          :aria-label="t(hideAmounts ? 'dashboard.amountPrivacy.show' : 'dashboard.amountPrivacy.hide')"
+          @click="settingsStore.toggleHideAmounts()"
+        >
+          <svg class="icon" v-html="HiddenIconUrl"></svg>
+        </button>
+      </FcTooltip>
     </div>
 
     <section class="dashboard-grid">
@@ -581,27 +598,27 @@ onMounted(async () => {
         <div class="amount-format-toggle" v-if="false"></div>
         <p
           class="amount"
-          :title="formatCurrency(totalBalance)"
+          :title="displayTitle(totalBalance)"
         >
-          {{ formatAmount(totalBalance) }}
+          {{ displayAmount(totalBalance) }}
         </p>
       </div>
       <div class="dashboard-card income">
         <h3>{{ t('dashboard.kpis.incomeMonth') }}</h3>
         <p
           class="amount"
-          :title="formatCurrency(incomeSum)"
+          :title="displayTitle(incomeSum)"
         >
-          {{ formatAmount(incomeSum) }}
+          {{ displayAmount(incomeSum) }}
         </p>
       </div>
       <div class="dashboard-card expense">
         <h3>{{ t('dashboard.kpis.expenseMonth') }}</h3>
         <p
           class="amount"
-          :title="formatCurrency(expenseSum)"
+          :title="displayTitle(expenseSum)"
         >
-          {{ formatAmount(expenseSum) }}
+          {{ displayAmount(expenseSum) }}
         </p>
       </div>
       <div class="dashboard-card">
@@ -702,8 +719,8 @@ onMounted(async () => {
             </div>
           </div>
           <div class="b-right">
-            <div class="b-remaining">
-              {{ formatAmount(it.r?.remaining || 0, it.b.currency) }}
+            <div class="b-remaining" :title="displayTitle(it.r?.remaining, it.b.currency)">
+              {{ displayAmount(it.r?.remaining, it.b.currency) }}
             </div>
             <div class="b-prev">
               {{ t('dashboard.budgets.prev', { pct: budgetsPrevPct[it.b.id] || 0 }) }}
@@ -741,8 +758,8 @@ onMounted(async () => {
               </div>
               <div class="pct">{{ goalProgressPct(g.id) }}%</div>
             </div>
-            <div class="goal-target">
-              {{ formatAmount(g.targetAmount, g.currency || 'COP') }}
+            <div class="goal-target" :title="displayTitle(g.targetAmount, g.currency || 'COP')">
+              {{ displayAmount(g.targetAmount, g.currency || 'COP') }}
             </div>
             <span
               v-if="goalCompleted(g.id)"
@@ -789,8 +806,9 @@ onMounted(async () => {
                 inc: it.type === 'income',
                 exp: it.type === 'expense' || it.type === 'debtPayment'
               }"
+              :title="displayTitle(it.amount, it.currency || 'COP')"
             >
-              {{ formatAmount(it.amount, it.currency || 'COP') }}
+              {{ displayAmount(it.amount, it.currency || 'COP') }}
             </div>
           </div>
         </li>
@@ -1356,6 +1374,51 @@ onMounted(async () => {
   color: var(--muted-text-color);
   font-style: italic;
   font-size: 1.1rem;
+}
+
+.icon-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 8px;
+  border: 2px solid rgba(var(--accent-color-rgb, 59, 130, 246), 0.3);
+  background: var(--primary-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.icon-toggle:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 2px 10px var(--shadow-soft);
+  transform: translateY(-1px);
+  color: var(--accent-color);
+}
+
+.icon-toggle .icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+}
+
+.icon-toggle .icon :deep(svg),
+.icon-toggle .icon :deep(img) {
+  width: 20px;
+  height: 20px;
+  display: block;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-toggle:hover .icon :deep(svg) {
+  transform: scale(1.1) rotate(3deg);
+}
+
+.icon-toggle .icon :deep(svg),
+.icon-toggle .icon :deep(svg *) {
+  stroke: currentColor;
 }
 
 @media (max-width: 768px) {
