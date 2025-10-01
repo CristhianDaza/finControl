@@ -2,11 +2,13 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useInactivityLockStore } from '@/stores/inactivityLock.js'
 import { useAuthStore } from '@/stores/auth.js'
+import { useRouter } from 'vue-router'
 import { verifyPin } from '@/utils/crypto.js'
 import { t } from '@/i18n/index.js'
 
 const store = useInactivityLockStore()
 const authStore = useAuthStore()
+const router = useRouter()
 const pinInput = ref(null)
 const enteredPin = ref('')
 const hasError = ref(false)
@@ -79,6 +81,7 @@ async function resetPinAndLogout() {
   store.clearPin()
   showForgotPin.value = false
   await authStore.logout()
+  await router.push({ name: 'login' })
 }
 
 function handleKeydown(event) {

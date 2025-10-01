@@ -8,6 +8,7 @@ import { useInactivityLock } from '@/composables/useInactivityLock.js'
 import { useRoute } from 'vue-router'
 import { t } from '@/i18n/index.js'
 import { useLazyComponents } from '@/composables/useLazyComponents.js'
+import { useInactivityLockStore } from '@/stores/inactivityLock.js'
 
 const FCStatusBar = defineAsyncComponent(/* webpackChunkName: "fCStatusBar" */ () => import('@/components/FCStatusBar.vue'))
 const FCGlobalLoader = defineAsyncComponent(/* webpackChunkName: "fCGlobalLoader" */ () => import('@/components/global/FCGlobalLoader.vue'))
@@ -63,6 +64,14 @@ watch(() => auth.isAuthenticated, async (v) => {
     stopTracking()
   }
 }, { immediate: true })
+
+const lockStore = useInactivityLockStore()
+watch(() => [lockStore.isEnabled, lockStore.timeoutMinutes], () => {
+  if (auth.isAuthenticated) {
+    stopTracking()
+    startTracking()
+  }
+}, { deep: true })
 
 const statusMessage = computed(() => auth.isReadOnly ? t('access.inactiveNotice') : '')
 </script>

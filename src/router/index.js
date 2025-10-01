@@ -64,6 +64,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, _from, next) => {
   const auth = useAuthStore()
+  
   await auth.initSessionListener()
 
   if (to.meta?.requiresAuth && !auth.isAuthenticated) {

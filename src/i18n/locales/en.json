@@ -592,7 +592,7 @@
     "timeoutTitle": "Inactivity time",
     "timeouts": {
       "disabled": "Disabled",
-      "1min": "1 minute (testing)",
+      "1min": "1 minute",
       "5min": "5 minutes",
       "10min": "10 minutes",
       "30min": "30 minutes"
