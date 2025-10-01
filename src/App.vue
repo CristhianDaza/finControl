@@ -13,6 +13,7 @@ import { useInactivityLockStore } from '@/stores/inactivityLock.js'
 const FCStatusBar = defineAsyncComponent(/* webpackChunkName: "fCStatusBar" */ () => import('@/components/FCStatusBar.vue'))
 const FCGlobalLoader = defineAsyncComponent(/* webpackChunkName: "fCGlobalLoader" */ () => import('@/components/global/FCGlobalLoader.vue'))
 const InactivityLockModal = defineAsyncComponent(/* webpackChunkName: "inactivityLockModal" */ () => import('@/components/global/InactivityLockModal.vue'))
+const TokenBanner = defineAsyncComponent(/* webpackChunkName: "tokenBanner" */ () => import('@/components/global/TokenBanner.vue'))
 
 const { Sidebar, Notify, preloadModals } = useLazyComponents()
 
@@ -91,19 +92,40 @@ const statusMessage = computed(() => auth.isReadOnly ? t('access.inactiveNotice'
   <Notify />
   <FCGlobalLoader />
   <InactivityLockModal />
+  <TokenBanner v-if="auth.isAuthenticated" />
 </template>
 
 <style scoped>
+body:has(.token-banner) .layout {
+  padding-top: 80px;
+}
+
+body:has(.token-banner) .main-content.has-bar {
+  padding-top: calc(clamp(1rem,4vw,2rem) + 48px + 80px);
+}
+
+@media (max-width: 480px) {
+  body:has(.token-banner) .layout {
+    padding-top: 120px;
+  }
+
+  body:has(.token-banner) .main-content.has-bar {
+    padding-top: calc(clamp(1rem,4vw,2rem) + 48px + 120px);
+  }
+}
+
 .layout {
   display: flex;
   height: 100dvh;
   overflow: hidden;
+  transition: padding-top 0.3s ease;
 }
 
 .main-content {
   flex-grow: 1;
   overflow-y: auto;
   padding: clamp(1rem, 4vw, 2rem);
+  transition: padding-top 0.3s ease;
 }
 
 .main-content.has-bar {

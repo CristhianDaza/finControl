@@ -652,6 +652,12 @@
       "processing": "Error al procesar el PIN"
     }
   },
+  "tokenBanner": {
+    "title": "¡Activa tu token!",
+    "message": "Activa tu token para mantener tu cuenta segura.",
+    "activateButton": "Activar Token",
+    "dismissButton": "Cerrar"
+  },
   "admin": {
     "title": "Panel Administrador",
     "kpis": {

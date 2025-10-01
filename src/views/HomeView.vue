@@ -652,7 +652,6 @@ onMounted(async () => {
           :raw-data="monthTx"
           :aria-label="t('dashboard.charts.daily')"
           :enable-progressive="true"
-          @chart-ready="(chart) => console.log('Bar chart ready', chart)"
         />
       </div>
       <div class="card chart-card">
@@ -664,7 +663,6 @@ onMounted(async () => {
           :raw-data="monthTx"
           :aria-label="t('dashboard.charts.breakdown')"
           :enable-progressive="true"
-          @chart-ready="(chart) => console.log('Doughnut chart ready', chart)"
         />
       </div>
       <div class="card chart-card">
@@ -676,7 +674,6 @@ onMounted(async () => {
           :raw-data="goalsList"
           :aria-label="t('goals.title')"
           :enable-progressive="false"
-          @chart-ready="(chart) => console.log('Goals chart ready', chart)"
         />
       </div>
     </section>

@@ -633,6 +633,12 @@
       "processing": "Error processing PIN"
     }
   },
+  "tokenBanner": {
+    "title": "Activate your token!",
+    "message": "Activate your token to keep your account secure.",
+    "activateButton": "Activate Token",
+    "dismissButton": "Close"
+  },
   "admin": {
     "title": "Admin Panel",
     "kpis": {

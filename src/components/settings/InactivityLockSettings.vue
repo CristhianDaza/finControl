@@ -18,6 +18,8 @@ const newPin = ref('')
 const confirmPin = ref('')
 const currentPinValid = ref(false)
 
+const selectedTimeout = ref(store.timeoutMinutes)
+
 const timeoutOptions = [
   { value: 0, label: t('inactivityLock.timeouts.disabled') },
   { value: 1, label: t('inactivityLock.timeouts.1min') },
@@ -69,6 +71,10 @@ watch(currentPin, async (newVal) => {
   } else {
     currentPinValid.value = false
   }
+})
+
+watch(() => store.timeoutMinutes, (newValue) => {
+  selectedTimeout.value = newValue
 })
 
 function toggleLock(event) {
@@ -289,21 +295,20 @@ function removePinConfirmed() {
 
     <div v-if="store.isConfigured && !showPinSetup" class="timeout-settings">
       <h4 class="subsection-title">{{ t('inactivityLock.timeoutTitle') }}</h4>
-      <div class="timeout-options">
-        <label
-          v-for="option in timeoutOptions"
-          :key="option.value"
-          class="timeout-option"
+      <div class="timeout-select-container">
+        <select
+          v-model="selectedTimeout"
+          @change="updateTimeout(selectedTimeout)"
+          class="timeout-select"
         >
-          <input
-            type="radio"
+          <option
+            v-for="option in timeoutOptions"
+            :key="option.value"
             :value="option.value"
-            :checked="store.timeoutMinutes === option.value"
-            @change="updateTimeout(option.value)"
-            name="timeout"
           >
-          <span>{{ option.label }}</span>
-        </label>
+            {{ option.label }}
+          </option>
+        </select>
       </div>
     </div>
 
@@ -510,23 +515,26 @@ function removePinConfirmed() {
   font-weight: 600;
 }
 
-.timeout-options {
+.timeout-select-container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.timeout-option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
+.timeout-select {
+  padding: 0.75rem;
+  border: 1px solid var(--primary-color);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: var(--background-color);
   color: var(--text-color);
-  padding: 0.25rem 0;
+  transition: all 0.2s ease;
 }
 
-.timeout-option input[type="radio"] {
-  margin: 0;
+.timeout-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--focus-accent-glow);
 }
 
 .status-info {
