@@ -594,6 +594,64 @@
       }
     }
   },
+  "inactivityLock": {
+    "title": "Bloqueo por Inactividad",
+    "description": "Configura un PIN para bloquear automáticamente la aplicación después de un período de inactividad.",
+    "enable": "Habilitar bloqueo por inactividad",
+    "setupPin": "Configurar PIN",
+    "changePin": "Cambiar PIN",
+    "currentPin": "PIN actual",
+    "newPin": "Nuevo PIN",
+    "confirmPin": "Confirmar PIN",
+    "confirmNewPin": "Confirmar nuevo PIN",
+    "placeholder": "4-8 dígitos",
+    "saving": "Guardando...",
+    "savePin": "Guardar PIN",
+    "cancel": "Cancelar",
+    "timeoutTitle": "Tiempo de inactividad",
+    "timeouts": {
+      "disabled": "Deshabilitado",
+      "1min": "1 minuto (pruebas)",
+      "5min": "5 minutos",
+      "10min": "10 minutos",
+      "30min": "30 minutos"
+    },
+    "status": {
+      "label": "Estado:",
+      "notConfigured": "No configurado",
+      "configured": "PIN configurado, pero deshabilitado",
+      "active": "Activo - {minutes} minutos"
+    },
+    "changeButton": "Cambiar PIN",
+    "removeButton": "Eliminar PIN",
+    "removeConfirm": {
+      "title": "¿Eliminar PIN?",
+      "message": "Esto deshabilitará completamente el bloqueo por inactividad.",
+      "confirm": "Sí, eliminar"
+    },
+    "modal": {
+      "title": "Aplicación Bloqueada",
+      "description": "Ingresa tu PIN para continuar",
+      "placeholder": "PIN",
+      "unlock": "Desbloquear",
+      "forgotPin": "¿Olvidaste tu PIN?",
+      "forgotConfirm": {
+        "title": "¿Restablecer PIN?",
+        "message": "Esto eliminará tu PIN actual y cerrará tu sesión por seguridad.",
+        "confirm": "Sí, restablecer"
+      },
+      "lockout": "Demasiados intentos fallidos. Espera {seconds}s",
+      "incorrectPin": "PIN incorrecto. {remaining} intentos restantes.",
+      "error": "Error al verificar el PIN"
+    },
+    "errors": {
+      "pinsNoMatch": "Los PINs no coinciden",
+      "pinLength": "El PIN debe tener entre 4 y 8 dígitos",
+      "pinNumeric": "El PIN solo puede contener números",
+      "incorrectPin": "PIN actual incorrecto",
+      "processing": "Error al procesar el PIN"
+    }
+  },
   "admin": {
     "title": "Panel Administrador",
     "kpis": {

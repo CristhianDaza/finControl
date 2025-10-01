@@ -11,6 +11,7 @@ import { useDataImport } from '@/composables/useDataImport.js'
 import { getBackupFilename } from '@/utils/constants.js'
 
 const FCConfirmModal = defineAsyncComponent(/* webpackChunkName: "fCConfirmModal" */() => import('@/components/global/FCConfirmModal.vue'))
+const InactivityLockSettings = defineAsyncComponent(/* webpackChunkName: "inactivityLockSettings" */() => import('@/components/settings/InactivityLockSettings.vue'))
 
 const store = useAuthStore()
 const notify = useNotify()
@@ -270,104 +271,10 @@ const onConfirmDelete = async () => {
 
     <section class="security-section">
       <div class="section-header">
-        <h2 class="section-title">{{ t('settings.account.title') }}</h2>
+        <h2 class="section-title">{{ t('inactivityLock.title') }}</h2>
       </div>
 
-      <div class="security-info">
-        <div class="info-item">
-          <span class="info-label">{{ t('settings.account.email') }}:</span>
-          <span class="info-value">{{ email }}</span>
-        </div>
-      </div>
-
-      <div class="security-actions">
-        <button
-          class="button button-secondary"
-          type="button"
-          :disabled="!email || sending"
-          :aria-busy="sending"
-          @click="onResetPassword"
-        >
-          {{ sending ? t('common.loading') : t('settings.account.changePassword') }}
-        </button>
-      </div>
-    </section>
-
-    <section class="data-section">
-      <div class="section-header">
-        <h2 class="section-title">{{ t('settings.account.io.title') }}</h2>
-      </div>
-
-      <p class="section-description">{{ t('settings.account.io.subtitle') }}</p>
-
-      <div class="data-actions">
-        <button
-          class="button button-primary"
-          type="button"
-          :aria-busy="exporting"
-          :disabled="exporting || !canWrite"
-          :title="!canWrite ? t('access.readOnly') : ''"
-          @click="onExport"
-        >
-          {{ exporting ? t('common.loading') : t('settings.account.io.export') }}
-        </button>
-
-        <div class="import-controls">
-          <label class="file-button" :title="!canWrite ? t('access.readOnly') : ''">
-            <input
-              type="file"
-              accept="application/json"
-              @change="onPickFile"
-              :disabled="!canWrite"
-            />
-            <span>{{ t('settings.account.io.pickFile') }}</span>
-          </label>
-
-          <select
-            class="input select-input"
-            v-model="importMode"
-            :disabled="!canWrite"
-          >
-            <option value="merge">{{ t('settings.account.io.mode.merge') }}</option>
-            <option value="replace">{{ t('settings.account.io.mode.replace') }}</option>
-          </select>
-
-          <input
-            v-if="requireWordForReplace"
-            class="input"
-            v-model="confirmInputImport"
-            :placeholder="t('settings.account.delete.inputPlaceholder', { word: confirmWordImport })"
-            :disabled="!canWrite"
-          />
-
-          <button
-            class="button button-secondary"
-            type="button"
-            :aria-busy="importing"
-            :disabled="!canWrite || importing || !importData || !isUnlockImport"
-            @click="onRequestImport"
-            :title="!canWrite ? t('access.readOnly') : ''"
-          >
-            {{ importing ? t('common.loading') : t('settings.account.io.import') }}
-          </button>
-        </div>
-      </div>
-
-      <div v-if="importData" class="import-preview">
-        <h4 class="preview-title">{{ t('settings.account.io.preview') }}</h4>
-        <div class="preview-content">
-          <ul class="preview-list">
-            <li v-for="item in importCounts.entries" :key="item.name" class="preview-item">
-              <span class="item-name">{{ item.name }}</span>
-              <span class="item-count">{{ item.count }}</span>
-            </li>
-          </ul>
-          <div class="preview-total">
-            <span class="total-label">{{ t('common.total') }}</span>
-            <span class="total-value">{{ importCounts.total }}</span>
-          </div>
-        </div>
-      </div>
+      <InactivityLockSettings />
     </section>
 
     <section class="danger-section">

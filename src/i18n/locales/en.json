@@ -575,6 +575,64 @@
       }
     }
   },
+  "inactivityLock": {
+    "title": "Inactivity Lock",
+    "description": "Set up a PIN to automatically lock the application after a period of inactivity.",
+    "enable": "Enable inactivity lock",
+    "setupPin": "Set up PIN",
+    "changePin": "Change PIN",
+    "currentPin": "Current PIN",
+    "newPin": "New PIN",
+    "confirmPin": "Confirm PIN",
+    "confirmNewPin": "Confirm new PIN",
+    "placeholder": "4-8 digits",
+    "saving": "Saving...",
+    "savePin": "Save PIN",
+    "cancel": "Cancel",
+    "timeoutTitle": "Inactivity time",
+    "timeouts": {
+      "disabled": "Disabled",
+      "1min": "1 minute (testing)",
+      "5min": "5 minutes",
+      "10min": "10 minutes",
+      "30min": "30 minutes"
+    },
+    "status": {
+      "label": "Status:",
+      "notConfigured": "Not configured",
+      "configured": "PIN set but disabled",
+      "active": "Active - {minutes} minutes"
+    },
+    "changeButton": "Change PIN",
+    "removeButton": "Remove PIN",
+    "removeConfirm": {
+      "title": "Remove PIN?",
+      "message": "This will completely disable inactivity lock.",
+      "confirm": "Yes, remove"
+    },
+    "modal": {
+      "title": "Application Locked",
+      "description": "Enter your PIN to continue",
+      "placeholder": "PIN",
+      "unlock": "Unlock",
+      "forgotPin": "Forgot your PIN?",
+      "forgotConfirm": {
+        "title": "Reset PIN?",
+        "message": "This will remove your current PIN and log you out for security.",
+        "confirm": "Yes, reset"
+      },
+      "lockout": "Too many failed attempts. Wait {seconds}s",
+      "incorrectPin": "Incorrect PIN. {remaining} attempts left.",
+      "error": "Error verifying PIN"
+    },
+    "errors": {
+      "pinsNoMatch": "PINs do not match",
+      "pinLength": "The PIN must be between 4 and 8 digits",
+      "pinNumeric": "The PIN can only contain numbers",
+      "incorrectPin": "Incorrect current PIN",
+      "processing": "Error processing PIN"
+    }
+  },
   "admin": {
     "title": "Admin Panel",
     "kpis": {

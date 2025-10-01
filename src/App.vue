@@ -4,12 +4,14 @@ import { useIsMobile} from '@/composables/useIsMobile.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useRecurringStore } from '@/stores/recurring.js'
 import { useSettingsStore } from '@/stores/settings.js'
+import { useInactivityLock } from '@/composables/useInactivityLock.js'
 import { useRoute } from 'vue-router'
 import { t } from '@/i18n/index.js'
 import { useLazyComponents } from '@/composables/useLazyComponents.js'
 
 const FCStatusBar = defineAsyncComponent(/* webpackChunkName: "fCStatusBar" */ () => import('@/components/FCStatusBar.vue'))
 const FCGlobalLoader = defineAsyncComponent(/* webpackChunkName: "fCGlobalLoader" */ () => import('@/components/global/FCGlobalLoader.vue'))
+const InactivityLockModal = defineAsyncComponent(/* webpackChunkName: "inactivityLockModal" */ () => import('@/components/global/InactivityLockModal.vue'))
 
 const { Sidebar, Notify, preloadModals } = useLazyComponents()
 
@@ -20,6 +22,8 @@ const recurring = useRecurringStore()
 const settings = useSettingsStore()
 const route = useRoute()
 const isLoginRoute = computed(() => route.name === 'login')
+
+const { startTracking, stopTracking } = useInactivityLock()
 
 const clickMainContent = () => {
   if (isMobile.value) {
@@ -52,10 +56,13 @@ watch(() => auth.isAuthenticated, async (v) => {
   if (v) {
     try { settings.loaded = false; await settings.initTheme() } catch {}
     triggerRecurring()
+    setTimeout(() => preloadModals(), 2000)
+    startTracking()
   } else {
     try { settings.clearCacheOnLogout() } catch {}
+    stopTracking()
   }
-})
+}, { immediate: true })
 
 const statusMessage = computed(() => auth.isReadOnly ? t('access.inactiveNotice') : '')
 </script>
@@ -74,6 +81,7 @@ const statusMessage = computed(() => auth.isReadOnly ? t('access.inactiveNotice'
   </div>
   <Notify />
   <FCGlobalLoader />
+  <InactivityLockModal />
 </template>
 
 <style scoped>
